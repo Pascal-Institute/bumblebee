@@ -1,5 +1,7 @@
 package bumblebee
 
+import bumblebee.Converter.Companion.convertByteToHex
+import bumblebee.Converter.Companion.convertHexToInt
 
 class Chunk {
     var length : ByteArray = ByteArray(4)
@@ -9,51 +11,6 @@ class Chunk {
 
     fun initData(size : Int) {
         data = ByteArray(size)
-    }
-    private fun convertHexToInt(hexString :String) : Int{
-        var coef = 1
-        var num = 0
-
-        hexString.reversed().forEach {
-
-            var hex = when(it){
-                '0' -> 0
-                '1' -> 1
-                '2' -> 2
-                '3' -> 3
-                '4' -> 4
-                '5' -> 5
-                '6' -> 6
-                '7' -> 7
-                '8' -> 8
-                '9' -> 9
-                'A' -> 10
-                'B' -> 11
-                'C' -> 12
-                'D' -> 13
-                'E' -> 14
-                'F' -> 15
-                else -> 0
-            }
-            num += hex * coef
-            coef *= 16
-        }
-        return num
-    }
-
-    fun convertByteToHex(byteArray : ByteArray) : String{
-        var string = ""
-
-        byteArray.forEach {
-
-            var first =  it.toUByte().toInt() / 16
-            var second = it.toUByte().toInt() % 16
-
-            string += String.format("%01X", first)
-            string += String.format("%01X", second)
-        }
-
-        return string
     }
 
     fun getWidth(byteArray: ByteArray) : Int{
@@ -68,4 +25,13 @@ class Chunk {
         var string = convertByteToHex(length)
         return convertHexToInt(string)
     }
+
+    fun getColorType(byte: Byte): Int {
+        return convertHexToInt(convertByteToHex(byte))
+    }
+
+    fun getBitDepth(byte: Byte): Int {
+        return convertHexToInt(convertByteToHex(byte))
+    }
+
 }
