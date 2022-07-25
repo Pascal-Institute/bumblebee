@@ -6,6 +6,7 @@ import java.awt.Graphics
 import java.awt.Transparency
 import java.awt.color.ColorSpace
 import java.awt.image.*
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.ByteBuffer
 import java.util.zip.Inflater
@@ -66,10 +67,11 @@ class ImgPix(filePath : String) {
 
             chunkArray.add(chunk)
         }
+        val outputStream = ByteArrayOutputStream()
 
         chunkArray.forEach{ it ->
             when(convertByteToHex(it.type)){
-               ChunkType.IHDR.id -> {
+                convertByteToHex(ChunkType.IHDR.byte) -> {
                    width = it.getWidth(it.data.sliceArray(0..3))
                    height = it.getHeight(it.data.sliceArray(4..7))
                    bitDepth = it.getBitDepth(it.data[8])
@@ -78,12 +80,16 @@ class ImgPix(filePath : String) {
                    bytesPerPixel = colorType.colorSpace * (bitDepth / 8)
             }
 
-                ChunkType.IDAT.id -> {
-                    val decompressedByteArray = decompress(it)
-                    offFilter(decompressedByteArray)
+                convertByteToHex(ChunkType.IDAT.byte)-> {
+
+                    outputStream.write(it.data)
+
                 }
             }
         }
+
+        val decompressedByteArray = decompress(outputStream.toByteArray())
+        offFilter(decompressedByteArray)
 
     }
 
@@ -98,7 +104,7 @@ class ImgPix(filePath : String) {
             DataBuffer.TYPE_BYTE
         )
 
-       val bufferedImage = BufferedImage(
+        val bufferedImage = BufferedImage(
             cm,
             Raster.createInterleavedRaster(buffer, width, height, width * 3, 3, intArrayOf(0, 1, 2), null),
             false,
@@ -130,9 +136,9 @@ class ImgPix(filePath : String) {
         frame.isVisible = true
     }
 
-    private fun decompress(chunk: Chunk) : ByteBuffer{
+    private fun decompress(byteArray: ByteArray) : ByteBuffer{
         val decompresser = Inflater()
-        decompresser.setInput(chunk.data, 0, chunk.data.size)
+        decompresser.setInput(byteArray, 0, byteArray.size)
         val decompressedByteArray = ByteArray(height * (1 + width * bytesPerPixel))
         decompresser.inflate(decompressedByteArray)
         decompresser.end()

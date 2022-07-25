@@ -1,5 +1,8 @@
 ![alt text](bumblebee.png)
 
+[![](https://jitpack.io/v/volta2030/bumblebee.svg)](https://jitpack.io/#volta2030/bumblebee)
+[![](https://jitpack.io/v/volta2030/bumblebee/month.svg)](https://jitpack.io/#volta2030/bumblebee)
+
 ## how to use?
 
 ### build.gradle.kts

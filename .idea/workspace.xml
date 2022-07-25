@@ -5,12 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="versionUp">
-      <change afterPath="$PROJECT_DIR$/bumblebee.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ChunkType.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/lenna.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ColorType.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ColorType.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ChunkType.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ChunkType.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/Main.kt" afterDir="false" />
     </list>
@@ -48,16 +45,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/user/IdeaProjects/bumblebee",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/user/IdeaProjects/bumblebee&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\user\IdeaProjects\bumblebee" />
@@ -178,11 +175,16 @@
         </breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt</url>
-          <line>241</line>
+          <line>247</line>
           <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="java.awt.image.DataBufferByte" memberName="data" />
+      </pinned-members>
+    </pin-to-top-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/bumblebee$MainKt.ic" NAME="MainKt Coverage Results" MODIFIED="1658670535724" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
