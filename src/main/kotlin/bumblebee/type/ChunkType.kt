@@ -1,4 +1,4 @@
-package bumblebee
+package bumblebee.type
 
 enum class ChunkType(val byte: ByteArray) {
     IHDR(byteArrayOf(73, 72, 68, 82)),

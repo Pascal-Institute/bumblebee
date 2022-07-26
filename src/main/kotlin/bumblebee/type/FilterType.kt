@@ -1,4 +1,4 @@
-package bumblebee
+package bumblebee.type
 
 enum class FilterType(val num : Int) {
 

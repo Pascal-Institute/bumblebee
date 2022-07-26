@@ -2,9 +2,10 @@ package bumblebee
 
 import bumblebee.Converter.Companion.convertByteToHex
 import bumblebee.Converter.Companion.convertHexToInt
+import bumblebee.type.ChunkType
+import bumblebee.type.ColorType
+import bumblebee.type.FilterType
 import java.awt.Graphics
-import java.awt.Transparency
-import java.awt.color.ColorSpace
 import java.awt.image.*
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -20,6 +21,7 @@ class ImgPix(filePath : String) {
     private val file = File(filePath)
     private val byteArray = file.readBytes()
     private val chunkArray = ArrayList<Chunk>()
+    private val OCTA = 8
 
     var width = 0
     var height = 0
@@ -33,6 +35,14 @@ class ImgPix(filePath : String) {
     init {
         extractImageInfo(byteArray)
     }
+
+    fun get(row : Int, col : Int) : String{
+
+        var byteArray = ByteArray((colorType.colorSpace * (bitDepth/OCTA)))
+        pixelBufferArray.get( col * width + row ,  byteArray, 0, (colorType.num * (bitDepth/OCTA)))
+        return convertByteToHex(byteArray)
+    }
+
     private fun extractImageInfo(byteArray: ByteArray){
 
         val size = byteArray.size
@@ -43,7 +53,6 @@ class ImgPix(filePath : String) {
             val chunk = Chunk()
 
             //length 4 byte
-            var count  = 0
             chunk.length = byteArray.sliceArray(idx until idx + 4)
             idx += 4
 
@@ -62,11 +71,13 @@ class ImgPix(filePath : String) {
 
             idx += length
 
+            //crc 4 byte
             chunk.crc = byteArray.sliceArray(idx until idx + 4)
             idx += 4
 
             chunkArray.add(chunk)
         }
+
         val outputStream = ByteArrayOutputStream()
 
         chunkArray.forEach{ it ->
@@ -76,15 +87,16 @@ class ImgPix(filePath : String) {
                    height = it.getHeight(it.data.sliceArray(4..7))
                    bitDepth = it.getBitDepth(it.data[8])
                    colorType = ColorType.fromInt(it.getColorType(it.data[9]))
-
-                   bytesPerPixel = colorType.colorSpace * (bitDepth / 8)
-            }
+                   bytesPerPixel = colorType.colorSpace * (bitDepth / OCTA)
+                }
 
                 convertByteToHex(ChunkType.IDAT.byte)-> {
-
                     outputStream.write(it.data)
-
                 }
+
+                convertByteToHex(ChunkType.GAMA.byte) -> {
+                }
+
             }
         }
 
@@ -95,21 +107,29 @@ class ImgPix(filePath : String) {
 
     fun show(){
         val buffer = DataBufferByte(pixelBufferArray.array(), pixelBufferArray.array().size)
-        val cm: ColorModel = ComponentColorModel(
-            ColorSpace.getInstance(ColorSpace.CS_sRGB),
-            intArrayOf(8, 8, 8),
-            false,
-            false,
-            Transparency.OPAQUE,
-            DataBuffer.TYPE_BYTE
-        )
 
-        val bufferedImage = BufferedImage(
-            cm,
-            Raster.createInterleavedRaster(buffer, width, height, width * 3, 3, intArrayOf(0, 1, 2), null),
-            false,
-            null
-        )
+        var bufferedImage : BufferedImage
+        when(colorType){
+            ColorType.GRAY_SCALE ->{
+                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 1, 1, intArrayOf(0), null)
+            }
+
+            ColorType.TRUE_COLOR ->{
+               bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+               bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 3, 3, intArrayOf(0,1,2), null)
+            }
+
+            ColorType.TRUE_COLOR_ALPHA->{
+                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(0,1,2,3), null)
+            }
+
+            else -> {
+                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 3, 3, intArrayOf(0,1,2), null)
+            }
+        }
 
         val frame = JFrame()
         frame.defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE

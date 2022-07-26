@@ -61,6 +61,15 @@ class Converter {
 
             return string
         }
+
+
+        fun convertHexToRGB(hex : String) : RGB{
+            var r = convertHexToInt(hex.slice(0 until 2))
+            var g = convertHexToInt(hex.slice(2 until 4))
+            var b = convertHexToInt(hex.slice(4 until 6))
+
+            return RGB(r, g, b)
+        }
     }
 
 
