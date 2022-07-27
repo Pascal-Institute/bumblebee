@@ -40,14 +40,14 @@ class ImgPix(private val filePath : String) {
             System.err.println("ERROR : ColorType does not match")
             return
         }else{
-            pixelBufferArray.put(bytesPerPixel * col + (width * bytesPerPixel) * row, convertColorToByte(color))
+            pixelBufferArray.put(bytesPerPixel * col + (width * bytesPerPixel) * row, convertColorToByte(color),0,(colorType.colorSpace * (bitDepth/OCTA)))
         }
     }
 
     fun get(row : Int, col : Int) : String{
 
         val byteArray = ByteArray((colorType.colorSpace * (bitDepth/OCTA)))
-        pixelBufferArray.get( bytesPerPixel * col + (width * bytesPerPixel) * row ,  byteArray, 0, (colorType.num * (bitDepth/OCTA)))
+        pixelBufferArray.get( bytesPerPixel * col + (width * bytesPerPixel) * row ,  byteArray, 0, (colorType.colorSpace * (bitDepth/OCTA)))
         return convertByteToHex(byteArray)
     }
 
