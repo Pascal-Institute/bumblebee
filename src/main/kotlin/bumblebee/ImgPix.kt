@@ -193,9 +193,13 @@ class ImgPix(private val filePath : String) {
 
             val from = ((width * bytesPerPixel) + 1) * col + 1
             val fromReal = (width * bytesPerPixel) * col
-            val byteArray = ByteArray(width * bytesPerPixel)
+            val size = width * bytesPerPixel
+            val byteArray = ByteArray(size)
 
-            decompressedByteBuffer.get(from, byteArray)
+            for(i : Int in 0 until size){
+                byteArray[i] = decompressedByteBuffer.get(from + i)
+            }
+
 
             when(filterType){
                 FilterType.NONE -> none(byteArray, fromReal)
