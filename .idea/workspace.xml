@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="-Fixed minor">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Color.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/RGBA.kt" afterDir="false" />
+    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="-Version Up">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Converter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Converter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/RGB.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/RGB.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/Main.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -123,7 +117,14 @@
       <option name="project" value="LOCAL" />
       <updated>1658641083566</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="-Version Up">
+      <created>1658932222363</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1658932222363</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -175,7 +176,8 @@
     <MESSAGE value="-Add RGBA class" />
     <MESSAGE value="-Add set() in imgPix class" />
     <MESSAGE value="-Fixed minor" />
-    <option name="LAST_COMMIT_MESSAGE" value="-Fixed minor" />
+    <MESSAGE value="-Version Up" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Version Up" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
