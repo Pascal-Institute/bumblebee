@@ -1,6 +1,7 @@
 package bumblebee
 
 import bumblebee.Converter.Companion.convertByteToHex
+import bumblebee.Converter.Companion.convertColorToByte
 import bumblebee.Converter.Companion.convertHexToInt
 import bumblebee.type.ChunkType
 import bumblebee.type.ColorType
@@ -16,10 +17,8 @@ import kotlin.math.abs
 import kotlin.math.floor
 
 
-class ImgPix(filePath : String) {
+class ImgPix(private val filePath : String) {
 
-    private val file = File(filePath)
-    private val byteArray = file.readBytes()
     private val chunkArray = ArrayList<Chunk>()
     private val OCTA = 8
 
@@ -33,13 +32,22 @@ class ImgPix(filePath : String) {
     lateinit var colorType : ColorType
 
     init {
-        extractImageInfo(byteArray)
+        extractImageInfo(File(filePath).readBytes())
+    }
+
+    fun set(row : Int, col : Int, color : Color) {
+        if (colorType != color.colorType){
+            System.err.println("ERROR : ColorType does not match")
+            return
+        }else{
+            pixelBufferArray.put(bytesPerPixel * col + (width * bytesPerPixel) * row, convertColorToByte(color))
+        }
     }
 
     fun get(row : Int, col : Int) : String{
 
-        var byteArray = ByteArray((colorType.colorSpace * (bitDepth/OCTA)))
-        pixelBufferArray.get( col * width + row ,  byteArray, 0, (colorType.num * (bitDepth/OCTA)))
+        val byteArray = ByteArray((colorType.colorSpace * (bitDepth/OCTA)))
+        pixelBufferArray.get( bytesPerPixel * col + (width * bytesPerPixel) * row ,  byteArray, 0, (colorType.num * (bitDepth/OCTA)))
         return convertByteToHex(byteArray)
     }
 
@@ -66,7 +74,7 @@ class ImgPix(filePath : String) {
             try{
                 chunk.data = byteArray.sliceArray(idx until idx + length)
             }catch (e : Exception){
-                error("Extract failed")
+                System.err.println("ERROR : Extract failed")
             }
 
             idx += length

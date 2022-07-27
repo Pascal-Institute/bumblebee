@@ -4,14 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="versionUp">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/RGB.kt" afterDir="false" />
+    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="-Fixed minor">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Color.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/RGBA.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ChunkType.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/type/ChunkType.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ColorType.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/type/ColorType.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Converter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Converter.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FilterType.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/type/FilterType.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/RGB.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/RGB.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/Main.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -30,6 +30,7 @@
         <option value="Kotlin File" />
         <option value="Kotlin Enum" />
         <option value="Kotlin Class" />
+        <option value="Kotlin Interface" />
       </list>
     </option>
   </component>
@@ -67,6 +68,7 @@
       <recent name="C:\Users\user\IdeaProjects\bumblebee" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="bumblebee" />
       <recent name="bumblebee.type" />
     </key>
   </component>
@@ -170,7 +172,10 @@
     <MESSAGE value="." />
     <MESSAGE value="bumblebee can show(using JSwing) pixel images.&#10;(not perfect, only TRUE_COLOR, RGB, and it has few errors)" />
     <MESSAGE value="versionUp" />
-    <option name="LAST_COMMIT_MESSAGE" value="versionUp" />
+    <MESSAGE value="-Add RGBA class" />
+    <MESSAGE value="-Add set() in imgPix class" />
+    <MESSAGE value="-Fixed minor" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Fixed minor" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -9,7 +9,7 @@ class Converter {
 
             hexString.reversed().forEach {
 
-                var hex = when(it){
+                val hex = when(it){
                     '0' -> 0
                     '1' -> 1
                     '2' -> 2
@@ -38,8 +38,8 @@ class Converter {
 
             var string = ""
 
-            var first =  byte.toUByte().toInt() / 16
-            var second = byte.toUByte().toInt() % 16
+            val first =  byte.toUByte().toInt() / 16
+            val second = byte.toUByte().toInt() % 16
 
             string += String.format("%01X", first)
             string += String.format("%01X", second)
@@ -52,8 +52,8 @@ class Converter {
 
             byteArray.forEach {
 
-                var first =  it.toUByte().toInt() / 16
-                var second = it.toUByte().toInt() % 16
+                val first =  it.toUByte().toInt() / 16
+                val second = it.toUByte().toInt() % 16
 
                 string += String.format("%01X", first)
                 string += String.format("%01X", second)
@@ -70,6 +70,25 @@ class Converter {
 
             return RGB(r, g, b)
         }
+
+        fun convertHexToRGBA(hex : String) : RGBA{
+            var r = convertHexToInt(hex.slice(0 until 2))
+            var g = convertHexToInt(hex.slice(2 until 4))
+            var b = convertHexToInt(hex.slice(4 until 6))
+            var a = convertHexToInt(hex.slice(6 until 8))
+
+            return RGBA(r, g, b, a)
+        }
+
+        fun convertColorToByte(color : Color) : ByteArray{
+            var byteArray = ByteArray(color.colorArray.size)
+
+            color.colorArray.forEachIndexed { index , color ->
+                byteArray[index] = color.toByte()
+            }
+            return byteArray
+        }
+
     }
 
 
