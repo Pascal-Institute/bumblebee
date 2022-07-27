@@ -80,11 +80,11 @@ class Converter {
             return RGBA(r, g, b, a)
         }
 
-        fun convertColorToByte(color : Color) : ByteArray{
+        fun convertColorToByte(color : Color) : ByteArray {
             var byteArray = ByteArray(color.colorArray.size)
 
             color.colorArray.forEach{
-                byteArray.plus(255.toByte())
+                byteArray.plus(it.toByte())
             }
             return byteArray
         }
