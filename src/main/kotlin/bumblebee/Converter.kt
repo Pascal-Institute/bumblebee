@@ -83,8 +83,8 @@ class Converter {
         fun convertColorToByte(color : Color) : ByteArray {
             var byteArray = ByteArray(color.colorArray.size)
 
-            color.colorArray.forEach{
-                byteArray.plus(it.toByte())
+            color.colorArray.forEachIndexed{ index , i ->
+                byteArray[index] = i.toByte()
             }
             return byteArray
         }

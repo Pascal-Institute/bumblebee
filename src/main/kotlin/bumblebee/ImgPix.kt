@@ -40,14 +40,19 @@ class ImgPix(private val filePath : String) {
             return
         }else{
             val byteArray : ByteArray = convertColorToByte(color)
-            pixelBufferArray.put(bytesPerPixel * col + (width * bytesPerPixel) * row, byteArray)
+
+            for (i : Int in 0 until bytesPerPixel){
+                pixelBufferArray.put(i + bytesPerPixel * col + (width * bytesPerPixel) * row, byteArray[i])
+            }
         }
     }
 
     fun get(row : Int, col : Int) : String{
-
         val byteArray = ByteArray((colorType.colorSpace * (bitDepth/OCTA)))
-        pixelBufferArray.get( bytesPerPixel * col + (width * bytesPerPixel) * row ,  byteArray)
+        for (i : Int in 0 until bytesPerPixel){
+            byteArray[i] = pixelBufferArray.get(i + bytesPerPixel * col + (width * bytesPerPixel) * row)
+        }
+
         return convertByteToHex(byteArray)
     }
 
