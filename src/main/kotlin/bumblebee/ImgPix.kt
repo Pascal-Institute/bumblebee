@@ -16,7 +16,6 @@ import javax.swing.*
 import kotlin.math.abs
 import kotlin.math.floor
 
-
 class ImgPix(private val filePath : String) {
 
     private val chunkArray = ArrayList<Chunk>()
@@ -40,17 +39,15 @@ class ImgPix(private val filePath : String) {
             System.err.println("ERROR : ColorType does not match")
             return
         }else{
-
-            var byteArray : ByteArray = convertColorToByte(color)
-
-            pixelBufferArray.put(bytesPerPixel * col + (width * bytesPerPixel) * row, byteArray, 0,(colorType.colorSpace * (bitDepth/OCTA)))
+            val byteArray : ByteArray = convertColorToByte(color)
+            pixelBufferArray.put(bytesPerPixel * col + (width * bytesPerPixel) * row, byteArray)
         }
     }
 
     fun get(row : Int, col : Int) : String{
 
         val byteArray = ByteArray((colorType.colorSpace * (bitDepth/OCTA)))
-        pixelBufferArray.get( bytesPerPixel * col + (width * bytesPerPixel) * row ,  byteArray, 0, (colorType.colorSpace * (bitDepth/OCTA)))
+        pixelBufferArray.get( bytesPerPixel * col + (width * bytesPerPixel) * row ,  byteArray)
         return convertByteToHex(byteArray)
     }
 
@@ -193,7 +190,7 @@ class ImgPix(private val filePath : String) {
             val fromReal = (width * bytesPerPixel) * col
             val byteArray = ByteArray(width * bytesPerPixel)
 
-            decompressedByteBuffer.get(from, byteArray, 0 ,width * bytesPerPixel)
+            decompressedByteBuffer.get(from, byteArray)
 
             when(filterType){
                 FilterType.NONE -> none(byteArray, fromReal)
