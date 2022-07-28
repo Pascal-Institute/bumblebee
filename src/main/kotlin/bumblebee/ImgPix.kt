@@ -16,22 +16,53 @@ import javax.swing.*
 import kotlin.math.abs
 import kotlin.math.floor
 
-class ImgPix(private val filePath : String) {
+class ImgPix(private val filePath : String) : Cloneable {
 
     private val chunkArray = ArrayList<Chunk>()
     private val OCTA = 8
 
+    var manipulatedIntance = false
     var width = 0
     var height = 0
     var bitDepth = 0
 
+    private var bytesPerPixel = 0
     private lateinit var pixelBufferArray: ByteBuffer
-    private var bytesPerPixel : Int = 0
 
     lateinit var colorType : ColorType
 
     init {
         extractImageInfo(File(filePath).readBytes())
+    }
+
+    public override fun clone(): ImgPix {
+        return super.clone() as ImgPix
+    }
+
+    fun crop(row : Int, col : Int, width : Int, height : Int) : ImgPix {
+
+        var imgPix = this.clone()
+
+        imgPix.manipulatedIntance = true
+        imgPix.width = width
+        imgPix.height = height
+
+        var bytesPerPixel = imgPix.bytesPerPixel
+        var pixelBufferArray = ByteBuffer.allocate(imgPix.width * imgPix.height * imgPix.bytesPerPixel)
+
+        var startIdx = row * (width * bytesPerPixel) + col * bytesPerPixel
+
+        for(i : Int in 0 until height){
+            for(j : Int in 0 until width){
+                for(k : Int in 0 until bytesPerPixel){
+                    pixelBufferArray.put(this.pixelBufferArray.get(startIdx  + j * bytesPerPixel + k + (i * bytesPerPixel * this.width)))
+                }
+            }
+        }
+
+        imgPix.pixelBufferArray = pixelBufferArray
+
+        return imgPix
     }
 
     fun set(row : Int, col : Int, color : Color) {
@@ -40,7 +71,6 @@ class ImgPix(private val filePath : String) {
             return
         }else{
             val byteArray : ByteArray = convertColorToByte(color)
-
             for (i : Int in 0 until bytesPerPixel){
                 pixelBufferArray.put(i + bytesPerPixel * col + (width * bytesPerPixel) * row, byteArray[i])
             }
@@ -160,7 +190,6 @@ class ImgPix(private val filePath : String) {
         }
 
         val box = Box(BoxLayout.X_AXIS)
-
         box.add(Box.createVerticalGlue())
         box.add(pane)
         box.add(Box.createVerticalGlue())
@@ -197,7 +226,7 @@ class ImgPix(private val filePath : String) {
             val byteArray = ByteArray(size)
 
             for(i : Int in 0 until size){
-                byteArray[i] = decompressedByteBuffer.get(from + i)
+                byteArray[i] =  decompressedByteBuffer.get(from+i)
             }
 
 
@@ -314,4 +343,6 @@ class ImgPix(private val filePath : String) {
             count++
         }
     }
+
+
 }
