@@ -1,5 +1,9 @@
 package bumblebee
 
+import bumblebee.color.Color
+import bumblebee.color.RGB
+import bumblebee.color.RGBA
+
 class Converter {
     companion object {
 
@@ -63,7 +67,7 @@ class Converter {
         }
 
 
-        fun convertHexToRGB(hex : String) : RGB{
+        fun convertHexToRGB(hex : String) : RGB {
             var r = convertHexToInt(hex.slice(0 until 2))
             var g = convertHexToInt(hex.slice(2 until 4))
             var b = convertHexToInt(hex.slice(4 until 6))
@@ -71,7 +75,7 @@ class Converter {
             return RGB(r, g, b)
         }
 
-        fun convertHexToRGBA(hex : String) : RGBA{
+        fun convertHexToRGBA(hex : String) : RGBA {
             var r = convertHexToInt(hex.slice(0 until 2))
             var g = convertHexToInt(hex.slice(2 until 4))
             var b = convertHexToInt(hex.slice(4 until 6))

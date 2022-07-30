@@ -1,10 +1,9 @@
 import bumblebee.Converter.Companion.convertHexToRGB
-import bumblebee.ImgPix
-import bumblebee.RGB
-import bumblebee.RGBA
+import bumblebee.FileManager
+import bumblebee.PNG
 
 fun main(){
-    val imgPix = ImgPix("src/main/resources/lenna.png")
+    val imgPix = FileManager.read("src/main/resources/lenna.png")
 
     println(imgPix.width)
     println(imgPix.height)

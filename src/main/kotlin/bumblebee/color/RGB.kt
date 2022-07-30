@@ -1,4 +1,4 @@
-package bumblebee
+package bumblebee.color
 
 import bumblebee.type.ColorType
 
