@@ -1,5 +1,6 @@
 package bumblebee
 
-interface ImgController {
+interface ImgExtractor {
    fun extract()
+
 }

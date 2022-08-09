@@ -1,23 +1,27 @@
 package bumblebee
 
-import bumblebee.Chunk
+import bumblebee.Converter.Companion.convertByteToHex
 import bumblebee.type.ChunkType
 import bumblebee.type.ColorType
 import bumblebee.type.FilterType
+import bumblebee.type.ImgFileType
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.util.zip.Inflater
 import kotlin.math.abs
 import kotlin.math.floor
 
-class PNG(private var byteArray: ByteArray) : ImgPix(), ImgController {
+class PNG(private var byteArray: ByteArray) : ImgPix(), ImgExtractor {
 
+
+    private val chunkArray = ArrayList<Chunk>()
     init {
+        imgFileType = ImgFileType.PNG
         extract()
     }
 
     override fun extract() {
-        val chunkArray = ArrayList<Chunk>()
+
         val size = byteArray.size
         var idx = 8
 
@@ -56,18 +60,24 @@ class PNG(private var byteArray: ByteArray) : ImgPix(), ImgController {
         chunkArray.forEach{ it ->
             when(Converter.convertByteToHex(it.type)){
                 Converter.convertByteToHex(ChunkType.IHDR.byte) -> {
+
+                    println(convertByteToHex(it.data))
+
                     width = it.getWidth(it.data.sliceArray(0..3))
                     height = it.getHeight(it.data.sliceArray(4..7))
                     bitDepth = it.getBitDepth(it.data[8])
                     colorType = ColorType.fromInt(it.getColorType(it.data[9]))
                     bytesPerPixel = colorType.colorSpace * (bitDepth / OCTA)
+
+                    println(convertByteToHex(it.crc))
+
                 }
 
-                Converter.convertByteToHex(ChunkType.IDAT.byte) -> {
+                convertByteToHex(ChunkType.IDAT.byte) -> {
                     outputStream.write(it.data)
                 }
 
-                Converter.convertByteToHex(ChunkType.GAMA.byte) -> {
+                convertByteToHex(ChunkType.GAMA.byte) -> {
                 }
 
             }

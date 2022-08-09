@@ -7,6 +7,7 @@ import bumblebee.color.Color
 import bumblebee.type.ChunkType
 import bumblebee.type.ColorType
 import bumblebee.type.FilterType
+import bumblebee.type.ImgFileType
 import java.awt.Graphics
 import java.awt.image.*
 import java.io.ByteArrayOutputStream
@@ -29,6 +30,7 @@ open class ImgPix : Cloneable {
 
     protected lateinit var pixelBufferArray: ByteBuffer
     lateinit var colorType : ColorType
+    lateinit var imgFileType: ImgFileType
 
     public override fun clone(): ImgPix {
         return super.clone() as ImgPix
@@ -79,6 +81,10 @@ open class ImgPix : Cloneable {
         }
 
         return convertByteToHex(byteArray)
+    }
+
+    fun get() : ByteArray {
+        return pixelBufferArray.array()
     }
 
     fun show(){

@@ -1,11 +1,33 @@
 package bumblebee
 
-import bumblebee.color.Color
-import bumblebee.color.RGB
-import bumblebee.color.RGBA
-
+import bumblebee.color.*
 class Converter {
     companion object {
+        fun convertLongToByteArray(long : Long, byteSize : Int) : ByteArray {
+            var byteArray = ByteArray(byteSize)
+            var num = long
+            var coef = 256
+
+            for(i : Int in 0 until byteSize){
+                println(num)
+                byteArray[byteSize - (i+1)] = (num % coef).toByte()
+                num /= coef
+            }
+
+            return byteArray
+        }
+        fun convertIntToByteArray(int : Int, byteSize : Int) : ByteArray {
+            var byteArray = ByteArray(byteSize)
+            var num = int
+            var coef = 256
+
+            for(i : Int in 0 until byteSize){
+                byteArray[byteSize - (i+1)] = (num % coef).toByte()
+                num /= coef
+            }
+
+            return byteArray
+        }
 
         fun convertHexToInt(hexString :String) : Int{
             var coef = 1
@@ -41,7 +63,6 @@ class Converter {
         fun convertByteToHex(byte : Byte) : String{
 
             var string = ""
-
             val first =  byte.toUByte().toInt() / 16
             val second = byte.toUByte().toInt() % 16
 
@@ -50,7 +71,6 @@ class Converter {
 
             return string
         }
-
         fun convertByteToHex(byteArray : ByteArray) : String{
             var string = ""
 
@@ -65,8 +85,6 @@ class Converter {
 
             return string
         }
-
-
         fun convertHexToRGB(hex : String) : RGB {
             var r = convertHexToInt(hex.slice(0 until 2))
             var g = convertHexToInt(hex.slice(2 until 4))
@@ -90,9 +108,9 @@ class Converter {
             color.colorArray.forEachIndexed{ index , i ->
                 byteArray[index] = i.toByte()
             }
+
             return byteArray
         }
-
     }
 
 
