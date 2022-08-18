@@ -2,9 +2,11 @@ package bumblebee
 
 import bumblebee.Converter.Companion.convertByteToHex
 import bumblebee.Converter.Companion.convertIntToByteArray
+import bumblebee.Converter.Companion.convertLongToByteArray
 import bumblebee.type.ChunkType
 import bumblebee.type.ImgFileType
 import java.io.File
+import javax.imageio.ImageIO
 
 class FileManager {
 
@@ -29,19 +31,12 @@ class FileManager {
         fun write(filePath: String, imgPix : ImgPix){
             when(imgPix.imgFileType){
                 ImgFileType.PNG -> {
-                    val chunkArray = ArrayList<Chunk>()
                     val fileSignature = ImgFileType.PNG.byte
 
-                    //IDHR
-                    //Width 4 byte
-                    //Height 4 byte
-                    //Bit depth 1 byte
-                    //Color Type 1 byte
-                    //Compression method 1 byte
-                    //Filter method 1 byte
-
                     val idhr = Chunk()
-                    idhr.length = byteArrayOf(0, 0, 0, 13)
+                    idhr.length = convertIntToByteArray(13,4)
+                    idhr.initData(13)
+
                     idhr.type = ChunkType.IHDR.byte
 
                     var widthArray = convertIntToByteArray(imgPix.width, 4);
@@ -59,21 +54,22 @@ class FileManager {
                                 compressionMethodTypeArray +
                                 filterMethodTypeArray +
                                 interlaceMethodType
-
                     idhr.crc = idhr.getCRC()
 
                     //IDAT
                     val idat = Chunk()
-                    idat.generateData(imgPix.get())
+                    idat.length = convertIntToByteArray(imgPix.width * imgPix.height, 4);
+                    idat.initData(imgPix.bytesPerPixel * (imgPix.width + 1) * imgPix.height)
+                    idat.generateData(imgPix)
                     idat.type = ChunkType.IDAT.byte
                     idat.crc = idat.getCRC()
 
                     //IEND
                     val iend = Chunk()
                     iend.length = byteArrayOf(0, 0, 0, 4)
+                    iend.initData(0)
                     iend.type = ChunkType.IEND.byte
                     iend.crc = iend.getCRC()
-
                 }
                 else ->{}
             }
