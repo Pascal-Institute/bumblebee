@@ -9,7 +9,6 @@ class Converter {
             var coef = 256
 
             for(i : Int in 0 until byteSize){
-                println(num)
                 byteArray[byteSize - (i+1)] = (num % coef).toByte()
                 num /= coef
             }

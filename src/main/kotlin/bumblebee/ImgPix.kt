@@ -4,20 +4,14 @@ import bumblebee.Converter.Companion.convertByteToHex
 import bumblebee.Converter.Companion.convertColorToByte
 import bumblebee.Converter.Companion.convertHexToInt
 import bumblebee.color.Color
-import bumblebee.type.ChunkType
 import bumblebee.type.ColorType
-import bumblebee.type.FilterType
 import bumblebee.type.ImgFileType
 import java.awt.Graphics
 import java.awt.image.*
-import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
-import java.util.zip.Inflater
 import javax.swing.*
-import kotlin.math.abs
-import kotlin.math.floor
 
-open class ImgPix : Cloneable {
+ open class ImgPix() : ImgExtractor, Cloneable {
 
     //PNG
     protected val OCTA = 8
@@ -30,7 +24,7 @@ open class ImgPix : Cloneable {
 
     protected lateinit var pixelBufferArray: ByteBuffer
     lateinit var colorType : ColorType
-    lateinit var imgFileType: ImgFileType
+    var imgFileType : ImgFileType = ImgFileType.PIX
 
     public override fun clone(): ImgPix {
         return super.clone() as ImgPix
@@ -135,4 +129,8 @@ open class ImgPix : Cloneable {
         frame.isVisible = true
     }
 
-}
+     override fun extract() {
+         TODO("Not yet implemented")
+     }
+
+ }

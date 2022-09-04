@@ -11,9 +11,7 @@ import java.util.zip.Inflater
 import kotlin.math.abs
 import kotlin.math.floor
 
-class PNG(private var byteArray: ByteArray) : ImgPix(), ImgExtractor {
-
-
+class PNG(private var byteArray: ByteArray) : ImgPix() {
     private val chunkArray = ArrayList<Chunk>()
     init {
         imgFileType = ImgFileType.PNG
@@ -58,28 +56,18 @@ class PNG(private var byteArray: ByteArray) : ImgPix(), ImgExtractor {
         val outputStream = ByteArrayOutputStream()
 
         chunkArray.forEach{ it ->
-            when(Converter.convertByteToHex(it.type)){
-                Converter.convertByteToHex(ChunkType.IHDR.byte) -> {
-
-                    println(convertByteToHex(it.data))
-
+            when(convertByteToHex(it.type)){
+                convertByteToHex(ChunkType.IHDR.byte) -> {
                     width = it.getWidth(it.data.sliceArray(0..3))
                     height = it.getHeight(it.data.sliceArray(4..7))
                     bitDepth = it.getBitDepth(it.data[8])
                     colorType = ColorType.fromInt(it.getColorType(it.data[9]))
                     bytesPerPixel = colorType.colorSpace * (bitDepth / OCTA)
-
-                    println(convertByteToHex(it.crc))
-
                 }
 
                 convertByteToHex(ChunkType.IDAT.byte) -> {
                     outputStream.write(it.data)
                 }
-
-                convertByteToHex(ChunkType.GAMA.byte) -> {
-                }
-
             }
         }
 

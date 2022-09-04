@@ -1,18 +1,12 @@
 import bumblebee.Converter.Companion.convertHexToRGB
 import bumblebee.FileManager
 import bumblebee.PNG
+import bumblebee.type.ImgFileType
 
 fun main(){
-
-    val imgPix = FileManager.read("src/main/resources/lenna.png")
+    val imgPng = FileManager.read("src/main/resources/lenna.png")
+    FileManager.write("src/main/resources/lenna", imgPng, ImgFileType.PIX)
+    val imgPix = FileManager.read("src/main/resources/lenna.pix")
+    imgPng.show()
     imgPix.show()
-    FileManager.write("d", imgPix)
-//  for( i : Int in 256 until 256 + 64){
-//      for( j : Int in 256 until 256 + 64){
-//          imgPix.set(i, j , RGB(0, 0, 0))
-//      }
-//  }
-//  var new = imgPix.crop(256,256,256,256)
-//  new.show()
-
 }
