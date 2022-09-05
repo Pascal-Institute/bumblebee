@@ -113,9 +113,11 @@ open class ImgPix() : ImgExtractor, Cloneable {
          TODO("Not yet implemented")
      }
 
-     fun crop(row : Int, col : Int, width : Int, height : Int) : Any {
-         var imgPix = this.clone()
-         return Process.crop(imgPix, row, col, width, height)
+     fun invert() {
+         Process.invert(this)
+     }
+     fun crop(row : Int, col : Int, width : Int, height : Int) {
+         Process.crop(this, row, col, width, height)
      }
 
  }

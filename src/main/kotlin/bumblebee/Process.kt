@@ -1,6 +1,7 @@
 package bumblebee
 
 import java.nio.ByteBuffer
+import kotlin.experimental.inv
 
 class Process {
     companion object{
@@ -24,6 +25,10 @@ class Process {
 
             imgPix.pixelBufferArray = pixelBufferArray
 
+            return imgPix
+        }
+
+        fun invert(imgPix: ImgPix): ImgPix {
             return imgPix
         }
     }
