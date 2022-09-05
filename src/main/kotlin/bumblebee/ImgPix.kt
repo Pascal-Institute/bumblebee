@@ -1,8 +1,8 @@
  package bumblebee
 
-import bumblebee.Converter.Companion.convertByteToHex
-import bumblebee.Converter.Companion.convertColorToByte
-import bumblebee.Converter.Companion.convertHexToInt
+import bumblebee.Converter.Companion.byteToHex
+import bumblebee.Converter.Companion.colorToByte
+import bumblebee.Converter.Companion.hexToInt
 import bumblebee.color.Color
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
@@ -11,7 +11,7 @@ import java.awt.image.*
 import java.nio.ByteBuffer
 import javax.swing.*
 
- open class ImgPix() : ImgExtractor, Cloneable {
+open class ImgPix() : ImgExtractor, Cloneable {
 
     //PNG
     protected val OCTA = 8
@@ -22,46 +22,26 @@ import javax.swing.*
     var width = 0
     var height = 0
 
-    protected lateinit var pixelBufferArray: ByteBuffer
-    lateinit var colorType : ColorType
-    var imgFileType : ImgFileType = ImgFileType.PIX
+     lateinit var pixelBufferArray: ByteBuffer
+     lateinit var colorType : ColorType
+     var imgFileType : ImgFileType = ImgFileType.PIX
+
+    constructor(width: Int, height: Int, colorType: ColorType) : this() {
+        this.width = width
+        this.height = height
+        this.colorType = colorType
+        this.pixelBufferArray = ByteBuffer.allocate(width * height * colorType.colorSpace)
+    }
 
     public override fun clone(): ImgPix {
         return super.clone() as ImgPix
     }
-
-    fun crop(row : Int, col : Int, width : Int, height : Int) : ImgPix {
-
-        var imgPix = this.clone()
-
-        imgPix.manipulatedIntance = true
-        imgPix.width = width
-        imgPix.height = height
-
-        var bytesPerPixel = imgPix.bytesPerPixel
-        var pixelBufferArray = ByteBuffer.allocate(imgPix.width * imgPix.height * imgPix.bytesPerPixel)
-
-        var startIdx = row * (width * bytesPerPixel) + col * bytesPerPixel
-
-        for(i : Int in 0 until height){
-            for(j : Int in 0 until width){
-                for(k : Int in 0 until bytesPerPixel){
-                    pixelBufferArray.put(this.pixelBufferArray.get(startIdx  + j * bytesPerPixel + k + (i * bytesPerPixel * this.width)))
-                }
-            }
-        }
-
-        imgPix.pixelBufferArray = pixelBufferArray
-
-        return imgPix
-    }
-
     fun set(row : Int, col : Int, color : Color) {
         if (colorType != color.colorType){
             System.err.println("ERROR : ColorType does not match")
             return
         }else{
-            val byteArray : ByteArray = convertColorToByte(color)
+            val byteArray : ByteArray = colorToByte(color)
             for (i : Int in 0 until bytesPerPixel){
                 pixelBufferArray.put(i + bytesPerPixel * col + (width * bytesPerPixel) * row, byteArray[i])
             }
@@ -74,7 +54,7 @@ import javax.swing.*
             byteArray[i] = pixelBufferArray.get(i + bytesPerPixel * col + (width * bytesPerPixel) * row)
         }
 
-        return convertByteToHex(byteArray)
+        return byteToHex(byteArray)
     }
 
     fun get() : ByteArray {
@@ -131,6 +111,11 @@ import javax.swing.*
 
      override fun extract() {
          TODO("Not yet implemented")
+     }
+
+     fun crop(row : Int, col : Int, width : Int, height : Int) : Any {
+         var imgPix = this.clone()
+         return Process.crop(imgPix, row, col, width, height)
      }
 
  }

@@ -4,8 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="-Add test file">
-      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="-Refactoring">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Process.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Chunk.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Chunk.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Converter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Converter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FileManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FileManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/PIX.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PIX.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/PNG.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PNG.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/type/ColorType.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/type/ColorType.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/Main.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +49,7 @@
         <option value="Kotlin File" />
         <option value="Kotlin Enum" />
         <option value="Kotlin Interface" />
+        <option value="Kotlin Object" />
         <option value="Kotlin Class" />
       </list>
     </option>
@@ -78,6 +88,7 @@
       <recent name="C:\Users\user\IdeaProjects\bumblebee" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="bumblebee.mode" />
       <recent name="bumblebee" />
       <recent name="bumblebee.type" />
     </key>
@@ -291,10 +302,10 @@
     <MESSAGE value="-Fixed compileError" />
     <MESSAGE value="-Fixed byteArray" />
     <MESSAGE value="-Add crop() in ImgPix class" />
-    <MESSAGE value="-Refactoring" />
     <MESSAGE value="-Refactoring, -Add PIX Type" />
     <MESSAGE value="-Add test file" />
-    <option name="LAST_COMMIT_MESSAGE" value="-Add test file" />
+    <MESSAGE value="-Refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Refactoring" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -303,16 +314,6 @@
           <properties class="java.lang.IllegalStateException" package="java.lang" />
           <option name="timeStamp" value="1" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/bumblebee/PNG.kt</url>
-          <line>57</line>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt</url>
-          <line>95</line>
-          <option name="timeStamp" value="35" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <pin-to-top-manager>

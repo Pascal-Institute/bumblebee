@@ -3,7 +3,7 @@ package bumblebee
 import bumblebee.color.*
 class Converter {
     companion object {
-        fun convertLongToByteArray(long : Long, byteSize : Int) : ByteArray {
+        fun longToByteArray(long : Long, byteSize : Int) : ByteArray {
             var byteArray = ByteArray(byteSize)
             var num = long
             var coef = 256
@@ -15,7 +15,7 @@ class Converter {
 
             return byteArray
         }
-        fun convertIntToByteArray(int : Int, byteSize : Int) : ByteArray {
+        fun intToByteArray(int : Int, byteSize : Int) : ByteArray {
             var byteArray = ByteArray(byteSize)
             var num = int
             var coef = 256
@@ -28,7 +28,7 @@ class Converter {
             return byteArray
         }
 
-        fun convertHexToInt(hexString :String) : Int{
+        fun hexToInt(hexString :String) : Int{
             var coef = 1
             var num = 0
 
@@ -59,7 +59,7 @@ class Converter {
             return num
         }
 
-        fun convertByteToHex(byte : Byte) : String{
+        fun byteToHex(byte : Byte) : String{
 
             var string = ""
             val first =  byte.toUByte().toInt() / 16
@@ -70,7 +70,7 @@ class Converter {
 
             return string
         }
-        fun convertByteToHex(byteArray : ByteArray) : String{
+        fun byteToHex(byteArray : ByteArray) : String{
             var string = ""
 
             byteArray.forEach {
@@ -84,24 +84,24 @@ class Converter {
 
             return string
         }
-        fun convertHexToRGB(hex : String) : RGB {
-            var r = convertHexToInt(hex.slice(0 until 2))
-            var g = convertHexToInt(hex.slice(2 until 4))
-            var b = convertHexToInt(hex.slice(4 until 6))
+        fun hexToRGB(hex : String) : RGB {
+            var r = hexToInt(hex.slice(0 until 2))
+            var g = hexToInt(hex.slice(2 until 4))
+            var b = hexToInt(hex.slice(4 until 6))
 
             return RGB(r, g, b)
         }
 
-        fun convertHexToRGBA(hex : String) : RGBA {
-            var r = convertHexToInt(hex.slice(0 until 2))
-            var g = convertHexToInt(hex.slice(2 until 4))
-            var b = convertHexToInt(hex.slice(4 until 6))
-            var a = convertHexToInt(hex.slice(6 until 8))
+        fun hexToRGBA(hex : String) : RGBA {
+            var r = hexToInt(hex.slice(0 until 2))
+            var g = hexToInt(hex.slice(2 until 4))
+            var b = hexToInt(hex.slice(4 until 6))
+            var a = hexToInt(hex.slice(6 until 8))
 
             return RGBA(r, g, b, a)
         }
 
-        fun convertColorToByte(color : Color) : ByteArray {
+        fun colorToByte(color : Color) : ByteArray {
             var byteArray = ByteArray(color.colorArray.size)
 
             color.colorArray.forEachIndexed{ index , i ->

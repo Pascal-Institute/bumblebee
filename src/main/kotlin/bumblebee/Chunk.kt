@@ -1,8 +1,8 @@
 package bumblebee
 
-import bumblebee.Converter.Companion.convertByteToHex
-import bumblebee.Converter.Companion.convertHexToInt
-import bumblebee.Converter.Companion.convertLongToByteArray
+import bumblebee.Converter.Companion.byteToHex
+import bumblebee.Converter.Companion.hexToInt
+import bumblebee.Converter.Companion.longToByteArray
 import java.util.zip.CRC32
 import java.util.zip.Checksum
 
@@ -17,31 +17,31 @@ class Chunk {
     }
 
     fun getWidth(byteArray: ByteArray): Int {
-        return convertHexToInt(convertByteToHex(byteArray))
+        return hexToInt(byteToHex(byteArray))
     }
 
     fun getHeight(byteArray: ByteArray): Int {
-        return convertHexToInt(convertByteToHex(byteArray))
+        return hexToInt(byteToHex(byteArray))
     }
 
     fun getLength(): Int {
-        var string = convertByteToHex(length)
-        return convertHexToInt(string)
+        var string = byteToHex(length)
+        return hexToInt(string)
     }
 
     fun getColorType(byte: Byte): Int {
-        return convertHexToInt(convertByteToHex(byte))
+        return hexToInt(byteToHex(byte))
     }
 
     fun getBitDepth(byte: Byte): Int {
-        return convertHexToInt(convertByteToHex(byte))
+        return hexToInt(byteToHex(byte))
     }
 
     fun getCRC(): ByteArray {
         val checksum: Checksum = CRC32()
         var source = type + data
         checksum.update(source, 0, source.size)
-        return convertLongToByteArray(checksum.value, 4)
+        return longToByteArray(checksum.value, 4)
     }
 
     fun generateData(imgPix: ImgPix) {

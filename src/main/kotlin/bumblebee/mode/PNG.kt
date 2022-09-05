@@ -1,6 +1,9 @@
-package bumblebee
+package bumblebee.mode
 
-import bumblebee.Converter.Companion.convertByteToHex
+import bumblebee.Chunk
+import bumblebee.Converter.Companion.byteToHex
+import bumblebee.Converter.Companion.hexToInt
+import bumblebee.ImgPix
 import bumblebee.type.ChunkType
 import bumblebee.type.ColorType
 import bumblebee.type.FilterType
@@ -56,8 +59,8 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         val outputStream = ByteArrayOutputStream()
 
         chunkArray.forEach{ it ->
-            when(convertByteToHex(it.type)){
-                convertByteToHex(ChunkType.IHDR.byte) -> {
+            when(byteToHex(it.type)){
+                byteToHex(ChunkType.IHDR.byte) -> {
                     width = it.getWidth(it.data.sliceArray(0..3))
                     height = it.getHeight(it.data.sliceArray(4..7))
                     bitDepth = it.getBitDepth(it.data[8])
@@ -65,7 +68,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     bytesPerPixel = colorType.colorSpace * (bitDepth / OCTA)
                 }
 
-                convertByteToHex(ChunkType.IDAT.byte) -> {
+                byteToHex(ChunkType.IDAT.byte) -> {
                     outputStream.write(it.data)
                 }
             }
@@ -91,8 +94,8 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
             var filterType: FilterType = try{
                 FilterType.fromInt(
-                    Converter.convertHexToInt(
-                        Converter.convertByteToHex(
+                    hexToInt(
+                        byteToHex(
                             decompressedByteBuffer.get(((width * bytesPerPixel) + 1) * col)
                         )
                     )

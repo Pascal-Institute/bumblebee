@@ -1,6 +1,9 @@
 package bumblebee
 
-import bumblebee.Converter.Companion.convertIntToByteArray
+import bumblebee.Converter.Companion
+import bumblebee.Converter.Companion.intToByteArray
+import bumblebee.mode.PIX
+import bumblebee.mode.PNG
 import bumblebee.type.ImgFileType
 import java.io.File
 
@@ -26,7 +29,7 @@ class FileManager {
            try{
                when(imgFileType){
                     ImgFileType.PIX ->{
-                        var byteArray = ImgFileType.PIX.signature + convertIntToByteArray(imgPix.width, 4) + convertIntToByteArray(imgPix.height, 4) + imgPix.get()
+                        var byteArray = ImgFileType.PIX.signature + intToByteArray(imgPix.width, 4) + intToByteArray(imgPix.height, 4) + imgPix.get()
                         File("$filePath.pix").writeBytes(byteArray)
                     }
                    else -> {}

@@ -2,6 +2,7 @@ package bumblebee.type
 
 enum class ColorType(val num: Int, val colorSpace: Int) {
     GRAY_SCALE(0, 2),
+    //RGB
     TRUE_COLOR(2, 3),
     INDEXED_COLOR(3, 1),
     GRAY_SCALE_ALPHA(4, 2),
