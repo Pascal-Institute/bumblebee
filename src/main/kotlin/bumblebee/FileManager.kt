@@ -1,9 +1,9 @@
 package bumblebee
 
-import bumblebee.Converter.Companion
 import bumblebee.Converter.Companion.intToByteArray
 import bumblebee.mode.PIX
 import bumblebee.mode.PNG
+import bumblebee.mode.TIFF
 import bumblebee.type.ImgFileType
 import java.io.File
 
@@ -22,7 +22,7 @@ class FileManager {
                         return PIX(byteArray)
                     }
                 }
-            return PIX(byteArray)
+            return TIFF(byteArray)
         }
 
         fun write(filePath: String, imgPix : ImgPix, imgFileType : ImgFileType){

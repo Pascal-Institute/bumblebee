@@ -5,12 +5,15 @@ import bumblebee.Converter.Companion.colorToByte
 import bumblebee.color.Color
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
+import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.image.*
 import java.nio.ByteBuffer
 import javax.swing.*
+import java.awt.Dimension as Dimension1
 
-open class ImgPix() : ImgExtractor, Cloneable {
+
+ open class ImgPix() : ImgExtractor, Cloneable {
 
     var metaData = MetaData(0, 0)
 
@@ -85,25 +88,23 @@ open class ImgPix() : ImgExtractor, Cloneable {
         }
 
         val frame = JFrame()
+
         frame.defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
+        frame.title = "image"
         frame.isResizable = false
-        frame.setLocationRelativeTo(null)
-        frame.setSize((metaData.width * 1.1).toInt(),  (metaData.height * 1.1).toInt())
+        frame.isVisible = true
+        frame.setLocation(0,0)
 
         val pane: JPanel = object : JPanel() {
             override fun paintComponent(g: Graphics) {
-                super.paintComponent(g)
                 g.drawImage(bufferedImage, 0, 0, null)
+                g.dispose()
             }
         }
 
-        val box = Box(BoxLayout.X_AXIS)
-        box.add(Box.createVerticalGlue())
-        box.add(pane)
-        box.add(Box.createVerticalGlue())
-        frame.add(box)
-
-        frame.isVisible = true
+        pane.preferredSize = Dimension(metaData.width, metaData.height)
+        frame.add(pane)
+        frame.pack()
     }
 
      override fun extract() {
