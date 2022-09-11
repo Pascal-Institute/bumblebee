@@ -64,8 +64,8 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     metaData.width = it.getWidth(it.data.sliceArray(0..3))
                     metaData.height = it.getHeight(it.data.sliceArray(4..7))
                     bitDepth = it.getBitDepth(it.data[8])
-                    colorType = ColorType.fromInt(it.getColorType(it.data[9]))
-                    bytesPerPixel = colorType.colorSpace * (bitDepth / OCTA)
+                    metaData.colorType = ColorType.fromInt(it.getColorType(it.data[9]))
+                    bytesPerPixel = metaData.colorType.colorSpace * (bitDepth / OCTA)
                 }
 
                 byteToHex(ChunkType.IDAT.byte) -> {

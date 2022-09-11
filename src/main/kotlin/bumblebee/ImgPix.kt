@@ -22,13 +22,12 @@ open class ImgPix() : ImgExtractor, Cloneable {
     var manipulatedIntance = false
 
     lateinit var pixelBufferArray: ByteBuffer
-    lateinit var colorType : ColorType
     var imgFileType : ImgFileType = ImgFileType.PIX
 
     constructor(width: Int, height: Int, colorType: ColorType) : this() {
         metaData.width = width
         metaData.height = height
-        this.colorType = colorType
+        metaData.colorType = colorType
         this.pixelBufferArray = ByteBuffer.allocate(width * height * colorType.colorSpace)
     }
 
@@ -36,7 +35,7 @@ open class ImgPix() : ImgExtractor, Cloneable {
         return super.clone() as ImgPix
     }
     fun set(row : Int, col : Int, color : Color) {
-        if (colorType != color.colorType){
+        if (metaData.colorType != color.colorType){
             System.err.println("ERROR : ColorType does not match")
             return
         }else{
@@ -48,11 +47,10 @@ open class ImgPix() : ImgExtractor, Cloneable {
     }
 
     fun get(row : Int, col : Int) : String{
-        val byteArray = ByteArray((colorType.colorSpace * (bitDepth/OCTA)))
+        val byteArray = ByteArray((metaData.colorType.colorSpace * (bitDepth/OCTA)))
         for (i : Int in 0 until bytesPerPixel){
             byteArray[i] = pixelBufferArray.get(i + bytesPerPixel * col + (metaData.width * bytesPerPixel) * row)
         }
-
         return byteToHex(byteArray)
     }
 
@@ -64,7 +62,7 @@ open class ImgPix() : ImgExtractor, Cloneable {
         val buffer = DataBufferByte(pixelBufferArray.array(), pixelBufferArray.array().size)
 
         var bufferedImage : BufferedImage
-        when(colorType){
+        when(metaData.colorType){
             ColorType.GRAY_SCALE ->{
                 bufferedImage = BufferedImage(metaData.width, metaData.height, BufferedImage.TYPE_BYTE_GRAY)
                 bufferedImage.data = Raster.createInterleavedRaster(buffer, metaData.width, metaData.height, metaData.width * 1, 1, intArrayOf(0), null)
