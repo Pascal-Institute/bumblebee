@@ -2,7 +2,6 @@
 
 import bumblebee.Converter.Companion.byteToHex
 import bumblebee.Converter.Companion.colorToByte
-import bumblebee.Converter.Companion.hexToInt
 import bumblebee.color.Color
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
@@ -114,10 +113,10 @@ open class ImgPix() : ImgExtractor, Cloneable {
      }
 
      fun invert() {
-         Process.invert(this)
+         ImgProcess.invert(this)
      }
      fun crop(row : Int, col : Int, width : Int, height : Int) {
-         Process.crop(this, row, col, width, height)
+         ImgProcess.crop(this, row, col, width, height)
      }
 
  }

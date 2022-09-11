@@ -3,7 +3,7 @@ package bumblebee
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
 
-class Process {
+class ImgProcess {
     companion object{
         fun crop(imgPix : ImgPix, row : Int, col : Int, width : Int, height : Int) : ImgPix{
             imgPix.manipulatedIntance = true
@@ -29,6 +29,10 @@ class Process {
         }
 
         fun invert(imgPix: ImgPix): ImgPix {
+
+            for(i : Int in 0 until imgPix.width * imgPix.height * imgPix.bytesPerPixel){
+                imgPix.pixelBufferArray.put(i, imgPix.pixelBufferArray[i].inv())
+               }
             return imgPix
         }
     }
