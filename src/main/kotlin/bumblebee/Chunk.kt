@@ -46,10 +46,10 @@ class Chunk {
 
     fun generateData(imgPix: ImgPix) {
         var byteArray = imgPix.get()
-        data = ByteArray(imgPix.height * (imgPix.width * imgPix.bytesPerPixel + 1))
+        data = ByteArray(imgPix.metaData.height * (imgPix.metaData.width * imgPix.bytesPerPixel + 1))
         var count = 0
         data.forEachIndexed { index, byte ->
-            if(index % (imgPix.width * imgPix.bytesPerPixel + 1) == 0){
+            if(index % (imgPix.metaData.width * imgPix.bytesPerPixel + 1) == 0){
                 data[index] = 0
             }else{
                 data[index] = byteArray[count]

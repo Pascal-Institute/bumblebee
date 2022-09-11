@@ -6,10 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FileManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FileManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PIX.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PIX.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/lenna.pix" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/lenna.pix" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Chunk.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Chunk.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -266,7 +263,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662885828202</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="-Add colorType into PIX">
+      <created>1662886251724</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1662886251725</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -333,7 +337,8 @@
     <MESSAGE value="-Refactoring invert()" />
     <MESSAGE value="-Add MetaData class" />
     <MESSAGE value="-Add colorType into MetaData" />
-    <option name="LAST_COMMIT_MESSAGE" value="-Add colorType into MetaData" />
+    <MESSAGE value="-Add colorType into PIX" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Add colorType into PIX" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
