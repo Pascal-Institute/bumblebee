@@ -1,9 +1,10 @@
 package bumblebee
 
 import bumblebee.Converter.Companion.intToByteArray
-import bumblebee.mode.PIX
-import bumblebee.mode.PNG
-import bumblebee.mode.TIFF
+import bumblebee.core.ImgPix
+import bumblebee.extension.PIX
+import bumblebee.extension.PNG
+import bumblebee.extension.TIFF
 import bumblebee.type.ImgFileType
 import java.io.File
 

@@ -5,11 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Chunk.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Chunk.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FileManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FileManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/TIFF.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/TIFF.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/type/ImgFileType.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/type/ImgFileType.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/core/ImgPix.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgProcess.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/core/ImgProcess.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/MetaData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/core/MetaData.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PIX.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/PIX.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PNG.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/PNG.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/TIFF.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/TIFF.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/Main.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,6 +89,7 @@
       <recent name="C:\Users\user\IdeaProjects\bumblebee" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="bumblebee.core" />
       <recent name="bumblebee.mode" />
       <recent name="bumblebee" />
       <recent name="bumblebee.type" />
@@ -288,7 +293,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662888590160</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="-Update show()">
+      <created>1662895250465</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1662895250465</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -333,7 +345,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="first commit" />
     <MESSAGE value="." />
     <MESSAGE value="bumblebee can show(using JSwing) pixel images.&#10;(not perfect, only TRUE_COLOR, RGB, and it has few errors)" />
     <MESSAGE value="versionUp" />
@@ -358,7 +369,8 @@
     <MESSAGE value="-Add colorType into PIX" />
     <MESSAGE value="-fix" />
     <MESSAGE value="-Add tiff" />
-    <option name="LAST_COMMIT_MESSAGE" value="-Add tiff" />
+    <MESSAGE value="-Update show()" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Update show()" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -368,7 +380,7 @@
           <option name="timeStamp" value="1" />
         </breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/TIFF.kt</url>
+          <url>file://$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/TIFF.kt</url>
           <line>21</line>
           <option name="timeStamp" value="19" />
         </line-breakpoint>

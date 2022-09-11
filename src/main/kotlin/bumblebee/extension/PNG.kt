@@ -1,9 +1,9 @@
-package bumblebee.mode
+package bumblebee.extension
 
 import bumblebee.Chunk
 import bumblebee.Converter.Companion.byteToHex
 import bumblebee.Converter.Companion.hexToInt
-import bumblebee.ImgPix
+import bumblebee.core.ImgPix
 import bumblebee.type.ChunkType
 import bumblebee.type.ColorType
 import bumblebee.type.FilterType

@@ -1,11 +1,11 @@
-package bumblebee
+package bumblebee.core
 
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
 
 class ImgProcess {
     companion object{
-        fun crop(imgPix : ImgPix, row : Int, col : Int, width : Int, height : Int) : ImgPix{
+        fun crop(imgPix : ImgPix, row : Int, col : Int, width : Int, height : Int) : ImgPix {
             imgPix.manipulatedIntance = true
             imgPix.metaData.width = width
             imgPix.metaData.height = height

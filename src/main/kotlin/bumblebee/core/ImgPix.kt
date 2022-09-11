@@ -1,7 +1,8 @@
- package bumblebee
+ package bumblebee.core
 
 import bumblebee.Converter.Companion.byteToHex
 import bumblebee.Converter.Companion.colorToByte
+import bumblebee.ImgExtractor
 import bumblebee.color.Color
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
@@ -10,7 +11,6 @@ import java.awt.Graphics
 import java.awt.image.*
 import java.nio.ByteBuffer
 import javax.swing.*
-import java.awt.Dimension as Dimension1
 
 
  open class ImgPix() : ImgExtractor, Cloneable {

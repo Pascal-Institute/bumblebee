@@ -3,6 +3,7 @@ package bumblebee
 import bumblebee.Converter.Companion.byteToHex
 import bumblebee.Converter.Companion.hexToInt
 import bumblebee.Converter.Companion.longToByteArray
+import bumblebee.core.ImgPix
 import java.util.zip.CRC32
 import java.util.zip.Checksum
 

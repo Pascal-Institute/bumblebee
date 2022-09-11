@@ -1,6 +1,6 @@
-package bumblebee.mode
+package bumblebee.extension
 
-import bumblebee.ImgPix
+import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import java.nio.ByteBuffer
