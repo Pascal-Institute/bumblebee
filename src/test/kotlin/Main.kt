@@ -4,7 +4,6 @@ import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 
 fun main(){
-    val imgPix = FileManager.read("src/main/resources/lenna.png")
-    imgPix.invert()
+    val imgPix = FileManager.read("src/main/resources/lenna.pix")
     imgPix.show()
 }

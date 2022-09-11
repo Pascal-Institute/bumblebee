@@ -27,8 +27,8 @@ class PIX(private var byteArray : ByteArray) : ImgPix() {
     override fun extract() {
         metaData.width = hexToInt(byteToHex(byteArray.copyOfRange(3, 7)))
         metaData.height = hexToInt(byteToHex(byteArray.copyOfRange(7, 11)))
-        metaData.colorType = ColorType.TRUE_COLOR
-        pixelBufferArray = ByteBuffer.allocate(metaData.width * metaData.height * 3)
-        pixelBufferArray.put(byteArray.copyOfRange(11 , 11 + metaData.width * metaData.height * 3 ))
+        metaData.colorType = ColorType.fromInt(hexToInt(byteToHex(byteArray[11])))
+        pixelBufferArray = ByteBuffer.allocate(metaData.width * metaData.height * metaData.colorType.colorSpace)
+        pixelBufferArray.put(byteArray.copyOfRange(12 , 12 + metaData.width * metaData.height * metaData.colorType.colorSpace))
     }
 }

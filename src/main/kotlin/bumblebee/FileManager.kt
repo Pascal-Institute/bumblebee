@@ -29,7 +29,11 @@ class FileManager {
            try{
                when(imgFileType){
                     ImgFileType.PIX ->{
-                        var byteArray = ImgFileType.PIX.signature + intToByteArray(imgPix.width, 4) + intToByteArray(imgPix.height, 4) + imgPix.get()
+                        var byteArray = ImgFileType.PIX.signature +
+                                        intToByteArray(imgPix.metaData.width, 4) +
+                                        intToByteArray(imgPix.metaData.height, 4) +
+                                        intToByteArray(imgPix.metaData.colorType.num, 1) +
+                                        imgPix.get()
                         File("$filePath.pix").writeBytes(byteArray)
                     }
                    else -> {}
