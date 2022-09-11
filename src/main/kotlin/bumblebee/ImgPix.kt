@@ -12,22 +12,22 @@ import javax.swing.*
 
 open class ImgPix() : ImgExtractor, Cloneable {
 
+    var metaData = MetaData(0, 0)
+
     //PNG
     protected val OCTA = 8
     var bytesPerPixel = 0
     var bitDepth = 0
 
     var manipulatedIntance = false
-    var width = 0
-    var height = 0
 
-     lateinit var pixelBufferArray: ByteBuffer
-     lateinit var colorType : ColorType
-     var imgFileType : ImgFileType = ImgFileType.PIX
+    lateinit var pixelBufferArray: ByteBuffer
+    lateinit var colorType : ColorType
+    var imgFileType : ImgFileType = ImgFileType.PIX
 
     constructor(width: Int, height: Int, colorType: ColorType) : this() {
-        this.width = width
-        this.height = height
+        metaData.width = width
+        metaData.height = height
         this.colorType = colorType
         this.pixelBufferArray = ByteBuffer.allocate(width * height * colorType.colorSpace)
     }
@@ -42,7 +42,7 @@ open class ImgPix() : ImgExtractor, Cloneable {
         }else{
             val byteArray : ByteArray = colorToByte(color)
             for (i : Int in 0 until bytesPerPixel){
-                pixelBufferArray.put(i + bytesPerPixel * col + (width * bytesPerPixel) * row, byteArray[i])
+                pixelBufferArray.put(i + bytesPerPixel * col + (metaData.width * bytesPerPixel) * row, byteArray[i])
             }
         }
     }
@@ -50,7 +50,7 @@ open class ImgPix() : ImgExtractor, Cloneable {
     fun get(row : Int, col : Int) : String{
         val byteArray = ByteArray((colorType.colorSpace * (bitDepth/OCTA)))
         for (i : Int in 0 until bytesPerPixel){
-            byteArray[i] = pixelBufferArray.get(i + bytesPerPixel * col + (width * bytesPerPixel) * row)
+            byteArray[i] = pixelBufferArray.get(i + bytesPerPixel * col + (metaData.width * bytesPerPixel) * row)
         }
 
         return byteToHex(byteArray)
@@ -66,23 +66,23 @@ open class ImgPix() : ImgExtractor, Cloneable {
         var bufferedImage : BufferedImage
         when(colorType){
             ColorType.GRAY_SCALE ->{
-                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 1, 1, intArrayOf(0), null)
+                bufferedImage = BufferedImage(metaData.width, metaData.height, BufferedImage.TYPE_BYTE_GRAY)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, metaData.width, metaData.height, metaData.width * 1, 1, intArrayOf(0), null)
             }
 
             ColorType.TRUE_COLOR ->{
-               bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-               bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 3, 3, intArrayOf(0,1,2), null)
+               bufferedImage = BufferedImage(metaData.width, metaData.height, BufferedImage.TYPE_INT_RGB)
+               bufferedImage.data = Raster.createInterleavedRaster(buffer, metaData.width, metaData.height, metaData.width * 3, 3, intArrayOf(0,1,2), null)
             }
 
             ColorType.TRUE_COLOR_ALPHA->{
-                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(0,1,2,3), null)
+                bufferedImage = BufferedImage(metaData.width, metaData.height, BufferedImage.TYPE_INT_ARGB)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, metaData.width, metaData.height, metaData.width * 4, 4, intArrayOf(0,1,2,3), null)
             }
 
             else -> {
-                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 3, 3, intArrayOf(0,1,2), null)
+                bufferedImage = BufferedImage(metaData.width, metaData.height, BufferedImage.TYPE_INT_RGB)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, metaData.width, metaData.height, metaData.width * 3, 3, intArrayOf(0,1,2), null)
             }
         }
 
@@ -90,7 +90,7 @@ open class ImgPix() : ImgExtractor, Cloneable {
         frame.defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         frame.isResizable = false
         frame.setLocationRelativeTo(null)
-        frame.setSize((width * 1.1).toInt(),  (height * 1.1).toInt())
+        frame.setSize((metaData.width * 1.1).toInt(),  (metaData.height * 1.1).toInt())
 
         val pane: JPanel = object : JPanel() {
             override fun paintComponent(g: Graphics) {

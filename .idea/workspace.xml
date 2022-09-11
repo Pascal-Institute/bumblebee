@@ -4,11 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="-Rename Converter methods">
+    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="-Refactoring invert()">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/MetaData.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Process.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgProcess.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/Main.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgProcess.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgProcess.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PIX.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PIX.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PNG.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PNG.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +48,7 @@
         <option value="Kotlin Interface" />
         <option value="Kotlin Object" />
         <option value="Kotlin Class" />
+        <option value="Kotlin Data Class" />
       </list>
     </option>
   </component>
@@ -243,7 +247,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662378032106</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="-Refactoring invert()">
+      <created>1662883621223</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1662883621223</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -307,7 +318,8 @@
     <MESSAGE value="-Add test file" />
     <MESSAGE value="-Refactoring" />
     <MESSAGE value="-Rename Converter methods" />
-    <option name="LAST_COMMIT_MESSAGE" value="-Rename Converter methods" />
+    <MESSAGE value="-Refactoring invert()" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Refactoring invert()" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
