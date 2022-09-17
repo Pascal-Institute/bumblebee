@@ -15,7 +15,7 @@ class TIFF(byteArray: ByteArray) : ImgPix() {
     //Image File Directory (IFD)9
 
     init {
-        imgFileType = ImgFileType.PNG
+        imgFileType = ImgFileType.TIFF
         metaData.colorType = ColorType.TRUE_COLOR
         this.pixelBufferArray = ByteBuffer.allocate(0)
         println(byteArray)

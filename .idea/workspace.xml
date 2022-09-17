@@ -4,15 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Chunk.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Chunk.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FileManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FileManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgPix.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/core/ImgPix.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/ImgProcess.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/core/ImgProcess.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/MetaData.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/core/MetaData.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PIX.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/PIX.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/PNG.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/PNG.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/mode/TIFF.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/TIFF.kt" afterDir="false" />
+    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="-Rename Converter methods">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/core/ImgPix.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/core/ImgPix.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/TIFF.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/TIFF.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/Main.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -69,16 +64,16 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/bumblebee/src/main/resources",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/bumblebee/src/main/resources&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\bumblebee\src\main\resources" />

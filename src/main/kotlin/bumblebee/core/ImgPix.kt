@@ -21,8 +21,12 @@ import javax.swing.*
     protected val OCTA = 8
     var bytesPerPixel = 0
     var bitDepth = 0
+    val width : Int
+        get() = metaData.width
+     val height : Int
+        get() = metaData.height
 
-    var manipulatedIntance = false
+     var manipulatedIntance = false
 
     lateinit var pixelBufferArray: ByteBuffer
     var imgFileType : ImgFileType = ImgFileType.PIX
@@ -37,6 +41,7 @@ import javax.swing.*
     public override fun clone(): ImgPix {
         return super.clone() as ImgPix
     }
+
     fun set(row : Int, col : Int, color : Color) {
         if (metaData.colorType != color.colorType){
             System.err.println("ERROR : ColorType does not match")
