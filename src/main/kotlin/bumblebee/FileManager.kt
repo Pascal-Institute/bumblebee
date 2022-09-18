@@ -26,7 +26,6 @@ class FileManager {
                         fileSignature = fileSignature.sliceArray(0 until 2)
 
                         if(fileSignature.contentEquals(ImgFileType.TIFF_BIG.signature) || fileSignature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                            println("엔디안 진입")
                             return TIFF(byteArray)
                         }
                     }
