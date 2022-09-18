@@ -1,7 +1,7 @@
  package bumblebee.core
 
-import bumblebee.Converter.Companion.byteToHex
-import bumblebee.Converter.Companion.colorToByte
+import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.util.Converter.Companion.colorToByte
 import bumblebee.ImgExtractor
 import bumblebee.color.Color
 import bumblebee.type.ColorType

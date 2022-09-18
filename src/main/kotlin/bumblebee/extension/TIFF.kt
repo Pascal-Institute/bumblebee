@@ -7,22 +7,32 @@ import java.nio.ByteBuffer
 
 class TIFF(byteArray: ByteArray) : ImgPix() {
 
-    //Image File Header (IFH)
-    lateinit var identifier : ByteArray
-    lateinit var version : ByteArray
-    lateinit var ifdOffset : ByteArray
-
-    //Image File Directory (IFD)9
+    //Image File Header
+    //Image File Directory
 
     init {
-        imgFileType = ImgFileType.TIFF
+        imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+            ImgFileType.TIFF_LITTLE
+        }else{
+            ImgFileType.TIFF_BIG
+        }
+
         metaData.colorType = ColorType.TRUE_COLOR
         this.pixelBufferArray = ByteBuffer.allocate(0)
-        println(byteArray)
+        byteArray.forEach {
+            println(it)
+        }
         extract()
     }
 
     override fun extract() {
 
     }
+
+    private class IFH(){
+        lateinit var byteOrder : ByteArray
+        lateinit var fortyTwo : ByteArray
+        lateinit var firstIFDOffset : ByteArray
+    }
+
 }

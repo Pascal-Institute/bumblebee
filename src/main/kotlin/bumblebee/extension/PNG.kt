@@ -1,8 +1,8 @@
 package bumblebee.extension
 
 import bumblebee.Chunk
-import bumblebee.Converter.Companion.byteToHex
-import bumblebee.Converter.Companion.hexToInt
+import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.core.ImgPix
 import bumblebee.type.ChunkType
 import bumblebee.type.ColorType

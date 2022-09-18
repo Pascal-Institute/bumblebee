@@ -1,6 +1,6 @@
 package bumblebee
 
-import bumblebee.Converter.Companion.intToByteArray
+import bumblebee.util.Converter.Companion.intToByteArray
 import bumblebee.core.ImgPix
 import bumblebee.extension.PIX
 import bumblebee.extension.PNG
@@ -19,11 +19,21 @@ class FileManager {
                     return PNG(byteArray)
                 }else{
                     fileSignature = fileSignature.sliceArray(0 until 3)
+
                     if(fileSignature.contentEquals(ImgFileType.PIX.signature )){
                         return PIX(byteArray)
+                    }else{
+                        fileSignature = fileSignature.sliceArray(0 until 2)
+
+                        if(fileSignature.contentEquals(ImgFileType.TIFF_BIG.signature) || fileSignature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+                            println("엔디안 진입")
+                            return TIFF(byteArray)
+                        }
                     }
+
                 }
-            return TIFF(byteArray)
+
+            return PIX(byteArray)
         }
 
         fun write(filePath: String, imgPix : ImgPix, imgFileType : ImgFileType){

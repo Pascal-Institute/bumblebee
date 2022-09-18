@@ -1,4 +1,4 @@
-package bumblebee
+package bumblebee.util
 
 import bumblebee.color.*
 class Converter {

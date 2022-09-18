@@ -4,10 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="-Rename Converter methods">
+    <list default="true" id="ee7138c7-3a0e-432e-be3b-9d166c15431a" name="Changes" comment="-Modify package directories, -Modify TIFF">
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/util/Coder.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Chunk.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Chunk.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/Converter.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/util/Converter.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FileManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/FileManager.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/core/ImgPix.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/core/ImgPix.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/PIX.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/PIX.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/PNG.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/PNG.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/TIFF.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/TIFF.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/bumblebee/type/ImgFileType.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/bumblebee/type/ImgFileType.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/kotlin/Main.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/Main.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -42,9 +49,9 @@
       <list>
         <option value="Kotlin File" />
         <option value="Kotlin Enum" />
-        <option value="Kotlin Interface" />
         <option value="Kotlin Object" />
         <option value="Kotlin Data Class" />
+        <option value="Kotlin Interface" />
         <option value="Kotlin Class" />
       </list>
     </option>
@@ -84,6 +91,7 @@
       <recent name="C:\Users\user\IdeaProjects\bumblebee" />
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
+      <recent name="bumblebee.util" />
       <recent name="bumblebee.core" />
       <recent name="bumblebee.mode" />
       <recent name="bumblebee" />
@@ -295,7 +303,14 @@
       <option name="project" value="LOCAL" />
       <updated>1662895250465</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="-Add delegate property for width, height">
+      <created>1663427160112</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1663427160113</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -340,8 +355,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="." />
-    <MESSAGE value="bumblebee can show(using JSwing) pixel images.&#10;(not perfect, only TRUE_COLOR, RGB, and it has few errors)" />
     <MESSAGE value="versionUp" />
     <MESSAGE value="-Add RGBA class" />
     <MESSAGE value="-Add set() in imgPix class" />
@@ -365,7 +378,9 @@
     <MESSAGE value="-fix" />
     <MESSAGE value="-Add tiff" />
     <MESSAGE value="-Update show()" />
-    <option name="LAST_COMMIT_MESSAGE" value="-Update show()" />
+    <MESSAGE value="-Add delegate property for width, height" />
+    <MESSAGE value="-Modify package directories, -Modify TIFF" />
+    <option name="LAST_COMMIT_MESSAGE" value="-Modify package directories, -Modify TIFF" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -374,11 +389,6 @@
           <properties class="java.lang.IllegalStateException" package="java.lang" />
           <option name="timeStamp" value="1" />
         </breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/bumblebee/extension/TIFF.kt</url>
-          <line>21</line>
-          <option name="timeStamp" value="19" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
     <pin-to-top-manager>
