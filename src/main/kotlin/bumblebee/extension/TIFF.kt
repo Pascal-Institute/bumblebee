@@ -3,8 +3,8 @@ package bumblebee.extension
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
-import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.invert
 import java.nio.ByteBuffer
 
@@ -13,7 +13,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     //Image File Header
     private var ifh = IFH()
     //Image File Directory
-    private var ifd = IFD()
+    private var ifdArray = ArrayList<IFD>()
     init {
         imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
             ImgFileType.TIFF_LITTLE
@@ -28,7 +28,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     }
 
     override fun extract() {
-        ifh.extract(byteArray.sliceArray(0 until 8))
+        ifh.extract(ifdArray, byteArray)
     }
 
     private class IFH{
@@ -36,14 +36,32 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         lateinit var fortyTwo : ByteArray
         lateinit var firstIFDOffset : ByteArray
 
-        fun extract(byteArray: ByteArray){
+        fun extract(ifdArray: ArrayList<IFD>, byteArray: ByteArray){
             byteOrder = byteArray.sliceArray(0 until 2)
             fortyTwo = byteArray.sliceArray(2 until 4)
             firstIFDOffset = byteArray.sliceArray(4 until 8)
+
+            ifdArray.add(IFD())
+            ifdArray.get(0).extract(byteArray.sliceArray(
+                hexToInt(byteToHex(invert(firstIFDOffset)))
+                        until
+                    byteArray.size))
         }
     }
 
-    private class IFD{
+    class IFD{
+        lateinit var numOfTags : ByteArray
+        var tags = ArrayList<ByteArray>()
+        lateinit var nextIFDOffset : ByteArray
+
+        lateinit var imageData : ByteArray
+        fun extract(byteArray: ByteArray) {
+            numOfTags = byteArray.sliceArray(0 until 2)
+            tags.add(ByteArray(0))
+            nextIFDOffset = byteArray.sliceArray(0 until 2)
+            imageData = ByteArray(0)
+            println(byteToHex(invert(numOfTags)))
+        }
     }
 
 }
