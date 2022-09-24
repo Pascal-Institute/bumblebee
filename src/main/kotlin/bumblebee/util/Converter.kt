@@ -84,6 +84,10 @@ class Converter {
 
             return string
         }
+
+        fun invert(byteArray : ByteArray) : ByteArray {
+            return byteArray.reversedArray()
+        }
         fun hexToRGB(hex : String) : RGB {
             var r = hexToInt(hex.slice(0 until 2))
             var g = hexToInt(hex.slice(2 until 4))

@@ -3,6 +3,9 @@ package bumblebee.extension
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
+import bumblebee.util.Converter
+import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.util.Converter.Companion.invert
 import java.nio.ByteBuffer
 
 class TIFF(private var byteArray: ByteArray) : ImgPix() {
