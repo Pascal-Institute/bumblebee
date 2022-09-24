@@ -40,49 +40,42 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             fortyTwo = byteArray.sliceArray(2 until 4)
             firstIFDOffset = byteArray.sliceArray(4 until 8)
 
-            ifdArray.add(IFD())
-            ifdArray.get(0).extract(byteArray.sliceArray(
+            ifdArray.add(IFD(byteArray.sliceArray(
                 hexToInt(byteToHex(invert(firstIFDOffset)))
                         until
-                    byteArray.size))
+                        byteArray.size)))
         }
     }
 
     //Image File Directory
-    class IFD{
-        lateinit var numOfTags : ByteArray
-        var tagArray = ArrayList<Tag>()
-        lateinit var nextIFDOffset : ByteArray
+    class IFD(byteArray: ByteArray){
+        var numOfTags : ByteArray = byteArray.sliceArray(0 until 2) //2 Byte
+        var tagArray = ArrayList<Tag>() //12 Byte * numOfTags
+        var nextIFDOffset : ByteArray //4 Byte
 
-        lateinit var imageData : ByteArray
-        fun extract(byteArray: ByteArray) {
-
-            numOfTags = byteArray.sliceArray(0 until 2)
-
-            for(i : Int in 0 until  hexToInt(byteToHex(invert(numOfTags)))){
-                tagArray.add(Tag(byteArray.sliceArray(i*12 until (i+1) * 12)))
+        init {
+            var value = hexToInt(byteToHex(invert(numOfTags)))
+            for(i : Int in 0 until  value){
+                tagArray.add(Tag(byteArray.sliceArray(2 + i*12 until 2 + (i+1) * 12)))
             }
-            nextIFDOffset = byteArray.sliceArray(0 until 2)
-            imageData = ByteArray(0)
+            nextIFDOffset = byteArray.sliceArray(2 + 12 * value until 2 + 12 * value + 4)
+
+            println("numOfTags:"+ byteToHex(numOfTags))
+            println("nextIFDOffset:" + byteToHex(nextIFDOffset))
         }
     }
 
-    class Tag(private var byteArray: ByteArray) {
-
-        lateinit var tagId : ByteArray //2 Byte
-        lateinit var dataType : ByteArray //2 Byte
-        lateinit var dataCount : ByteArray //4 Byte
-        lateinit var dataOffset : ByteArray // 4Byte
+    class Tag(byteArray: ByteArray) {
+        var tagId : ByteArray = byteArray.sliceArray(0 until 2) //2 Byte
+        var dataType : ByteArray = byteArray.sliceArray(2 until 4) //2 Byte
+        var dataCount : ByteArray = byteArray.sliceArray(4 until 8) //4 Byte
+        var dataOffset : ByteArray = byteArray.sliceArray(8 until 12) // 4Byte
 
         init {
-            extract()
-        }
-
-        fun extract(){
-            tagId = byteArray.sliceArray(0 until 2)
-            dataType = byteArray.sliceArray(2 until 4)
-            dataCount = byteArray.sliceArray(4 until 8)
-            dataOffset = byteArray.sliceArray(8 until 12)
+            println(byteToHex(invert(tagId)))
+            println(byteToHex(invert(dataType)))
+            println(byteToHex(invert(dataCount)))
+            println(byteToHex(invert(dataOffset)))
         }
 
     }
