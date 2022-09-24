@@ -10,9 +10,7 @@ import java.nio.ByteBuffer
 
 class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
-    //Image File Header
     private var ifh = IFH()
-    //Image File Directory
     private var ifdArray = ArrayList<IFD>()
     init {
         imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
@@ -31,6 +29,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         ifh.extract(ifdArray, byteArray)
     }
 
+    //Image File Header
     private class IFH{
         lateinit var byteOrder : ByteArray
         lateinit var fortyTwo : ByteArray
@@ -49,6 +48,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         }
     }
 
+    //Image File Directory
     class IFD{
         lateinit var numOfTags : ByteArray
         var tags = ArrayList<ByteArray>()
@@ -62,6 +62,13 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             imageData = ByteArray(0)
             println(byteToHex(invert(numOfTags)))
         }
+    }
+
+    class Tag{
+        lateinit var tagId : ByteArray
+        lateinit var dataType : ByteArray
+        lateinit var dataCount : ByteArray
+        lateinit var dataOffset : ByteArray
     }
 
 }
