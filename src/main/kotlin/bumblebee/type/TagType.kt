@@ -2,7 +2,7 @@ package bumblebee.type
 
 import bumblebee.util.Converter.Companion.intToByteArray
 
-enum class TagType (val byte : ByteArray) {
+enum class TagType (val byteArray : ByteArray) {
 
     NEW_SUBFILE_TYPE(intToByteArray(254, 2)),
     SUBFILE_TYPE(intToByteArray(255, 2)),
@@ -75,5 +75,8 @@ enum class TagType (val byte : ByteArray) {
     JPEG_AC_TABLES(intToByteArray(521, 2)),
     Y_CB_CR_COEFFICIENTS(intToByteArray(529, 2)),
     Y_CB_CR_SUB_SAMPLING(intToByteArray(530, 2)),
-    REFERENCE_BLACK_WHITE(intToByteArray(532, 2)),
+    REFERENCE_BLACK_WHITE(intToByteArray(532, 2));
+    companion object {
+        fun fromByteArray(byteArray : ByteArray) = TagType.values().first { it.byteArray.contentEquals(byteArray) }
+    }
 }

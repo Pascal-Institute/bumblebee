@@ -8,6 +8,7 @@ import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.invert
 import java.nio.ByteBuffer
 
+//TIFF Revision 6.0, / Author : Aldus Corporation
 class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     private var ifh = IFH()
@@ -60,8 +61,8 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             }
             nextIFDOffset = byteArray.sliceArray(2 + 12 * value until 2 + 12 * value + 4)
 
-            println("numOfTags:"+ byteToHex(numOfTags))
-            println("nextIFDOffset:" + byteToHex(nextIFDOffset))
+//            println("numOfTags:"+ byteToHex(numOfTags))
+//            println("nextIFDOffset:" + byteToHex(nextIFDOffset))
         }
     }
 
@@ -72,10 +73,10 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         var dataOffset : ByteArray = byteArray.sliceArray(8 until 12) // 4Byte
 
         init {
-            println(byteToHex(invert(tagId)))
-            println(byteToHex(invert(dataType)))
-            println(byteToHex(invert(dataCount)))
-            println(byteToHex(invert(dataOffset)))
+//            println(byteToHex(invert(tagId)))
+//            println(byteToHex(invert(dataType)))
+//            println(byteToHex(invert(dataCount)))
+//            println(byteToHex(invert(dataOffset)))
         }
 
     }

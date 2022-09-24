@@ -14,6 +14,7 @@ import java.util.zip.Inflater
 import kotlin.math.abs
 import kotlin.math.floor
 
+//PNG Version 1.2, / Author : G. Randers-Pehrson, et. al.
 class PNG(private var byteArray: ByteArray) : ImgPix() {
     private val chunkArray = ArrayList<Chunk>()
     init {
