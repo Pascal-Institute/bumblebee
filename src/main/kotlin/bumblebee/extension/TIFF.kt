@@ -51,24 +51,40 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     //Image File Directory
     class IFD{
         lateinit var numOfTags : ByteArray
-        var tags = ArrayList<ByteArray>()
+        var tagArray = ArrayList<Tag>()
         lateinit var nextIFDOffset : ByteArray
 
         lateinit var imageData : ByteArray
         fun extract(byteArray: ByteArray) {
+
             numOfTags = byteArray.sliceArray(0 until 2)
-            tags.add(ByteArray(0))
+
+            for(i : Int in 0 until  hexToInt(byteToHex(invert(numOfTags)))){
+                tagArray.add(Tag(byteArray.sliceArray(i*12 until (i+1) * 12)))
+            }
             nextIFDOffset = byteArray.sliceArray(0 until 2)
             imageData = ByteArray(0)
-            println(byteToHex(invert(numOfTags)))
         }
     }
 
-    class Tag{
-        lateinit var tagId : ByteArray
-        lateinit var dataType : ByteArray
-        lateinit var dataCount : ByteArray
-        lateinit var dataOffset : ByteArray
+    class Tag(private var byteArray: ByteArray) {
+
+        lateinit var tagId : ByteArray //2 Byte
+        lateinit var dataType : ByteArray //2 Byte
+        lateinit var dataCount : ByteArray //4 Byte
+        lateinit var dataOffset : ByteArray // 4Byte
+
+        init {
+            extract()
+        }
+
+        fun extract(){
+            tagId = byteArray.sliceArray(0 until 2)
+            dataType = byteArray.sliceArray(2 until 4)
+            dataCount = byteArray.sliceArray(4 until 8)
+            dataOffset = byteArray.sliceArray(8 until 12)
+        }
+
     }
 
 }
