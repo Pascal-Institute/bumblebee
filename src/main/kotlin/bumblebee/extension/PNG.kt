@@ -60,6 +60,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         }
 
         val outputStream = ByteArrayOutputStream()
+        var tempByteArray = ByteArray(0)
 
         chunkArray.forEach{ it ->
             when(byteToHex(it.type)){
@@ -72,13 +73,18 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                 }
 
                 byteToHex(ChunkType.IDAT.byte) -> {
-                    outputStream.write(it.data)
+
+                    if(tempByteArray.isNotEmpty()){
+                        tempByteArray += it.data
+                    }else{
+                        tempByteArray = it.data
+                    }
                 }
             }
         }
-
-        val decompressedByteArray = decompress(outputStream.toByteArray())
-        offFilter(decompressedByteArray)
+        outputStream.write(tempByteArray)
+        val decompressedByteBuffer = decompress(outputStream.toByteArray())
+        offFilter(decompressedByteBuffer)
     }
 
     private fun decompress(byteArray: ByteArray) : ByteBuffer{
@@ -119,8 +125,8 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
             when(filterType){
                 FilterType.NONE -> none(byteArray, fromReal)
-                FilterType.SUB -> sub( byteArray, fromReal)
-                FilterType.UP -> up( byteArray, fromReal)
+                FilterType.SUB -> sub(byteArray, fromReal)
+                FilterType.UP -> up(byteArray, fromReal)
                 FilterType.AVERAGE -> average(byteArray, fromReal)
                 FilterType.PAETH -> paeth(byteArray, fromReal)
             }

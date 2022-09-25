@@ -1,7 +1,7 @@
 import bumblebee.FileManager
 
 fun main(){
-    val imgPix = FileManager.read("src/main/resources/lenna.png")
+    val imgPix = FileManager.read("src/main/resources/grayscale.png")
     imgPix.show()
     println(imgPix.width)
     println(imgPix.height)
