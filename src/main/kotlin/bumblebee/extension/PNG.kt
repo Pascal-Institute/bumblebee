@@ -1,6 +1,5 @@
 package bumblebee.extension
 
-import bumblebee.Chunk
 import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.core.ImgPix
@@ -8,13 +7,16 @@ import bumblebee.type.ChunkType
 import bumblebee.type.ColorType
 import bumblebee.type.FilterType
 import bumblebee.type.ImgFileType
+import bumblebee.util.Converter
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
+import java.util.zip.CRC32
+import java.util.zip.Checksum
 import java.util.zip.Inflater
 import kotlin.math.abs
 import kotlin.math.floor
 
-//PNG Version 1.2, / Author : G. Randers-Pehrson, et. al.
+//PNG Version 1.2 / Author : G. Randers-Pehrson, et. al.
 class PNG(private var byteArray: ByteArray) : ImgPix() {
     private val chunkArray = ArrayList<Chunk>()
     init {
@@ -226,6 +228,60 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             }
             idx++
             count++
+        }
+    }
+
+    private class Chunk {
+        var length: ByteArray = ByteArray(4)
+        var type: ByteArray = ByteArray(4)
+        lateinit var data: ByteArray
+        var crc: ByteArray = ByteArray(4)
+
+        fun initData(size: Int) {
+            data = ByteArray(size)
+        }
+
+        fun getWidth(byteArray: ByteArray): Int {
+            return hexToInt(byteToHex(byteArray))
+        }
+
+        fun getHeight(byteArray: ByteArray): Int {
+            return hexToInt(byteToHex(byteArray))
+        }
+
+        fun getLength(): Int {
+            var string = byteToHex(length)
+            return hexToInt(string)
+        }
+
+        fun getColorType(byte: Byte): Int {
+            return hexToInt(byteToHex(byte))
+        }
+
+        fun getBitDepth(byte: Byte): Int {
+            return hexToInt(byteToHex(byte))
+        }
+
+        fun getCRC(): ByteArray {
+            val checksum: Checksum = CRC32()
+            var source = type + data
+            checksum.update(source, 0, source.size)
+            return Converter.longToByteArray(checksum.value, 4)
+        }
+
+        fun generateData(imgPix: ImgPix) {
+            var byteArray = imgPix.get()
+            data = ByteArray(imgPix.metaData.height * (imgPix.metaData.width * imgPix.bytesPerPixel + 1))
+            var count = 0
+            data.forEachIndexed { index, byte ->
+                if(index % (imgPix.metaData.width * imgPix.bytesPerPixel + 1) == 0){
+                    data[index] = 0
+                }else{
+                    data[index] = byteArray[count]
+                    count++
+                }
+
+            }
         }
     }
 }
