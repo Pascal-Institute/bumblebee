@@ -127,4 +127,8 @@ import javax.swing.*
          ImgProcess.crop(this, row, col, width, height)
      }
 
+     fun toGrayScale(){
+         ImgProcess.toGrayScale(this)
+     }
+
  }

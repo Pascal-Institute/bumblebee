@@ -42,7 +42,7 @@ class ImgProcess {
             for(i : Int in 0 until imgPix.metaData.height){
                 for(j : Int in 0 until imgPix.metaData.width){
                     for(k : Int in 0 until imgPix.bytesPerPixel){
-                        pixelBufferArray.put(imgPix.pixelBufferArray.get(((i +1) * imgPix.bytesPerPixel * imgPix.metaData.width - 1) - (j * imgPix.bytesPerPixel + k)))
+                        pixelBufferArray.put(imgPix.pixelBufferArray.get(((i + 1) * imgPix.bytesPerPixel * imgPix.metaData.width - 1) - (j * imgPix.bytesPerPixel + (imgPix.bytesPerPixel - 1) - k)))
                     }
                 }
             }
@@ -50,5 +50,22 @@ class ImgProcess {
 
             return imgPix
         }
+
+        fun toGrayScale(imgPix : ImgPix) : ImgPix{
+            imgPix.manipulatedInstance = true
+            var pixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
+            for(i : Int in 0 until imgPix.metaData.height){
+                for(j : Int in 0 until imgPix.metaData.width){
+                    for(k : Int in 0 until imgPix.bytesPerPixel){
+                        pixelBufferArray.put(imgPix.pixelBufferArray.get(((i + 1) * imgPix.bytesPerPixel * imgPix.metaData.width - 1) - (j * imgPix.bytesPerPixel + k) - ((imgPix.bytesPerPixel - 1) - k)))
+                    }
+                }
+            }
+            imgPix.pixelBufferArray = pixelBufferArray
+
+            return imgPix
+        }
+
+
     }
 }
