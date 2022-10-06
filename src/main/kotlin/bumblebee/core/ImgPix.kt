@@ -26,7 +26,7 @@ import javax.swing.*
      val height : Int
         get() = metaData.height
 
-     var manipulatedIntance = false
+     var manipulatedInstance = false
 
     lateinit var pixelBufferArray: ByteBuffer
     var imgFileType : ImgFileType = ImgFileType.PIX
@@ -119,6 +119,10 @@ import javax.swing.*
      fun invert() {
          ImgProcess.invert(this)
      }
+     fun flip(){
+         ImgProcess.flip(this)
+     }
+
      fun crop(row : Int, col : Int, width : Int, height : Int) {
          ImgProcess.crop(this, row, col, width, height)
      }
