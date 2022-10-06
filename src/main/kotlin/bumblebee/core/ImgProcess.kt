@@ -1,5 +1,6 @@
 package bumblebee.core
 
+import bumblebee.type.ColorType
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
 
@@ -53,7 +54,11 @@ class ImgProcess {
 
         fun toGrayScale(imgPix : ImgPix) : ImgPix{
             imgPix.manipulatedInstance = true
+
             var pixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
+
+            var oldBytesPerPixel = imgPix.bytesPerPixel
+
             for(i : Int in 0 until imgPix.metaData.height){
                 for(j : Int in 0 until imgPix.metaData.width){
                     for(k : Int in 0 until imgPix.bytesPerPixel){
@@ -61,7 +66,16 @@ class ImgProcess {
                     }
                 }
             }
-            imgPix.pixelBufferArray = pixelBufferArray
+
+            imgPix.bytesPerPixel = 1
+            imgPix.metaData.colorType = ColorType.GRAY_SCALE
+
+            var newPixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
+            for(i : Int in 0 until imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel){
+               newPixelBufferArray.put(pixelBufferArray[i*oldBytesPerPixel])
+            }
+
+            imgPix.pixelBufferArray = newPixelBufferArray
 
             return imgPix
         }
