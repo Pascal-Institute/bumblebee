@@ -2,6 +2,7 @@ package bumblebee
 
 import bumblebee.util.Converter.Companion.intToByteArray
 import bumblebee.core.ImgPix
+import bumblebee.extension.BMP
 import bumblebee.extension.PIX
 import bumblebee.extension.PNG
 import bumblebee.extension.TIFF
@@ -27,6 +28,8 @@ class FileManager {
 
                         if(fileSignature.contentEquals(ImgFileType.TIFF_BIG.signature) || fileSignature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
                             return TIFF(byteArray)
+                        }else if(fileSignature.contentEquals(ImgFileType.BMP.signature)){
+                            return BMP(byteArray)
                         }
                     }
 
