@@ -56,6 +56,7 @@ class ImgProcess {
             imgPix.manipulatedInstance = true
 
             var oldBytesPerPixel = imgPix.bytesPerPixel
+
             imgPix.bytesPerPixel = 1
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
 
