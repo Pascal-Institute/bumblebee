@@ -38,6 +38,10 @@ class FileManager {
             return PIX(byteArray)
         }
 
+        fun readBytes(filePath : String) : ByteArray{
+            return File(filePath).readBytes()
+        }
+
         fun write(filePath: String, imgPix : ImgPix, imgFileType : ImgFileType){
            try{
                when(imgFileType){

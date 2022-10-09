@@ -10,34 +10,21 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
     private var infoHeader = InfoHeader()
 
     init {
-
         extract()
-
-        println(byteToHex(header.signature))
-        println(byteToHex(header.fileSize))
-        println(byteToHex(header.reversed))
-        println(byteToHex(header.dataOffset))
-
-        println((byteToHex(infoHeader.imageSize)))
-        println(byteToHex(infoHeader.bitCount))
-        println(byteToHex(infoHeader.width))
-        println(byteToHex(infoHeader.height))
-        println(hexToInt(byteToHex(infoHeader.width)))
-        println(hexToInt(byteToHex(infoHeader.height)))
-
-
     }
 
     private class Header{
         lateinit var signature : ByteArray
         lateinit var fileSize : ByteArray
-        lateinit var reversed : ByteArray
+        lateinit var reversed1 : ByteArray
+        lateinit var reversed2 : ByteArray
         lateinit var dataOffset : ByteArray
 
         fun extract(byteArray: ByteArray){
             signature = byteArray.sliceArray(0 until 2)
             fileSize = byteArray.sliceArray(2 until 6)
-            reversed = byteArray.sliceArray(6 until 10)
+            reversed1 = byteArray.sliceArray(6 until 8)
+            reversed2 = byteArray.sliceArray(8 until 10)
             dataOffset = byteArray.sliceArray(10 until 14)
         }
     }
