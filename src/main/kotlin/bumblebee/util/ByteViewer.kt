@@ -17,7 +17,7 @@ import javax.swing.table.TableColumn
 
 class ByteViewer(val byteArray : ByteArray) : JFrame() {
 
-    lateinit var table: JTable
+    private lateinit var table: JTable
 
     init {
         build()
