@@ -17,8 +17,6 @@ import javax.swing.table.TableColumn
 
 class ByteViewer(val byteArray : ByteArray) : JFrame() {
 
-    private lateinit var table: JTable
-
     init {
         build()
         title = "Byte Viewer"
@@ -32,12 +30,14 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
 
         extract()
 
-        table = JTable()
-
         val header = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E")
 
         val contents = extract()
-        val table = JTable(contents, header)
+        val table = object : JTable(contents, header){
+            override fun isCellEditable(rowIndex: Int, colIndex: Int): Boolean {
+                return false
+            }
+        }
         val rowTable =  RowNumberTable(table)
 
         val scrollPane = JScrollPane(table)
@@ -51,10 +51,10 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
         val row = byteArray.size / 16
         val col = 16
 
-        var array = Array(row) { Array(col) { "" } }
+        val array = Array(row) { Array(col) { "" } }
 
         array.forEachIndexed { index, strings ->
-            strings.forEachIndexed { idx, s ->
+            strings.forEachIndexed { idx, _ ->
                 strings[idx] = byteToHex(byteArray[index * 16 + idx])
             }
         }
@@ -175,11 +175,11 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
                     if (header != null) {
                         foreground = header.foreground
                         background = header.background
-                        font = header.getFont()
+                        font = header.font
                     }
                 }
                 if (isSelected) {
-                    font = getFont().deriveFont(Font.BOLD)
+                    font = font.deriveFont(Font.BOLD)
                 }
                 text = value?.toString() ?: ""
                 border = UIManager.getBorder("TableHeader.cellBorder")
