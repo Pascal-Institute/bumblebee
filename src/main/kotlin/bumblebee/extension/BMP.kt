@@ -3,6 +3,7 @@ package bumblebee.extension
 import bumblebee.core.ImgPix
 import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.hexToInt
+import bumblebee.util.Converter.Companion.invert
 
 class BMP(private var byteArray: ByteArray) : ImgPix() {
 
@@ -11,6 +12,9 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
 
     init {
         extract()
+        println(byteToHex(infoHeader.width))
+        println(byteToHex(infoHeader.height))
+
     }
 
     private class Header{
@@ -22,10 +26,10 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
 
         fun extract(byteArray: ByteArray){
             signature = byteArray.sliceArray(0 until 2)
-            fileSize = byteArray.sliceArray(2 until 6)
-            reversed1 = byteArray.sliceArray(6 until 8)
-            reversed2 = byteArray.sliceArray(8 until 10)
-            dataOffset = byteArray.sliceArray(10 until 14)
+            fileSize = invert(byteArray.sliceArray(2 until 6))
+            reversed1 = invert(byteArray.sliceArray(6 until 8))
+            reversed2 = invert(byteArray.sliceArray(8 until 10))
+            dataOffset = invert(byteArray.sliceArray(10 until 14))
         }
     }
 //
@@ -43,17 +47,17 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
         lateinit var colorsImportant : ByteArray
 
         fun extract(byteArray: ByteArray) {
-            size = byteArray.sliceArray(0 until 4)
-            width = byteArray.sliceArray(4 until 8)
-            height = byteArray.sliceArray(8 until 12)
-            planes = byteArray.sliceArray(12 until 14)
-            bitCount = byteArray.sliceArray(14 until 16)
-            compression = byteArray.sliceArray(16 until 20)
-            imageSize = byteArray.sliceArray(20 until 24)
-            xPixelsPerM = byteArray.sliceArray(24 until 28)
-            yPixelsPerM = byteArray.sliceArray(28 until 32)
-            colorsUsed = byteArray.sliceArray(32 until 36)
-            colorsImportant = byteArray.sliceArray(36 until 40)
+            size = invert(byteArray.sliceArray(0 until 4))
+            width = invert(byteArray.sliceArray(4 until 8))
+            height = invert(byteArray.sliceArray(8 until 12))
+            planes = invert(byteArray.sliceArray(12 until 14))
+            bitCount = invert(byteArray.sliceArray(14 until 16))
+            compression = invert(byteArray.sliceArray(16 until 20))
+            imageSize = invert(byteArray.sliceArray(20 until 24))
+            xPixelsPerM = invert(byteArray.sliceArray(24 until 28))
+            yPixelsPerM = invert(byteArray.sliceArray(28 until 32))
+            colorsUsed = invert(byteArray.sliceArray(32 until 36))
+            colorsImportant = invert(byteArray.sliceArray(36 until 40))
         }
     }
 
