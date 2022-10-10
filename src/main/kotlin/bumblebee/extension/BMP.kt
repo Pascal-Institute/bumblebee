@@ -1,9 +1,12 @@
 package bumblebee.extension
 
 import bumblebee.core.ImgPix
+import bumblebee.type.ColorType
+import bumblebee.type.ImgFileType
 import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.invert
+import java.nio.ByteBuffer
 
 class BMP(private var byteArray: ByteArray) : ImgPix() {
 
@@ -11,9 +14,9 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
     private var infoHeader = InfoHeader()
 
     init {
+        imgFileType = ImgFileType.BMP
+
         extract()
-        println(byteToHex(infoHeader.width))
-        println(byteToHex(infoHeader.height))
 
     }
 
@@ -32,7 +35,7 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
             dataOffset = invert(byteArray.sliceArray(10 until 14))
         }
     }
-//
+
     private class InfoHeader{
         lateinit var size : ByteArray
         lateinit var width : ByteArray
@@ -58,12 +61,30 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
             yPixelsPerM = invert(byteArray.sliceArray(28 until 32))
             colorsUsed = invert(byteArray.sliceArray(32 until 36))
             colorsImportant = invert(byteArray.sliceArray(36 until 40))
+
+
         }
     }
 
     override fun extract() {
         header.extract(byteArray.sliceArray(0 until 14))
         infoHeader.extract(byteArray.sliceArray(14 until 54))
+
+        metaData.width = hexToInt(byteToHex(infoHeader.width))
+        metaData.height = hexToInt(byteToHex(infoHeader.height))
+        metaData.colorType = if (hexToInt(byteToHex(infoHeader.bitCount)) == 24) {
+            ColorType.TRUE_COLOR
+        } else {
+            println()
+            ColorType.GRAY_SCALE
+        }
+        bytesPerPixel = metaData.colorType.colorSpace
+        pixelBufferArray = ByteBuffer.allocate(metaData.width * metaData.height * bytesPerPixel)
+
+        byteArray.sliceArray(54 until byteArray.size).forEachIndexed { index, byte ->
+            pixelBufferArray.put( bytesPerPixel * metaData.width * (metaData.height - (index / (metaData.width * bytesPerPixel)) - 1) + index % (metaData.width * bytesPerPixel) + ((bytesPerPixel - 1) - index % bytesPerPixel), byte)
+        }
+
 
     }
 }
