@@ -82,7 +82,7 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
         pixelBufferArray = ByteBuffer.allocate(metaData.width * metaData.height * bytesPerPixel)
 
         byteArray.sliceArray(54 until byteArray.size).forEachIndexed { index, byte ->
-            pixelBufferArray.put( bytesPerPixel * metaData.width * (metaData.height - (index / (metaData.width * bytesPerPixel)) - 1) + index % (metaData.width * bytesPerPixel) + ((bytesPerPixel - 1) - index % bytesPerPixel), byte)
+            pixelBufferArray.put( bytesPerPixel * metaData.width * (metaData.height - (index / (metaData.width * bytesPerPixel)) - 1) + ((index % (metaData.width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
         }
 
 
