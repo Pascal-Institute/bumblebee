@@ -11,10 +11,10 @@ class ImgProcess {
             imgPix.manipulatedInstance = true
 
 
-            var bytesPerPixel = imgPix.bytesPerPixel
-            var pixelBufferArray = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
+            val bytesPerPixel = imgPix.bytesPerPixel
+            val pixelBufferArray = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
 
-            var startIdx = row * (imgPix.metaData.width * bytesPerPixel) + col * bytesPerPixel
+            val startIdx = row * (imgPix.metaData.width * bytesPerPixel) + col * bytesPerPixel
 
             for(i : Int in 0 until height){
                 for(j : Int in 0 until width){
@@ -42,7 +42,7 @@ class ImgProcess {
 
         fun flip(imgPix : ImgPix, orientation: Orientation) : ImgPix{
             imgPix.manipulatedInstance = true
-            var pixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
+            val pixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
 
             when(orientation){
                 Orientation.HORIZONTAL -> {
@@ -74,12 +74,12 @@ class ImgProcess {
         fun toGrayScale(imgPix : ImgPix) : ImgPix{
             imgPix.manipulatedInstance = true
 
-            var oldBytesPerPixel = imgPix.bytesPerPixel
+            val oldBytesPerPixel = imgPix.bytesPerPixel
 
             imgPix.bytesPerPixel = 1
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
 
-            var pixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
+            val pixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
 
             for(i : Int in 0 until imgPix.metaData.height){
                 for(j : Int in 0 until imgPix.metaData.width){
