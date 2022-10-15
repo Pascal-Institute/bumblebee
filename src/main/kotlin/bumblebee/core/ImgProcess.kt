@@ -2,6 +2,8 @@ package bumblebee.core
 
 import bumblebee.type.ColorType
 import bumblebee.type.Orientation
+import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.util.Converter.Companion.hexToInt
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
 
@@ -94,6 +96,18 @@ class ImgProcess {
             return imgPix
         }
 
+        fun threshold(imgPix: ImgPix, level : Int) : ImgPix{
+            if(imgPix.metaData.colorType != ColorType.GRAY_SCALE){
+               toGrayScale(imgPix)
+            }
+
+            for(i : Int in 0 until imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel){
+                val byte = if (hexToInt(byteToHex(imgPix.pixelBufferArray.get(i))) > level) (255).toByte() else (0).toByte()
+                imgPix.pixelBufferArray.put(i, byte)
+            }
+
+            return imgPix
+        }
 
     }
 }

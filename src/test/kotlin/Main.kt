@@ -3,6 +3,6 @@ import bumblebee.type.Orientation
 
 fun main(){
     val imgPix = FileManager.read("src/main/resources/blackbuck.bmp")
-    imgPix.flip(Orientation.VERTICAL)
+    imgPix.threshold(50)
     imgPix.show()
 }

@@ -131,4 +131,8 @@ import javax.swing.*
      fun toGrayScale(){
          ImgProcess.toGrayScale(this)
      }
+
+     fun threshold(level : Int){
+         ImgProcess.threshold(this, level)
+     }
  }
