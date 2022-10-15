@@ -1,6 +1,7 @@
 package bumblebee.core
 
 import bumblebee.type.ColorType
+import bumblebee.type.Orientation
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
 
@@ -39,16 +40,32 @@ class ImgProcess {
             return imgPix
         }
 
-        fun flip(imgPix : ImgPix) : ImgPix{
+        fun flip(imgPix : ImgPix, orientation: Orientation) : ImgPix{
             imgPix.manipulatedInstance = true
             var pixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
-            for(i : Int in 0 until imgPix.metaData.height){
-                for(j : Int in 0 until imgPix.metaData.width){
-                    for(k : Int in 0 until imgPix.bytesPerPixel){
-                        pixelBufferArray.put(imgPix.pixelBufferArray.get(((i + 1) * imgPix.bytesPerPixel * imgPix.metaData.width - 1) - (j * imgPix.bytesPerPixel + (imgPix.bytesPerPixel - 1) - k)))
+
+            when(orientation){
+                Orientation.HORIZONTAL -> {
+                    for(i : Int in 0 until imgPix.metaData.height){
+                        for(j : Int in 0 until imgPix.metaData.width){
+                            for(k : Int in 0 until imgPix.bytesPerPixel){
+                                pixelBufferArray.put(imgPix.pixelBufferArray.get(((i + 1) * imgPix.bytesPerPixel * imgPix.metaData.width - 1) - (j * imgPix.bytesPerPixel + (imgPix.bytesPerPixel - 1) - k)))
+                            }
+                        }
+                    }
+                }
+
+                Orientation.VERTICAL ->{
+                    for(i : Int in 0 until imgPix.metaData.height){
+                        for(j : Int in 0 until imgPix.metaData.width){
+                            for(k : Int in 0 until imgPix.bytesPerPixel){
+                                pixelBufferArray.put(imgPix.pixelBufferArray.get(imgPix.metaData.width * (imgPix.metaData.height - (i + 1)) * imgPix.bytesPerPixel + j * imgPix.bytesPerPixel + k))
+                            }
+                        }
                     }
                 }
             }
+
             imgPix.pixelBufferArray = pixelBufferArray
 
             return imgPix

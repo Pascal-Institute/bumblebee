@@ -6,6 +6,7 @@ import bumblebee.ImgExtractor
 import bumblebee.color.Color
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
+import bumblebee.type.Orientation
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.image.*
@@ -119,8 +120,8 @@ import javax.swing.*
      fun invert() {
          ImgProcess.invert(this)
      }
-     fun flip(){
-         ImgProcess.flip(this)
+     fun flip(orientation: Orientation){
+         ImgProcess.flip(this, orientation)
      }
 
      fun crop(row : Int, col : Int, width : Int, height : Int) {
@@ -130,5 +131,4 @@ import javax.swing.*
      fun toGrayScale(){
          ImgProcess.toGrayScale(this)
      }
-
  }
