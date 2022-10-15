@@ -8,13 +8,12 @@ class ImgProcess {
     companion object{
         fun crop(imgPix : ImgPix, row : Int, col : Int, width : Int, height : Int) : ImgPix {
             imgPix.manipulatedInstance = true
-            imgPix.metaData.width = width
-            imgPix.metaData.height = height
+
 
             var bytesPerPixel = imgPix.bytesPerPixel
-            var pixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
+            var pixelBufferArray = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
 
-            var startIdx = row * (width * bytesPerPixel) + col * bytesPerPixel
+            var startIdx = row * (imgPix.metaData.width * bytesPerPixel) + col * bytesPerPixel
 
             for(i : Int in 0 until height){
                 for(j : Int in 0 until width){
@@ -23,6 +22,9 @@ class ImgProcess {
                     }
                 }
             }
+
+            imgPix.metaData.width = width
+            imgPix.metaData.height = height
 
             imgPix.pixelBufferArray = pixelBufferArray
 
