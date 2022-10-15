@@ -28,8 +28,6 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
 
     private fun build() {
 
-        extract()
-
         val header = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E")
 
         val contents = extract()
@@ -48,14 +46,18 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
 
     private fun extract() : Array<Array<String>>  {
 
-        val row = byteArray.size / 16
+        val row = byteArray.size / 16 + 1
         val col = 16
 
         val array = Array(row) { Array(col) { "" } }
 
         array.forEachIndexed { index, strings ->
             strings.forEachIndexed { idx, _ ->
-                strings[idx] = byteToHex(byteArray[index * 16 + idx])
+                strings[idx] = if(index * 16 + idx < byteArray.size) {
+                    byteToHex(byteArray[index * 16 + idx])
+                }else{
+                     ""
+                }
             }
         }
 

@@ -39,7 +39,7 @@ dependencies {
    2. Run Main 
 ```
 
-## 1. API Introduction
+## 1. Introduction
 ### Extension support
 
 ```aidl
