@@ -1,5 +1,5 @@
 package bumblebee.type
 
-enum class Orientation {
+enum class OrientationType {
     HORIZONTAL, VERTICAL
 }

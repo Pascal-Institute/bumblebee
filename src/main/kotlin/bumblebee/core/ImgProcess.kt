@@ -1,7 +1,8 @@
 package bumblebee.core
 
 import bumblebee.type.ColorType
-import bumblebee.type.Orientation
+import bumblebee.type.OrientationType
+import bumblebee.type.ThresholdType
 import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.hexToInt
 import java.nio.ByteBuffer
@@ -42,12 +43,12 @@ class ImgProcess {
             return imgPix
         }
 
-        fun flip(imgPix : ImgPix, orientation: Orientation) : ImgPix{
+        fun flip(imgPix : ImgPix, orientation: OrientationType) : ImgPix{
             imgPix.manipulatedInstance = true
             val pixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
 
             when(orientation){
-                Orientation.HORIZONTAL -> {
+                OrientationType.HORIZONTAL -> {
                     for(i : Int in 0 until imgPix.metaData.height){
                         for(j : Int in 0 until imgPix.metaData.width){
                             for(k : Int in 0 until imgPix.bytesPerPixel){
@@ -57,7 +58,7 @@ class ImgProcess {
                     }
                 }
 
-                Orientation.VERTICAL ->{
+                OrientationType.VERTICAL ->{
                     for(i : Int in 0 until imgPix.metaData.height){
                         for(j : Int in 0 until imgPix.metaData.width){
                             for(k : Int in 0 until imgPix.bytesPerPixel){
@@ -92,6 +93,20 @@ class ImgProcess {
             }
 
             imgPix.pixelBufferArray = pixelBufferArray
+
+            return imgPix
+        }
+
+        fun threshold(imgPix : ImgPix, thresholdType : ThresholdType) : ImgPix{
+
+            when(thresholdType){
+                ThresholdType.OTSU -> {
+
+                }
+                else -> {
+
+                }
+            }
 
             return imgPix
         }

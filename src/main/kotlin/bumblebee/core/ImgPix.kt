@@ -6,7 +6,8 @@ import bumblebee.ImgExtractor
 import bumblebee.color.Color
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
-import bumblebee.type.Orientation
+import bumblebee.type.OrientationType
+import bumblebee.type.ThresholdType
 import bumblebee.util.Histogram
 import java.awt.Dimension
 import java.awt.Graphics
@@ -121,7 +122,7 @@ import javax.swing.*
      fun invert() : ImgPix {
          return ImgProcess.invert(this)
      }
-     fun flip(orientation: Orientation) : ImgPix {
+     fun flip(orientation: OrientationType) : ImgPix {
          return ImgProcess.flip(this, orientation)
      }
 
@@ -131,6 +132,10 @@ import javax.swing.*
 
      fun toGrayScale() : ImgPix {
          return ImgProcess.toGrayScale(this)
+     }
+
+     fun threshold(thresholdType: ThresholdType): ImgPix {
+         return ImgProcess.threshold(this, thresholdType)
      }
 
      fun threshold(level : Int) : ImgPix {
