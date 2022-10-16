@@ -7,6 +7,7 @@ import bumblebee.color.Color
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.type.Orientation
+import bumblebee.util.Histogram
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.image.*
@@ -70,7 +71,7 @@ import javax.swing.*
     fun show(){
         val buffer = DataBufferByte(pixelBufferArray.array(), pixelBufferArray.array().size)
 
-        var bufferedImage : BufferedImage
+        val bufferedImage : BufferedImage
         when(metaData.colorType){
             ColorType.GRAY_SCALE ->{
                 bufferedImage = BufferedImage(metaData.width, metaData.height, BufferedImage.TYPE_BYTE_GRAY)
@@ -117,22 +118,26 @@ import javax.swing.*
          TODO("Not yet implemented")
      }
 
-     fun invert() {
-         ImgProcess.invert(this)
+     fun invert() : ImgPix {
+         return ImgProcess.invert(this)
      }
-     fun flip(orientation: Orientation){
-         ImgProcess.flip(this, orientation)
-     }
-
-     fun crop(row : Int, col : Int, width : Int, height : Int) {
-         ImgProcess.crop(this, row, col, width, height)
+     fun flip(orientation: Orientation) : ImgPix {
+         return ImgProcess.flip(this, orientation)
      }
 
-     fun toGrayScale(){
-         ImgProcess.toGrayScale(this)
+     fun crop(row : Int, col : Int, width : Int, height : Int) : ImgPix {
+         return ImgProcess.crop(this, row, col, width, height)
      }
 
-     fun threshold(level : Int){
-         ImgProcess.threshold(this, level)
+     fun toGrayScale() : ImgPix {
+         return ImgProcess.toGrayScale(this)
+     }
+
+     fun threshold(level : Int) : ImgPix {
+         return ImgProcess.threshold(this, level)
+     }
+
+     fun histogram() : Histogram{
+        return Histogram(this)
      }
  }
