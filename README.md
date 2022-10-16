@@ -33,15 +33,9 @@ dependencies {
 }
 ```
 
-### For Committers (IntelliJ IDEA, etc)
-```
-   1. git clone
-   2. Run Main 
-```
-
 ## 1. Introduction
 ### Extension support
 
 ```aidl
-png, bmp
+png bmp
 ```
