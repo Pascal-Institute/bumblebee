@@ -5,6 +5,7 @@ import bumblebee.type.OrientationType
 import bumblebee.type.ThresholdType
 import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.hexToInt
+import bumblebee.util.Histogram
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
 
@@ -122,6 +123,35 @@ class ImgProcess {
             when(thresholdType){
                 ThresholdType.OTSU -> {
 
+                    var vKList = MutableList(256) { 0.0 }
+
+                    val histogram = Histogram(imgPix)
+                    val totalCount = histogram.totalCount
+                    var mT = 0.0
+                    for(i : Int in 0 until 256){
+                        mT += (i * histogram.channelG[i] * 1.0) / totalCount
+                    }
+                    for(k : Int in 0 until  256){
+
+                        var sum = 0
+                        var mK = 0.0
+
+                        for(i : Int in 0 until k+1){
+                            sum += histogram.channelG[i]
+                            mK += (i * histogram.channelG[i] * 1.0) / totalCount
+                        }
+
+                        var pK = (sum * 1.0) / totalCount
+                        var vK = ((mT * pK - mK) *  (mT * pK - mK))/(pK * (1 - pK))
+
+                        vKList[k] = vK
+
+                        if(pK == 1.0){
+                            vKList[k] = 0.0
+                        }
+                    }
+
+                    return threshold(imgPix, vKList.indexOf(vKList.max()))
                 }
                 else -> {
 

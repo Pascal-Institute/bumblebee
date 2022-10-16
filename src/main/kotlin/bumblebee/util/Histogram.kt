@@ -11,6 +11,7 @@ data class Histogram(val imgPix: ImgPix) {
     lateinit var channelR : MutableList<Int>
     lateinit var channelG : MutableList<Int>
     lateinit var channelB : MutableList<Int>
+    var totalCount = 0
 
     init {
         extract()
@@ -56,6 +57,11 @@ data class Histogram(val imgPix: ImgPix) {
                 }
             }
         }
+
+        channelG.forEach {
+            totalCount += it
+        }
+
     }
 
 }
