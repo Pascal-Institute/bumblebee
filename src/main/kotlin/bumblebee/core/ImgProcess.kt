@@ -146,7 +146,7 @@ class ImgProcess {
 
                         vKList[k] = vK
 
-                        if(pK == 1.0){
+                        if(pK == 1.0 || pK == 0.0){
                             vKList[k] = 0.0
                         }
                     }
