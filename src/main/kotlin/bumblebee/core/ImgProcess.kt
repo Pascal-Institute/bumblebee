@@ -97,7 +97,27 @@ class ImgProcess {
             return imgPix
         }
 
+        fun threshold(imgPix: ImgPix, level : Int) : ImgPix{
+            imgPix.manipulatedInstance = true
+
+            if(imgPix.metaData.colorType != ColorType.GRAY_SCALE){
+               toGrayScale(imgPix)
+            }
+
+            for(i : Int in 0 until imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel){
+                val byte = if (hexToInt(byteToHex(imgPix.pixelBufferArray.get(i))) > level) (255).toByte() else (0).toByte()
+                imgPix.pixelBufferArray.put(i, byte)
+            }
+
+            return imgPix
+        }
+
         fun threshold(imgPix : ImgPix, thresholdType : ThresholdType) : ImgPix{
+            imgPix.manipulatedInstance = true
+
+            if(imgPix.metaData.colorType != ColorType.GRAY_SCALE){
+                toGrayScale(imgPix)
+            }
 
             when(thresholdType){
                 ThresholdType.OTSU -> {
@@ -106,19 +126,6 @@ class ImgProcess {
                 else -> {
 
                 }
-            }
-
-            return imgPix
-        }
-
-        fun threshold(imgPix: ImgPix, level : Int) : ImgPix{
-            if(imgPix.metaData.colorType != ColorType.GRAY_SCALE){
-               toGrayScale(imgPix)
-            }
-
-            for(i : Int in 0 until imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel){
-                val byte = if (hexToInt(byteToHex(imgPix.pixelBufferArray.get(i))) > level) (255).toByte() else (0).toByte()
-                imgPix.pixelBufferArray.put(i, byte)
             }
 
             return imgPix
