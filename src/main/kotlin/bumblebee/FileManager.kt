@@ -2,10 +2,7 @@ package bumblebee
 
 import bumblebee.util.Converter.Companion.intToByteArray
 import bumblebee.core.ImgPix
-import bumblebee.extension.BMP
-import bumblebee.extension.PIX
-import bumblebee.extension.PNG
-import bumblebee.extension.TIFF
+import bumblebee.extension.*
 import bumblebee.type.ImgFileType
 import java.io.File
 
@@ -21,7 +18,7 @@ class FileManager {
                 }else{
                     fileSignature = fileSignature.sliceArray(0 until 3)
 
-                    if(fileSignature.contentEquals(ImgFileType.PIX.signature )){
+                    if(fileSignature.contentEquals(ImgFileType.PIX.signature)){
                         return PIX(byteArray)
                     }else{
                         fileSignature = fileSignature.sliceArray(0 until 2)
@@ -30,6 +27,8 @@ class FileManager {
                             return TIFF(byteArray)
                         }else if(fileSignature.contentEquals(ImgFileType.BMP.signature)){
                             return BMP(byteArray)
+                        }else if(fileSignature.contentEquals(ImgFileType.JPG.signature)){
+                            return JPG(byteArray)
                         }
                     }
 

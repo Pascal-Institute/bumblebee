@@ -1,8 +1,7 @@
 import bumblebee.FileManager
-import bumblebee.type.ThresholdType
+import bumblebee.util.ByteViewer
 
 fun main(){
-    val imgPix = FileManager.read("src/main/resources/lenna.png")
-    imgPix.threshold(ThresholdType.OTSU)
-    imgPix.show()
+    var imgPix = FileManager.read("src/main/resources/balloons.jpg")
+    ByteViewer(FileManager.readBytes("src/main/resources/balloons.jpg"))
 }
