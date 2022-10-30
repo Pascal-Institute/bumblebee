@@ -1,5 +1,7 @@
 package bumblebee.util
 
+import bumblebee.color.Color
+import bumblebee.color.RGB
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.util.Converter.Companion.byteToHex
@@ -62,6 +64,16 @@ data class Histogram(val imgPix: ImgPix) {
             totalCount += it
         }
 
+    }
+
+    fun getAverage(colorType: ColorType) : ByteArray {
+        return when(colorType){
+            ColorType.GRAY_SCALE -> byteArrayOf(channelG.average().toInt().toByte())
+            ColorType.TRUE_COLOR -> byteArrayOf(channelR.average().toInt().toByte(),
+                channelG.average().toInt().toByte(),
+                channelB.average().toInt().toByte())
+            else -> byteArrayOf(channelG.average().toInt().toByte())
+        }
     }
 
 }

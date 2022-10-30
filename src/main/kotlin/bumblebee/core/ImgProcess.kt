@@ -2,6 +2,7 @@ package bumblebee.core
 
 import bumblebee.type.ColorType
 import bumblebee.type.OrientationType
+import bumblebee.type.PadType
 import bumblebee.type.ThresholdType
 import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.hexToInt
@@ -161,5 +162,24 @@ class ImgProcess {
             return imgPix
         }
 
+        fun pad(imgPix: ImgPix, padType: PadType, padPixelSize: Int) : ImgPix{
+
+            val pixelBufferArray = ByteBuffer.allocate(
+                (padPixelSize + imgPix.width + padPixelSize) *
+                        (padPixelSize + imgPix.height + padPixelSize) *
+                        imgPix.bytesPerPixel)
+
+            when(padType){
+                PadType.ZERO -> {
+
+                }
+
+                PadType.AVERAGE -> {
+
+                }
+            }
+
+            return imgPix
+        }
     }
 }

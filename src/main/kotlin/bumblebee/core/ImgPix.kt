@@ -1,5 +1,6 @@
  package bumblebee.core
 
+import bumblebee.FileManager
 import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.colorToByte
 import bumblebee.ImgExtractor
@@ -40,8 +41,7 @@ import javax.swing.*
         metaData.colorType = colorType
         this.pixelBufferArray = ByteBuffer.allocate(width * height * colorType.colorSpace)
     }
-
-    public override fun clone(): ImgPix {
+     public override fun clone(): ImgPix {
         return super.clone() as ImgPix
     }
 
