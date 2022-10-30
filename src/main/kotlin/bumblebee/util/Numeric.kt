@@ -1,5 +1,7 @@
 package bumblebee.util
 
+import kotlin.math.exp
+
 class Numeric {
     companion object{
         fun isPrimeNumber(number : Int) : Boolean{
@@ -38,6 +40,21 @@ class Numeric {
                 }
             }
             return answer.toIntArray()
+        }
+
+        fun softMax(number : DoubleArray) : DoubleArray{
+
+            val answer = DoubleArray(number.size)
+            var sum = 0.0
+            number.forEach {
+                sum += exp(it)
+            }
+
+            for(i : Int in answer.indices){
+                answer[i] = (exp(number[i]) / sum)
+            }
+
+            return answer
         }
     }
 }
