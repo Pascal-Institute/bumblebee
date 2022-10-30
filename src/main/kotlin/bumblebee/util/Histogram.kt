@@ -65,7 +65,6 @@ data class Histogram(val imgPix: ImgPix) {
             mT += (i * channelG[i] * 1.0) / totalCount
         }
         for(k : Int in 0 until  256){
-
             var sum = 0
             var mK = 0.0
 

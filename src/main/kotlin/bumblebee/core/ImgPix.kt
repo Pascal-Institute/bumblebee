@@ -38,6 +38,19 @@ import javax.swing.*
         metaData.colorType = colorType
         this.pixelBufferArray = ByteBuffer.allocate(width * height * colorType.colorSpace)
     }
+
+    constructor(filePath : String) : this() {
+       var imgPix  = FileManager.read(filePath)
+
+        metaData.width = imgPix.width
+        metaData.height = imgPix.height
+        metaData.colorType = imgPix.metaData.colorType
+        bytesPerPixel = imgPix.bytesPerPixel
+        bitDepth = imgPix.bitDepth
+        this.pixelBufferArray = imgPix.pixelBufferArray
+
+    }
+
      public override fun clone(): ImgPix {
         return super.clone() as ImgPix
     }
