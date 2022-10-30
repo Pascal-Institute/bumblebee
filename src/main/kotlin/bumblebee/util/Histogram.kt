@@ -1,12 +1,7 @@
 package bumblebee.util
 
-import bumblebee.color.Color
-import bumblebee.color.RGB
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
-import bumblebee.util.Converter.Companion.byteToHex
-import bumblebee.util.Converter.Companion.hexToInt
-import bumblebee.util.Converter.Companion.hexToRGB
 
 data class Histogram(val imgPix: ImgPix) {
 
@@ -67,13 +62,23 @@ data class Histogram(val imgPix: ImgPix) {
     }
 
     fun getAverage(colorType: ColorType) : ByteArray {
+
         return when(colorType){
-            ColorType.GRAY_SCALE -> byteArrayOf(channelG.average().toInt().toByte())
-            ColorType.TRUE_COLOR -> byteArrayOf(channelR.average().toInt().toByte(),
-                channelG.average().toInt().toByte(),
-                channelB.average().toInt().toByte())
+
+            ColorType.GRAY_SCALE -> byteArrayOf(getAverage(channelG).toByte())
+            ColorType.TRUE_COLOR -> byteArrayOf(getAverage(channelR).toByte(),
+                                                getAverage(channelG).toByte(),
+                                                getAverage(channelB).toByte())
             else -> byteArrayOf(channelG.average().toInt().toByte())
         }
+    }
+
+    private fun getAverage(channel : MutableList<Int>) : Int{
+        var sum = 0
+        channel.forEachIndexed { index, it ->
+            sum += index * it
+        }
+        return sum/channel.sum()
     }
 
 }

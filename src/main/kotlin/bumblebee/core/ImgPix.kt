@@ -5,10 +5,7 @@ import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.colorToByte
 import bumblebee.ImgExtractor
 import bumblebee.color.Color
-import bumblebee.type.ColorType
-import bumblebee.type.ImgFileType
-import bumblebee.type.OrientationType
-import bumblebee.type.ThresholdType
+import bumblebee.type.*
 import bumblebee.util.Histogram
 import java.awt.Dimension
 import java.awt.Graphics
@@ -120,29 +117,41 @@ import javax.swing.*
      }
 
      fun invert() : ImgPix {
+         manipulatedInstance = true
          return ImgProcess.invert(this)
      }
      fun flip(orientation: OrientationType) : ImgPix {
+         manipulatedInstance = true
          return ImgProcess.flip(this, orientation)
      }
 
      fun crop(row : Int, col : Int, width : Int, height : Int) : ImgPix {
+         manipulatedInstance = true
          return ImgProcess.crop(this, row, col, width, height)
      }
 
      fun toGrayScale() : ImgPix {
+         manipulatedInstance = true
          return ImgProcess.toGrayScale(this)
      }
 
      fun threshold(thresholdType: ThresholdType): ImgPix {
+         manipulatedInstance = true
          return ImgProcess.threshold(this, thresholdType)
      }
 
      fun threshold(level : Int) : ImgPix {
+         manipulatedInstance = true
          return ImgProcess.threshold(this, level)
+     }
+
+     fun pad(padType: PadType, padPixelSize : Int) : ImgPix{
+         manipulatedInstance = true
+         return ImgProcess.pad(this, padType, padPixelSize)
      }
 
      fun histogram() : Histogram{
         return Histogram(this)
      }
+
  }

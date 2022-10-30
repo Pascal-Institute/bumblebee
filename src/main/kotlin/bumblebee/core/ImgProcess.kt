@@ -13,9 +13,6 @@ import kotlin.experimental.inv
 class ImgProcess {
     companion object{
         fun crop(imgPix : ImgPix, row : Int, col : Int, width : Int, height : Int) : ImgPix {
-            imgPix.manipulatedInstance = true
-
-
             val bytesPerPixel = imgPix.bytesPerPixel
             val pixelBufferArray = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
 
@@ -38,7 +35,6 @@ class ImgProcess {
         }
 
         fun invert(imgPix: ImgPix) : ImgPix {
-            imgPix.manipulatedInstance = true
             for(i : Int in 0 until imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel){
                 imgPix.pixelBufferArray.put(i, imgPix.pixelBufferArray[i].inv())
                }
@@ -46,7 +42,6 @@ class ImgProcess {
         }
 
         fun flip(imgPix : ImgPix, orientation: OrientationType) : ImgPix{
-            imgPix.manipulatedInstance = true
             val pixelBufferArray = ByteBuffer.allocate(imgPix.metaData.width * imgPix.metaData.height * imgPix.bytesPerPixel)
 
             when(orientation){
@@ -77,8 +72,6 @@ class ImgProcess {
         }
 
         fun toGrayScale(imgPix : ImgPix) : ImgPix{
-            imgPix.manipulatedInstance = true
-
             val oldBytesPerPixel = imgPix.bytesPerPixel
 
             imgPix.bytesPerPixel = 1
@@ -100,8 +93,6 @@ class ImgProcess {
         }
 
         fun threshold(imgPix: ImgPix, level : Int) : ImgPix{
-            imgPix.manipulatedInstance = true
-
             if(imgPix.metaData.colorType != ColorType.GRAY_SCALE){
                toGrayScale(imgPix)
             }
@@ -115,8 +106,6 @@ class ImgProcess {
         }
 
         fun threshold(imgPix : ImgPix, thresholdType : ThresholdType) : ImgPix{
-            imgPix.manipulatedInstance = true
-
             if(imgPix.metaData.colorType != ColorType.GRAY_SCALE){
                 toGrayScale(imgPix)
             }
@@ -162,22 +151,45 @@ class ImgProcess {
             return imgPix
         }
 
-        fun pad(imgPix: ImgPix, padType: PadType, padPixelSize: Int) : ImgPix{
+        fun  pad(imgPix: ImgPix, padType: PadType, padPixelSize: Int) : ImgPix{
 
-            val pixelBufferArray = ByteBuffer.allocate(
-                (padPixelSize + imgPix.width + padPixelSize) *
-                        (padPixelSize + imgPix.height + padPixelSize) *
-                        imgPix.bytesPerPixel)
+            val width = padPixelSize + imgPix.width + padPixelSize
+            val height = padPixelSize + imgPix.height + padPixelSize
+            val bytesPerPixel = imgPix.bytesPerPixel
+
+            val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
 
             when(padType){
                 PadType.ZERO -> {
-
                 }
 
                 PadType.AVERAGE -> {
+                    var averagePixel = Histogram(imgPix).getAverage(imgPix.metaData.colorType)
 
+                    for(i : Int in 0 until height){
+                        for(j : Int in 0 until width){
+                            for(k : Int in 0 until bytesPerPixel){
+                                pixelBufferArray.put(averagePixel[k])
+                            }
+                        }
+                    }
                 }
             }
+
+
+            imgPix.metaData.width = width
+            imgPix.metaData.height = height
+
+            for(i : Int in padPixelSize * bytesPerPixel until height - padPixelSize * bytesPerPixel){
+                for(j : Int in padPixelSize * bytesPerPixel until width - padPixelSize * bytesPerPixel){
+                    for(k : Int in 0 until bytesPerPixel){
+                        pixelBufferArray.put(j * bytesPerPixel + k + i * bytesPerPixel * width,
+                            imgPix.pixelBufferArray.get((j-padPixelSize) * bytesPerPixel + k + (i-padPixelSize) * bytesPerPixel * (width - 2 * padPixelSize)))
+                    }
+                }
+            }
+
+            imgPix.pixelBufferArray = pixelBufferArray
 
             return imgPix
         }
