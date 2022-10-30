@@ -42,18 +42,6 @@ import javax.swing.*
         return super.clone() as ImgPix
     }
 
-    fun set(row : Int, col : Int, color : Color) {
-        if (metaData.colorType != color.colorType){
-            System.err.println("ERROR : ColorType does not match")
-            return
-        }else{
-            val byteArray : ByteArray = colorToByte(color)
-            for (i : Int in 0 until bytesPerPixel){
-                pixelBufferArray.put(i + bytesPerPixel * col + (metaData.width * bytesPerPixel) * row, byteArray[i])
-            }
-        }
-    }
-
     fun get(row : Int, col : Int) : String{
         val byteArray = ByteArray((metaData.colorType.colorSpace * (bitDepth/OCTA)))
         for (i : Int in 0 until bytesPerPixel){
@@ -116,6 +104,9 @@ import javax.swing.*
          TODO("Not yet implemented")
      }
 
+     fun set(row : Int, col : Int, color : Color) : ImgPix {
+         return ImgProcess.set(this, row, col, color)
+     }
      fun invert() : ImgPix {
          manipulatedInstance = true
          return ImgProcess.invert(this)

@@ -1,10 +1,12 @@
 package bumblebee.core
 
+import bumblebee.color.Color
 import bumblebee.type.ColorType
 import bumblebee.type.OrientationType
 import bumblebee.type.PadType
 import bumblebee.type.ThresholdType
 import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.util.Converter.Companion.colorToByte
 import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Histogram
 import java.nio.ByteBuffer
@@ -12,6 +14,18 @@ import kotlin.experimental.inv
 
 class ImgProcess {
     companion object{
+        fun set(imgPix : ImgPix, row : Int, col : Int, color : Color) : ImgPix {
+            if (imgPix.metaData.colorType != color.colorType){
+                System.err.println("ERROR : ColorType does not match")
+            }else{
+                val byteArray : ByteArray = colorToByte(color)
+                for (i : Int in 0 until imgPix.bytesPerPixel){
+                    imgPix.pixelBufferArray.put(i + imgPix.bytesPerPixel * col + (imgPix.metaData.width * imgPix.bytesPerPixel) * row, byteArray[i])
+                }
+            }
+            return imgPix
+        }
+
         fun crop(imgPix : ImgPix, row : Int, col : Int, width : Int, height : Int) : ImgPix {
 
             val bytesPerPixel = imgPix.bytesPerPixel
