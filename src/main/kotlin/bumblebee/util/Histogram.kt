@@ -8,7 +8,6 @@ data class Histogram(val imgPix: ImgPix) {
     lateinit var channelR : MutableList<Int>
     lateinit var channelG : MutableList<Int>
     lateinit var channelB : MutableList<Int>
-    var totalCount = 0
 
     init {
         extract()
@@ -54,11 +53,37 @@ data class Histogram(val imgPix: ImgPix) {
                 }
             }
         }
+    }
 
-        channelG.forEach {
-            totalCount += it
+    fun getOtsuLevel() : Int {
+
+        val vKList = MutableList(256) { 0.0 }
+        val totalCount = channelG.sum()
+
+        var mT = 0.0
+        for(i : Int in 0 until 256){
+            mT += (i * channelG[i] * 1.0) / totalCount
         }
+        for(k : Int in 0 until  256){
 
+            var sum = 0
+            var mK = 0.0
+
+            for(i : Int in 0 until k+1){
+                sum += channelG[i]
+                mK += (i * channelG[i] * 1.0) / totalCount
+            }
+
+            var pK = (sum * 1.0) / totalCount
+            var vK = ((mT * pK - mK) *  (mT * pK - mK))/(pK * (1 - pK))
+
+            vKList[k] = vK
+
+            if(pK == 1.0 || pK == 0.0){
+                vKList[k] = 0.0
+            }
+        }
+        return vKList.indexOf(vKList.max())
     }
 
     fun getAverage(colorType: ColorType) : ByteArray {
