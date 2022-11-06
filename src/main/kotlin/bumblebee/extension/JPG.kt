@@ -1,13 +1,8 @@
 package bumblebee.extension
 
-import bumblebee.FileManager
 import bumblebee.core.ImgPix
 import bumblebee.util.ByteViewer
-import bumblebee.util.Converter
-import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.byteToInt
-import bumblebee.util.Converter.Companion.hexToInt
-import org.intellij.lang.annotations.Identifier
 
 class JPG(private var byteArray: ByteArray) : ImgPix(){
     var startIndex = 0
