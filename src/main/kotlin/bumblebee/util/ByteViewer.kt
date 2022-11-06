@@ -28,6 +28,19 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
 
     private fun build() {
 
+        val menuBar = JMenuBar()
+        val fileMenu = JMenu("File")
+        val aboutMenu = JMenu("About")
+
+        val openMenuItem = JMenuItem("Open")
+        val contactMenuItem = JMenuItem("Contact")
+
+        fileMenu.add(openMenuItem)
+        aboutMenu.add(contactMenuItem)
+
+        menuBar.add(fileMenu)
+        menuBar.add(aboutMenu)
+
         val header = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E")
 
         val contents = extract()
@@ -41,6 +54,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
         val scrollPane = JScrollPane(table)
         scrollPane.setRowHeaderView(rowTable)
 
+        this.jMenuBar = menuBar
         this.add(scrollPane)
     }
 
