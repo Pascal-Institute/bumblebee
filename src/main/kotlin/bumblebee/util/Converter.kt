@@ -85,6 +85,10 @@ class Converter {
             return string
         }
 
+        fun byteToInt(byteArray: ByteArray) : Int{
+            return hexToInt(byteToHex(byteArray))
+        }
+
         fun invert(byteArray : ByteArray) : ByteArray {
             return byteArray.reversedArray()
         }
