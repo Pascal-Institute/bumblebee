@@ -2,6 +2,8 @@ package bumblebee.util
 
 import bumblebee.FileManager
 import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.util.Converter.Companion.intToByteArray
+import bumblebee.util.Converter.Companion.intToHex
 import java.awt.Component
 import java.awt.Dialog
 import java.awt.Font
@@ -163,7 +165,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
 	 *  as the value of the cell.
 	 */
         override fun getValueAt(row: Int, column: Int): Any {
-            return (row + 1).toString()
+            return intToHex(row)
         }
 
         /*

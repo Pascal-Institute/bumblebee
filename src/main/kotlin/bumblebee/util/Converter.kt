@@ -28,6 +28,40 @@ class Converter {
             return byteArray
         }
 
+        fun intToHex(int : Int) : String{
+
+            if(int == 0){
+                return "0"
+            }
+
+            var hexString = ""
+            var num = int
+            while (num > 0){
+                val hex = when(num % 16){
+                    0 -> "0"
+                    1 -> "1"
+                    2 -> "2"
+                    3 -> "3"
+                    4 -> "4"
+                    5 -> "5"
+                    6 -> "6"
+                    7 -> "7"
+                    8 -> "8"
+                    9 -> "9"
+                    10 -> "A"
+                    11 -> "B"
+                    12 -> "C"
+                    13 -> "D"
+                    14 -> "E"
+                    15 -> "F"
+                    else -> "0"
+                }
+                hexString += hex
+                num /= 16
+            }
+            return hexString.reversed()
+        }
+
         fun hexToInt(hexString :String) : Int{
             var coef = 1
             var num = 0
