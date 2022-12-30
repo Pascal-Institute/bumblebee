@@ -1,5 +1,6 @@
 package bumblebee.util
 
+import bumblebee.FileManager
 import bumblebee.util.Converter.Companion.byteToHex
 import java.awt.Component
 import java.awt.Dialog
@@ -18,55 +19,63 @@ import javax.swing.table.TableColumn
 
 class ByteViewer(val byteArray : ByteArray) : JFrame() {
 
-    private lateinit var table : JTable
+    private val HEXA = 16
+    private lateinit var scrollPane : JScrollPane
     private var row = 0
     private var col = 0
 
     init {
-        build()
+        build(byteArray)
         title = "Byte Viewer"
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         setSize(800, 600)
         setDefaultLookAndFeelDecorated(true)
-        isVisible = true
     }
 
-    private fun build() {
-
+    private fun build(byteArray: ByteArray) {
         val menuBar = buildMenuBar()
-
         val header = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E")
-        val contents = extract()
-        table = object : JTable(contents, header){
+        val contents = extract(byteArray)
+        val table = object : JTable(contents, header){
             override fun isCellEditable(rowIndex: Int, colIndex: Int): Boolean {
                 return false
             }
         }
         val rowTable =  RowNumberTable(table)
-        val scrollPane = JScrollPane(table)
+        scrollPane = JScrollPane(table)
         scrollPane.setRowHeaderView(rowTable)
 
         this.jMenuBar = menuBar
         this.add(scrollPane)
-
-        find("FF")
+        isVisible = true
     }
 
     private fun buildMenuBar() : JMenuBar{
         val menuBar = JMenuBar()
 
-        val findDialog = buildDialog()
+        val findDialog = buildDialog("find")
+        val contactDialog = buildDialog("contact")
 
         val fileMenu = JMenu("File")
         val toolMenu = JMenu("Tool")
         val aboutMenu = JMenu("About")
 
         val openMenuItem = JMenuItem("open")
+        openMenuItem.addActionListener {
+            val fileChooser = JFileChooser()
+            fileChooser.showOpenDialog(this)
+            this.remove(this.scrollPane)
+            build(FileManager.readBytes(fileChooser.selectedFile.path))
+        }
+
         val findMenuItem = JMenuItem("find")
         findMenuItem.addActionListener {
             findDialog.isVisible = true
         }
         val contactMenuItem = JMenuItem("contact")
+        contactMenuItem.addActionListener {
+            contactDialog.isVisible = true
+        }
 
         fileMenu.add(openMenuItem)
         toolMenu.add(findMenuItem)
@@ -79,24 +88,24 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
         return menuBar
     }
 
-    private fun buildDialog() : JDialog{
+    private fun buildDialog(title : String) : JDialog{
         val dialog = JDialog()
+        dialog.title = title
         dialog.setSize(40, 20)
 
         return dialog
     }
 
-    private fun extract() : Array<Array<String>>  {
-
-        row = byteArray.size / 16 + 1
-        col = 16
+    private fun extract(byteArray: ByteArray) : Array<Array<String>>  {
+        row = byteArray.size / HEXA + 1
+        col = HEXA
 
         val array = Array(row) { Array(col) { "" } }
 
         array.forEachIndexed { index, strings ->
             strings.forEachIndexed { idx, _ ->
-                strings[idx] = if(index * 16 + idx < byteArray.size) {
-                    byteToHex(byteArray[index * 16 + idx])
+                strings[idx] = if(index * HEXA + idx < byteArray.size) {
+                    byteToHex(byteArray[index * HEXA + idx])
                 }else{
                      ""
                 }
@@ -231,16 +240,4 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
             }
         }
     }
-
-    private fun find(hex : String){
-
-        for(i : Int in 0 until row){
-            for(j : Int in 0 until col){
-                if(table.model.getValueAt(0,0).equals(hex)){
-                    println("TRUE")
-                }
-            }
-        }
-    }
-
 }
