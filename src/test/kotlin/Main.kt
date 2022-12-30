@@ -4,8 +4,9 @@ import bumblebee.type.ThresholdType
 import bumblebee.util.ByteViewer
 
 fun main(){
-//    var imgPix = ImgPix("src/main/resources/balloons.jpg")
-    ByteViewer(FileManager.readBytes("src/main/resources/balloons.jpg"))
-//    imgPix.show()
 
+    var lenna = FileManager.read("C:\\Users\\volta\\IdeaProjects\\bumblebee\\src\\main\\resources\\lenna.png")
+    lenna.show()
+
+//    ByteViewer(FileManager.readBytes("src/main/resources/balloons.jpg"))
 }
