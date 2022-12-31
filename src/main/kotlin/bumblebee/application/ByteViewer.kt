@@ -32,7 +32,8 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         rootPane.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0, false), "myAction")
         var action = object : AbstractAction() {
             override fun actionPerformed(e: ActionEvent?) {
-                println("아잇 시팔!")
+                val findDialog = FindDialog()
+                findDialog.isVisible = true
             }
         }
 
@@ -257,6 +258,13 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
                 border = UIManager.getBorder("TableHeader.cellBorder")
                 return this
             }
+        }
+    }
+
+    private class FindDialog : JDialog() {
+        var findTextField = JTextField()
+        init {
+            add(findTextField)
         }
     }
 }
