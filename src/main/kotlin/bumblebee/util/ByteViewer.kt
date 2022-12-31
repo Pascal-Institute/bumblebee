@@ -2,11 +2,11 @@ package bumblebee.util
 
 import bumblebee.FileManager
 import bumblebee.util.Converter.Companion.byteToHex
-import bumblebee.util.Converter.Companion.intToByteArray
 import bumblebee.util.Converter.Companion.intToHex
 import java.awt.Component
-import java.awt.Dialog
 import java.awt.Font
+import java.awt.Image
+import java.awt.Toolkit
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 import javax.swing.*
@@ -31,6 +31,9 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
         title = "Byte Viewer"
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         setSize(800, 600)
+        val toolkit: Toolkit = Toolkit.getDefaultToolkit()
+        val img: Image = toolkit.getImage("bumblebee_icon.png")
+        iconImage = img
         setDefaultLookAndFeelDecorated(true)
     }
 
