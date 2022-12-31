@@ -1,4 +1,4 @@
-package bumblebee.util
+package bumblebee.application
 
 import bumblebee.FileManager
 import bumblebee.util.Converter.Companion.byteToHex
@@ -7,9 +7,12 @@ import java.awt.Component
 import java.awt.Font
 import java.awt.Image
 import java.awt.Toolkit
+import java.awt.event.ActionEvent
+import java.awt.event.KeyEvent
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 import javax.swing.*
+import javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW
 import javax.swing.event.ChangeEvent
 import javax.swing.event.ChangeListener
 import javax.swing.event.TableModelEvent
@@ -19,14 +22,22 @@ import javax.swing.table.JTableHeader
 import javax.swing.table.TableColumn
 
 
-class ByteViewer(val byteArray : ByteArray) : JFrame() {
+class ByteViewer(val byteArray : ByteArray) : JFrame(){
 
     private val HEXA = 16
     private lateinit var scrollPane : JScrollPane
-    private var row = 0
-    private var col = 0
-
     init {
+
+        val rootPane: JRootPane = getRootPane()
+        rootPane.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0, false), "myAction")
+        var action = object : AbstractAction() {
+            override fun actionPerformed(e: ActionEvent?) {
+                println("아잇 시팔!")
+            }
+        }
+
+        rootPane.actionMap.put("myAction", action)
+
         build(byteArray)
         title = "Byte Viewer"
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
@@ -36,6 +47,9 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
         iconImage = img
         setDefaultLookAndFeelDecorated(true)
     }
+
+
+
 
     private fun build(byteArray: ByteArray) {
         val menuBar = buildMenuBar()
@@ -102,8 +116,8 @@ class ByteViewer(val byteArray : ByteArray) : JFrame() {
     }
 
     private fun extract(byteArray: ByteArray) : Array<Array<String>>  {
-        row = byteArray.size / HEXA + 1
-        col = HEXA
+        val row = byteArray.size / HEXA + 1
+        val col = HEXA
 
         val array = Array(row) { Array(col) { "" } }
 

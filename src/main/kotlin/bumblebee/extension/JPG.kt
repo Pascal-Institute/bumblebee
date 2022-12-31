@@ -1,7 +1,7 @@
 package bumblebee.extension
 
 import bumblebee.core.ImgPix
-import bumblebee.util.ByteViewer
+import bumblebee.application.ByteViewer
 import bumblebee.util.Converter.Companion.byteToInt
 
 class JPG(private var byteArray: ByteArray) : ImgPix(){
