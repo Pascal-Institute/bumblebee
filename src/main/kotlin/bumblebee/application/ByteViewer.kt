@@ -3,12 +3,13 @@ package bumblebee.application
 import bumblebee.FileManager
 import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.intToHex
+import jdk.jshell.Snippet.Status
+import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.Font
 import java.awt.Image
 import java.awt.Toolkit
-import java.awt.event.ActionEvent
-import java.awt.event.KeyEvent
+import java.awt.event.*
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
 import javax.swing.*
@@ -26,6 +27,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
 
     private val HEXA = 16
     private lateinit var scrollPane : JScrollPane
+    private lateinit var statusPanel : StatusPanel
     init {
 
         val rootPane: JRootPane = getRootPane()
@@ -61,13 +63,35 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
                 return false
             }
         }
+
+        table.addMouseListener(object : MouseAdapter() {
+            override fun mouseClicked(e: MouseEvent?) {
+                super.mouseClicked(e)
+                statusPanel.setLoc(table.selectedRow + 1 , table.selectedColumn + 1)
+            }
+        })
+
         val rowTable =  RowNumberTable(table)
+
         scrollPane = JScrollPane(table)
         scrollPane.setRowHeaderView(rowTable)
 
         this.jMenuBar = menuBar
+        this.statusPanel = StatusPanel()
         this.add(scrollPane)
+        this.add(statusPanel, BorderLayout.PAGE_END)
         isVisible = true
+    }
+
+    class StatusPanel : JPanel(){
+        val locationLabel = JLabel("Byte Viewer")
+
+        init {
+            add(locationLabel)
+        }
+        fun setLoc(row : Int, col : Int){
+            locationLabel.text = "$row x $col = ${(row * col)}"
+        }
     }
 
     private fun buildMenuBar() : JMenuBar{

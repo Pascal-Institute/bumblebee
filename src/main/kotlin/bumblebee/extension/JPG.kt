@@ -1,7 +1,6 @@
 package bumblebee.extension
 
 import bumblebee.core.ImgPix
-import bumblebee.application.ByteViewer
 import bumblebee.util.Converter.Companion.byteToInt
 
 class JPG(private var byteArray: ByteArray) : ImgPix(){
@@ -21,13 +20,12 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         startIndex += app0.endIndex
         app1 = APP1(byteArray.sliceArray(startIndex until byteArray.size))
         startIndex += app1.endIndex
-
         var bytes = byteArray.sliceArray(startIndex until byteArray.size)
-        ByteViewer(bytes)
-        println()
+        println(app0.size())
+        println(app1.size())
     }
 
-    private class APP0(byteArray: ByteArray) {
+    private class APP0(byteArray: ByteArray) : Segment(byteArray) {
 
         var endIndex = 0
         private var n = 0
@@ -59,7 +57,7 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         }
     }
 
-    private class APP1(byteArray: ByteArray) {
+    private class APP1(byteArray: ByteArray) : Segment(byteArray) {
 
         var endIndex = 0
         private var n = 0
@@ -69,6 +67,12 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
             app1Marker = byteArray.sliceArray(0 until 2)
             length = byteArray.sliceArray(2 until 4)
             endIndex = 2 + byteToInt(length)
+        }
+    }
+
+    open class Segment(var byteArray: ByteArray) {
+        fun size() : Int{
+            return byteArray.size
         }
     }
 }
