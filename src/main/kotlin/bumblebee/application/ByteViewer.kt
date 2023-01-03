@@ -3,7 +3,6 @@ package bumblebee.application
 import bumblebee.FileManager
 import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.intToHex
-import jdk.jshell.Snippet.Status
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.Font
@@ -29,6 +28,8 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
     private lateinit var scrollPane : JScrollPane
     private lateinit var statusPanel : StatusPanel
     init {
+        val menuBar = buildMenuBar()
+        jMenuBar = menuBar
 
         val rootPane: JRootPane = getRootPane()
         rootPane.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0, false), "myAction")
@@ -51,11 +52,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         setDefaultLookAndFeelDecorated(true)
     }
 
-
-
-
     private fun build(byteArray: ByteArray) {
-        val menuBar = buildMenuBar()
         val header = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F")
         val contents = extract(byteArray)
         val table = object : JTable(contents, header){
@@ -76,9 +73,9 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         scrollPane = JScrollPane(table)
         scrollPane.setRowHeaderView(rowTable)
 
-        this.jMenuBar = menuBar
         this.statusPanel = StatusPanel()
         this.add(scrollPane)
+        this.add(JPanel(), BorderLayout.EAST)
         this.add(statusPanel, BorderLayout.PAGE_END)
         isVisible = true
     }
