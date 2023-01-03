@@ -54,7 +54,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
 
     private fun build(byteArray: ByteArray) {
         val menuBar = buildMenuBar()
-        val header = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E")
+        val header = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F")
         val contents = extract(byteArray)
         val table = object : JTable(contents, header){
             override fun isCellEditable(rowIndex: Int, colIndex: Int): Boolean {
