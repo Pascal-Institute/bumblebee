@@ -84,8 +84,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
     }
 
     class StatusPanel : JPanel(){
-        val locationLabel = JLabel("Byte Viewer")
-
+        private val locationLabel = JLabel("Byte Viewer")
         init {
             add(locationLabel)
         }
