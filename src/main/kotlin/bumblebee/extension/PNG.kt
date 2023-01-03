@@ -4,7 +4,6 @@ import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
-import bumblebee.type.FilterType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter
 import java.io.ByteArrayOutputStream
@@ -243,6 +242,19 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         PLTE(byteArrayOf(80, 76, 84, 69)),
         SRGB(byteArrayOf(115, 82, 71, 66)),
         GAMA(byteArrayOf(103, 65, 77, 65)),
+    }
+
+    private enum class FilterType(val num : Int) {
+
+        NONE(0),
+        SUB(1),
+        UP(2),
+        AVERAGE(3),
+        PAETH(4);
+
+        companion object {
+            fun fromInt(num: Int) = FilterType.values().first { it.num == num }
+        }
     }
 
     private class Chunk {
