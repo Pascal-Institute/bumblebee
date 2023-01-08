@@ -3,11 +3,7 @@ package bumblebee.application
 import bumblebee.FileManager
 import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.util.Converter.Companion.intToHex
-import java.awt.BorderLayout
-import java.awt.Component
-import java.awt.Font
-import java.awt.Image
-import java.awt.Toolkit
+import java.awt.*
 import java.awt.event.*
 import java.beans.PropertyChangeEvent
 import java.beans.PropertyChangeListener
@@ -24,16 +20,26 @@ import javax.swing.table.TableColumn
 
 class ByteViewer(val byteArray : ByteArray) : JFrame(){
 
-    private val HEXA = 16
+    companion object{
+        const val HEXA = 16
+    }
+
     private lateinit var scrollPane : JScrollPane
     private lateinit var statusPanel : StatusPanel
+
     init {
-        val menuBar = buildMenuBar()
-        jMenuBar = menuBar
+
+        title = "Byte Viewer"
+        defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
+        setSize(800, 600)
+        val toolkit: Toolkit = Toolkit.getDefaultToolkit()
+        val img: Image = toolkit.getImage("bumblebee_icon.png")
+        iconImage = img
+        setDefaultLookAndFeelDecorated(true)
 
         val rootPane: JRootPane = getRootPane()
         rootPane.getInputMap(WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_F, 0, false), "myAction")
-        var action = object : AbstractAction() {
+        val action = object : AbstractAction() {
             override fun actionPerformed(e: ActionEvent?) {
                 val findDialog = FindDialog()
                 findDialog.isVisible = true
@@ -42,17 +48,41 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
 
         rootPane.actionMap.put("myAction", action)
 
-        build(byteArray)
-        title = "Byte Viewer"
-        defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
-        setSize(800, 600)
-        val toolkit: Toolkit = Toolkit.getDefaultToolkit()
-        val img: Image = toolkit.getImage("bumblebee_icon.png")
-        iconImage = img
-        setDefaultLookAndFeelDecorated(true)
+        buildMenuBar()
+        buildTable(byteArray)
+        buildText(byteArray)
     }
 
-    private fun build(byteArray: ByteArray) {
+    private fun buildText(byteArray: ByteArray) {
+
+        val textArea = JTextArea()
+
+        textArea.setSize(100, 600)
+        textArea.lineWrap = true
+        textArea.isEditable = false
+        textArea.background = background
+        refine(textArea, byteArray)
+
+        val scrollPane = JScrollPane()
+        scrollPane.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
+        scrollPane.setViewportView(textArea)
+        add(scrollPane, BorderLayout.EAST)
+    }
+
+    private fun refine(textArea : JTextArea, byteArray: ByteArray) {
+        val text = byteToHex(byteArray)
+        var str = ""
+        text.forEachIndexed { index, c ->
+            str += c.toString()
+            if(index!= 0 && index % HEXA == 0){
+                textArea.append(str)
+                textArea.append("\n")
+                str = ""
+            }
+        }
+    }
+
+    private fun buildTable(byteArray: ByteArray) {
         val header = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F")
         val contents = extract(byteArray)
         val table = object : JTable(contents, header){
@@ -72,15 +102,14 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
 
         scrollPane = JScrollPane(table)
         scrollPane.setRowHeaderView(rowTable)
+        add(scrollPane)
 
         this.statusPanel = StatusPanel()
-        this.add(scrollPane)
-        this.add(JPanel(), BorderLayout.EAST)
         this.add(statusPanel, BorderLayout.PAGE_END)
         isVisible = true
     }
 
-    class StatusPanel : JPanel(){
+    private class StatusPanel : JPanel(){
         private val locationLabel = JLabel("Byte Viewer")
         init {
             add(locationLabel)
@@ -90,7 +119,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         }
     }
 
-    private fun buildMenuBar() : JMenuBar{
+    private fun buildMenuBar() {
         val menuBar = JMenuBar()
 
         val findDialog = buildDialog("find")
@@ -105,7 +134,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
             val fileChooser = JFileChooser()
             fileChooser.showOpenDialog(this)
             this.remove(this.scrollPane)
-            build(FileManager.readBytes(fileChooser.selectedFile.path))
+            buildTable(FileManager.readBytes(fileChooser.selectedFile.path))
         }
 
         val findMenuItem = JMenuItem("find")
@@ -125,7 +154,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         menuBar.add(toolMenu)
         menuBar.add(aboutMenu)
 
-        return menuBar
+        jMenuBar = menuBar
     }
 
     private fun buildDialog(title : String) : JDialog{
@@ -151,7 +180,6 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
                 }
             }
         }
-
         return array
     }
 
