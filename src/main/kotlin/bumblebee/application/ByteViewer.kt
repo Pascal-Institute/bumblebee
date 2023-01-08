@@ -24,7 +24,8 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         const val HEXA = 16
     }
 
-    private lateinit var scrollPane : JScrollPane
+    private lateinit var tableScrollPane : JScrollPane
+    private lateinit var textScrollPane: JScrollPane
     private lateinit var statusPanel : StatusPanel
 
     init {
@@ -63,15 +64,16 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         textArea.background = background
         refine(textArea, byteArray)
 
-        val scrollPane = JScrollPane()
-        scrollPane.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
-        scrollPane.setViewportView(textArea)
-        add(scrollPane, BorderLayout.EAST)
+        textScrollPane = JScrollPane()
+        textScrollPane.verticalScrollBarPolicy = ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS
+        textScrollPane.setViewportView(textArea)
+        add(textScrollPane, BorderLayout.EAST)
     }
 
     private fun refine(textArea : JTextArea, byteArray: ByteArray) {
         val text = String(byteArray)
         var str = ""
+
         text.forEachIndexed { index, c ->
             str += c.toString()
             if(index!= 0 && index % HEXA == 0){
@@ -100,9 +102,9 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
 
         val rowTable =  RowNumberTable(table)
 
-        scrollPane = JScrollPane(table)
-        scrollPane.setRowHeaderView(rowTable)
-        add(scrollPane)
+        tableScrollPane = JScrollPane(table)
+        tableScrollPane.setRowHeaderView(rowTable)
+        add(tableScrollPane)
 
         this.statusPanel = StatusPanel()
         this.add(statusPanel, BorderLayout.PAGE_END)
@@ -112,7 +114,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
     private class StatusPanel : JPanel(){
         private val locationLabel = JLabel("Byte Viewer")
         init {
-            add(locationLabel)
+            add(locationLabel, BorderLayout.EAST)
         }
         fun setLoc(row : Int, col : Int){
             locationLabel.text = "$row x $col = ${(row * col)}"
@@ -132,15 +134,21 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         val openMenuItem = JMenuItem("open")
         openMenuItem.addActionListener {
             val fileChooser = JFileChooser()
-            fileChooser.showOpenDialog(this)
-            this.remove(this.scrollPane)
-            buildTable(FileManager.readBytes(fileChooser.selectedFile.path))
+            val returnVal = fileChooser.showOpenDialog(this)
+            if(returnVal == JFileChooser.APPROVE_OPTION) {
+                val byteArray = FileManager.readBytes(fileChooser.selectedFile.path)
+                this.remove(this.tableScrollPane)
+                this.remove(this.textScrollPane)
+                buildTable(byteArray)
+                buildText(byteArray)
+            }
         }
 
         val findMenuItem = JMenuItem("find")
         findMenuItem.addActionListener {
             findDialog.isVisible = true
         }
+
         val contactMenuItem = JMenuItem("contact")
         contactMenuItem.addActionListener {
             contactDialog.isVisible = true
