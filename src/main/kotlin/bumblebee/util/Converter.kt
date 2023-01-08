@@ -119,6 +119,10 @@ class Converter {
             return string
         }
 
+        fun byteToInt(byte: Byte) : Int{
+            return hexToInt(byteToHex(byte))
+        }
+
         fun byteToInt(byteArray: ByteArray) : Int{
             return hexToInt(byteToHex(byteArray))
         }

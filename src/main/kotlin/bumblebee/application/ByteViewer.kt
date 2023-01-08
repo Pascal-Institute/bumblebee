@@ -57,7 +57,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
 
         val textArea = JTextArea()
 
-        textArea.setSize(100, 600)
+        textArea.setSize(160, 600)
         textArea.lineWrap = true
         textArea.isEditable = false
         textArea.background = background
@@ -70,7 +70,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
     }
 
     private fun refine(textArea : JTextArea, byteArray: ByteArray) {
-        val text = byteToHex(byteArray)
+        val text = String(byteArray)
         var str = ""
         text.forEachIndexed { index, c ->
             str += c.toString()
