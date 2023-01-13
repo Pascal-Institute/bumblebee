@@ -49,22 +49,27 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 hexToInt(byteToHex(firstIFDOffset))
             }
 
-            println(startIdx - 8)
             ifdArray.add(IFD(imgFileType, byteArray.sliceArray(startIdx until byteArray.size)))
         }
     }
 
     //Image File Directory
     private class IFD(imgFileType: ImgFileType, byteArray: ByteArray){
-        var numOfTags : ByteArray = byteArray.sliceArray(0 until 2) //2 Byte
+        var numOfTags : ByteArray =
+            if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+                invert(byteArray.sliceArray(0 until 2))
+            }else{
+                byteArray.sliceArray(0 until 2)
+            }
         var tagArray = ArrayList<Tag>() //12 Byte * numOfTags
         var nextIFDOffset : ByteArray //4 Byte
 
         init {
-            var value = hexToInt(byteToHex(invert(numOfTags)))
+            var value = hexToInt(byteToHex(numOfTags))
             for(i : Int in 0 until  value){
                 tagArray.add(Tag(imgFileType, byteArray.sliceArray(2 + i*12 until 2 + (i+1) * 12)))
             }
+            println(byteArray.size)
             nextIFDOffset = byteArray.sliceArray(2 + 12 * value until 2 + 12 * value + 4)
         }
     }
@@ -83,8 +88,8 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         /*
         * 1  = BYTE
         * 2  = ASCII
-        * 3  = SHORT
-        * 4  = LONG
+        * 3  = SHORT 2byte
+        * 4  = LONG 4byte
         * 5  = RATIONAL
         * 6  = SBYTE
         * 7  = UNDEFINED
@@ -101,9 +106,18 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
         init {
             println(tagId.name)
-            println(byteToHex(invert(dataType)))
-            println(byteToHex(invert(dataCount)))
-            println(byteToHex(invert(dataOffset)))
+
+            if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+                dataType = invert(dataType)
+                dataCount = invert(dataCount)
+                dataOffset = invert(dataOffset)
+            }
+            println(byteToHex(dataType))
+            println(byteToHex(dataCount))
+            println(byteToHex(dataOffset[0]))
+            println(byteToHex(dataOffset[1]))
+            println(byteToHex(dataOffset[2]))
+            println(byteToHex(dataOffset[3]))
         }
     }
 
