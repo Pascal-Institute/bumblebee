@@ -117,7 +117,7 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
             add(locationLabel, BorderLayout.EAST)
         }
         fun setLoc(row : Int, col : Int){
-            locationLabel.text = "$row x $col = ${(row * col)}"
+            locationLabel.text = "$row x $col : ${((row - 1) * 16 + col)}"
         }
     }
 
