@@ -17,6 +17,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private var ifdArray = ArrayList<IFD>()
 
     companion object{
+
         private fun endianArray(imgFileType: ImgFileType, byteArray: ByteArray) : ByteArray{
             return if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
                 invert(byteArray)
@@ -34,7 +35,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     }
 
     init {
-        metaData.colorType = ColorType.TRUE_COLOR
+        metaData.colorType = ColorType.GRAY_SCALE
         this.pixelBufferArray = ByteBuffer.allocate(0)
         imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
             ImgFileType.TIFF_LITTLE
@@ -46,6 +47,38 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     override fun extract() {
         ifh.extract(imgFileType, ifdArray, byteArray)
+        ifdArray.forEach {
+            it.tagArray.forEach { tag ->
+
+                if(tag.tagId == TagType.IMAGE_WIDTH){
+                    metaData.width = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                }
+
+                if(tag.tagId == TagType.IMAGE_LENGTH){
+                    metaData.height = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                }
+
+                if(tag.tagId == TagType.STRIP_OFFSETS){
+                    extractRasterImage(tag)
+                }
+            }
+        }
+    }
+
+    private fun extractRasterImage(tag: Tag) {
+
+        val stripCount = byteToInt(tag.dataCount)
+        var stripOffset = byteToInt(tag.dataOffset)
+        this.pixelBufferArray = ByteBuffer.allocate(width * height)
+        var copy = stripOffset
+
+        for(i : Int in 0 until stripCount){
+            stripOffset += 4
+        }
+
+        var startIdx = byteToInt(byteArray.sliceArray(copy until copy+4))
+        var endIdx = byteToInt(byteArray.sliceArray(stripOffset- 4 until stripOffset)) + (width * (height / stripCount))
+        pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
     }
 
     //Image File Header
@@ -69,21 +102,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 var ifd = IFD(imgFileType, byteArray.sliceArray(startIdx until byteArray.size))
                 ifdArray.add(ifd)
 
-                ifd.tagArray.forEach {
-                    if(it.tagId == TagType.STRIP_OFFSETS){
-                        extractRasterImage(it)
-                    }
-                }
-
             }while(!ifd.nextIFDOffset.contentEquals(byteArrayOf(0, 0, 0, 0)))
-        }
-
-        fun extractRasterImage(tag: Tag) {
-            var stripCount = byteToInt(tag.dataCount)
-            var stripStartOffset = byteToInt(tag.dataOffset)
-
-
-
         }
     }
 
@@ -126,15 +145,15 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         var dataCount : ByteArray = endianArray(imgFileType,byteArray.sliceArray(4 until 8)) //4 Byte
         var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12)) // 4Byte
 
-        init {
-            println(tagId.name)
-            println(byteToHex(dataType))
-            println(byteToHex(dataCount))
-            println(byteToHex(dataOffset[0]))
-            println(byteToHex(dataOffset[1]))
-            println(byteToHex(dataOffset[2]))
-            println(byteToHex(dataOffset[3]))
-        }
+//        init {
+//            println(tagId.name)
+//            println(byteToHex(dataType))
+//            println(byteToHex(dataCount))
+//            println(byteToHex(dataOffset[0]))
+//            println(byteToHex(dataOffset[1]))
+//            println(byteToHex(dataOffset[2]))
+//            println(byteToHex(dataOffset[3]))
+//        }
     }
 
     private enum class TagType (val byteArray : ByteArray) {

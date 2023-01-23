@@ -141,7 +141,6 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
                     super.mouseClicked(e)
                     val row = textField.text.toInt() / 16
                     val col = textField.text.toInt() % 16
-
                     table.changeSelection(row, col, false, false)
                     table.requestFocus()
                 }
