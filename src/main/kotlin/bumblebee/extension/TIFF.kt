@@ -71,10 +71,19 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                 ifd.tagArray.forEach {
                     if(it.tagId == TagType.STRIP_OFFSETS){
-
+                        extractRasterImage(it)
                     }
                 }
+
             }while(!ifd.nextIFDOffset.contentEquals(byteArrayOf(0, 0, 0, 0)))
+        }
+
+        fun extractRasterImage(tag: Tag) {
+            var stripCount = byteToInt(tag.dataCount)
+            var stripStartOffset = byteToInt(tag.dataOffset)
+
+
+
         }
     }
 
@@ -96,8 +105,6 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     private class Tag(imgFileType: ImgFileType, byteArray: ByteArray) {
 
-        var tagId : TagType = TagType.fromByteArray(endianArray(imgFileType, byteArray, 0, 2))
-
         //data type
         /*
         * 1  = BYTE
@@ -114,6 +121,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         * 12 = DOUBLE
         * */
 
+        var tagId : TagType = TagType.fromByteArray(endianArray(imgFileType, byteArray, 0, 2))
         var dataType : ByteArray = endianArray(imgFileType,byteArray.sliceArray(2 until 4)) //2 Byte
         var dataCount : ByteArray = endianArray(imgFileType,byteArray.sliceArray(4 until 8)) //4 Byte
         var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12)) // 4Byte
