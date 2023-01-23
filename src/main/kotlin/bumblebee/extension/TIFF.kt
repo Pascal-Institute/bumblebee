@@ -32,6 +32,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 byteArray.sliceArray(startIdx until endIdx)
             }
         }
+
     }
 
     init {
@@ -51,7 +52,8 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             it.tagArray.forEach { tag ->
 
                 if(tag.tagId == TagType.IMAGE_WIDTH){
-                    metaData.width = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                    metaData.width = byteToInt(
+                        tag.dataOffset.sliceArray(0 until 2))
                 }
 
                 if(tag.tagId == TagType.IMAGE_LENGTH){
@@ -124,36 +126,20 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     private class Tag(imgFileType: ImgFileType, byteArray: ByteArray) {
 
-        //data type
-        /*
-        * 1  = BYTE
-        * 2  = ASCII
-        * 3  = SHORT 2byte
-        * 4  = LONG 4byte
-        * 5  = RATIONAL
-        * 6  = SBYTE
-        * 7  = UNDEFINED
-        * 8  = SSHORT
-        * 9  = SLONG
-        * 10 = SRATIONAL
-        * 11 = FLOAD
-        * 12 = DOUBLE
-        * */
-
         var tagId : TagType = TagType.fromByteArray(endianArray(imgFileType, byteArray, 0, 2))
         var dataType : ByteArray = endianArray(imgFileType,byteArray.sliceArray(2 until 4)) //2 Byte
         var dataCount : ByteArray = endianArray(imgFileType,byteArray.sliceArray(4 until 8)) //4 Byte
         var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12)) // 4Byte
 
-//        init {
-//            println(tagId.name)
-//            println(byteToHex(dataType))
-//            println(byteToHex(dataCount))
-//            println(byteToHex(dataOffset[0]))
-//            println(byteToHex(dataOffset[1]))
-//            println(byteToHex(dataOffset[2]))
-//            println(byteToHex(dataOffset[3]))
-//        }
+        init {
+            println(tagId.name)
+            println(byteToHex(dataType))
+            println(byteToHex(dataCount))
+            println(byteToHex(dataOffset[0]))
+            println(byteToHex(dataOffset[1]))
+            println(byteToHex(dataOffset[2]))
+            println(byteToHex(dataOffset[3]))
+        }
     }
 
     private enum class TagType (val byteArray : ByteArray) {
@@ -235,4 +221,22 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         }
     }
 
+    private enum class DataType (val byteArray: ByteArray){
+
+        BYTE(byteArrayOf(0,1)),
+        ASCII(byteArrayOf(0,2)),
+        SHORT(byteArrayOf(0,3)),
+        LONG(byteArrayOf(0,4)),
+        RATIONAL(byteArrayOf(0,5)),
+        SBYTE(byteArrayOf(0,6)),
+        UNDEFINED(byteArrayOf(0,7)),
+        SSHORT(byteArrayOf(0,8)),
+        SLONG(byteArrayOf(0,9)),
+        SRATIONAL(byteArrayOf(0,10)),
+        FLOAD(byteArrayOf(0,11)),
+        DOUBLE(byteArrayOf(0,12));
+        companion object {
+            fun fromByteArray(byteArray : ByteArray) = TagType.values().first { it.byteArray.contentEquals(byteArray) }
+        }
+    }
 }
