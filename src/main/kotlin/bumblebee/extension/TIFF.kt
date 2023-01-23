@@ -64,19 +64,18 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     override fun extract() {
         ifh.extract(imgFileType, ifdArray, byteArray)
         ifdArray.forEach {
-            it.tagArray.forEach { tag ->
-
-                if(tag.tagId == TagType.IMAGE_WIDTH){
-                    metaData.width = byteToInt(
-                        tag.dataOffset.sliceArray(0 until 2))
+            it.tagArray.forEach {tag->
+                when(tag.tagId){
+                    TagType.IMAGE_WIDTH -> metaData.width = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                    TagType.IMAGE_LENGTH -> metaData.height = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                    TagType.SAMPLES_PER_PIXEL -> bytesPerPixel = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                    else -> {}
                 }
+            }
 
-                if(tag.tagId == TagType.IMAGE_LENGTH){
-                    metaData.height = byteToInt(tag.dataOffset.sliceArray(0 until 2))
-                }
-
-                if(tag.tagId == TagType.STRIP_OFFSETS){
-                    extractRasterImage(tag)
+            it.tagArray.forEach {tag->
+                if(tag.tagId == TagType.STRIP_OFFSETS) {
+                        extractRasterImage(tag)
                 }
             }
         }
@@ -86,7 +85,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
         val stripCount = tag.dataCount
         var stripOffset = byteToInt(tag.dataOffset)
-        this.pixelBufferArray = ByteBuffer.allocate(width * height)
+        this.pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
         var copy = stripOffset
 
         for(i : Int in 0 until stripCount){
