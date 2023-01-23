@@ -17,6 +17,13 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private var ifdArray = ArrayList<IFD>()
 
     companion object{
+        private fun endianArray(imgFileType: ImgFileType, byteArray: ByteArray) : ByteArray{
+            return if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+                invert(byteArray)
+            }else{
+                byteArray
+            }
+        }
         private fun endianArray(imgFileType : ImgFileType ,byteArray: ByteArray, startIdx : Int, endIdx : Int) : ByteArray{
             return if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
                 invert(byteArray.sliceArray(startIdx until endIdx))
@@ -61,6 +68,12 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             do{
                 var ifd = IFD(imgFileType, byteArray.sliceArray(startIdx until byteArray.size))
                 ifdArray.add(ifd)
+
+                ifd.tagArray.forEach {
+                    if(it.tagId == TagType.STRIP_OFFSETS){
+
+                    }
+                }
             }while(!ifd.nextIFDOffset.contentEquals(byteArrayOf(0, 0, 0, 0)))
         }
     }
@@ -101,18 +114,12 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         * 12 = DOUBLE
         * */
 
-        var dataType : ByteArray = byteArray.sliceArray(2 until 4) //2 Byte
-        var dataCount : ByteArray = byteArray.sliceArray(4 until 8) //4 Byte
-        var dataOffset : ByteArray = byteArray.sliceArray(8 until 12) // 4Byte
+        var dataType : ByteArray = endianArray(imgFileType,byteArray.sliceArray(2 until 4)) //2 Byte
+        var dataCount : ByteArray = endianArray(imgFileType,byteArray.sliceArray(4 until 8)) //4 Byte
+        var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12)) // 4Byte
 
         init {
             println(tagId.name)
-
-            if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                dataType = invert(dataType)
-                dataCount = invert(dataCount)
-                dataOffset = invert(dataOffset)
-            }
             println(byteToHex(dataType))
             println(byteToHex(dataCount))
             println(byteToHex(dataOffset[0]))
