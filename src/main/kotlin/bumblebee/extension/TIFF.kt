@@ -25,6 +25,19 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 byteArray
             }
         }
+
+        private fun endianArray(imgFileType: ImgFileType, byteArray: ByteArray, dataType: DataType) : ByteArray{
+
+           return when(dataType){
+                DataType.SHORT -> {
+                    endianArray(imgFileType, byteArray.sliceArray(0 until 2)).plus(byteArray.sliceArray(2 until byteArray.size))
+                }
+                else->{
+                    endianArray(imgFileType, byteArray)
+                }
+            }
+        }
+
         private fun endianArray(imgFileType : ImgFileType ,byteArray: ByteArray, startIdx : Int, endIdx : Int) : ByteArray{
             return if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
                 invert(byteArray.sliceArray(startIdx until endIdx))
@@ -78,8 +91,8 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             stripOffset += 4
         }
 
-        var startIdx = byteToInt(byteArray.sliceArray(copy until copy+4))
-        var endIdx = byteToInt(byteArray.sliceArray(stripOffset- 4 until stripOffset)) + (width * (height / stripCount))
+        val startIdx = byteToInt(byteArray.sliceArray(copy until copy+4))
+        val endIdx = byteToInt(byteArray.sliceArray(stripOffset- 4 until stripOffset)) + (width * (height / stripCount))
         pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
     }
 
@@ -101,7 +114,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             }
 
             do{
-                var ifd = IFD(imgFileType, byteArray.sliceArray(startIdx until byteArray.size))
+                val ifd = IFD(imgFileType, byteArray.sliceArray(startIdx until byteArray.size))
                 ifdArray.add(ifd)
 
             }while(!ifd.nextIFDOffset.contentEquals(byteArrayOf(0, 0, 0, 0)))
@@ -115,7 +128,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         var nextIFDOffset : ByteArray //4 Byte
 
         init {
-            var value = hexToInt(byteToHex(numOfTags))
+            val value = hexToInt(byteToHex(numOfTags))
             for(i : Int in 0 until  value){
                 var tag = Tag(imgFileType, byteArray.sliceArray(2 + i*12 until 2 + (i+1) * 12))
                 tagArray.add(tag)
@@ -127,19 +140,9 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private class Tag(imgFileType: ImgFileType, byteArray: ByteArray) {
 
         var tagId : TagType = TagType.fromByteArray(endianArray(imgFileType, byteArray, 0, 2))
-        var dataType : ByteArray = endianArray(imgFileType,byteArray.sliceArray(2 until 4)) //2 Byte
+        var dataType : DataType = DataType.fromByteArray(endianArray(imgFileType,byteArray.sliceArray(2 until 4))) //2 Byte
         var dataCount : ByteArray = endianArray(imgFileType,byteArray.sliceArray(4 until 8)) //4 Byte
-        var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12)) // 4Byte
-
-        init {
-            println(tagId.name)
-            println(byteToHex(dataType))
-            println(byteToHex(dataCount))
-            println(byteToHex(dataOffset[0]))
-            println(byteToHex(dataOffset[1]))
-            println(byteToHex(dataOffset[2]))
-            println(byteToHex(dataOffset[3]))
-        }
+        var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12), dataType) // 4Byte
     }
 
     private enum class TagType (val byteArray : ByteArray) {
@@ -236,7 +239,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         FLOAD(byteArrayOf(0,11)),
         DOUBLE(byteArrayOf(0,12));
         companion object {
-            fun fromByteArray(byteArray : ByteArray) = TagType.values().first { it.byteArray.contentEquals(byteArray) }
+            fun fromByteArray(byteArray : ByteArray) = DataType.values().first { it.byteArray.contentEquals(byteArray) }
         }
     }
 }
