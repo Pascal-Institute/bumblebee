@@ -38,12 +38,12 @@ dependencies {
 ### Extension support
 
 ```aidl
-png bmp
+png bmp tiff
 ```
 
 ### Extended Application : Byte Viewer (built in library)
 
-![image](https://user-images.githubusercontent.com/65960990/210139765-0488dad2-24de-48e2-8950-da51af8e40d6.png)
+
 
 ## 2. Support
 ```
