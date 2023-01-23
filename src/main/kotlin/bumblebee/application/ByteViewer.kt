@@ -22,14 +22,18 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
 
     companion object{
         const val HEXA = 16
+        private lateinit var table: JTable
+
     }
 
     private lateinit var tableScrollPane : JScrollPane
     private lateinit var textScrollPane: JScrollPane
-    private lateinit var statusBar : StatusBar
     private lateinit var toolBar : ToolBar
+    private lateinit var statusBar : StatusBar
 
     init {
+
+        this.isVisible = false
 
         title = "Byte Viewer"
         defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
@@ -51,21 +55,19 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         rootPane.actionMap.put("myAction", action)
 
         buildMenuBar()
-        buildToolBar()
-        buildStatusBar()
         buildTable(byteArray)
         buildText(byteArray)
-
+        buildStatusBar()
+        buildToolBar()
         isVisible = true
     }
 
-    private fun buildStatusBar() {
+     fun buildStatusBar() {
         this.statusBar = StatusBar()
         this.add(statusBar, BorderLayout.PAGE_END)
     }
 
     private fun buildToolBar() {
-
         this.toolBar = ToolBar()
         this.add(toolBar, BorderLayout.PAGE_START)
     }
@@ -103,15 +105,20 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
     private fun buildTable(byteArray: ByteArray) {
         val header = arrayOf("0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F")
         val contents = extract(byteArray)
-        val table = object : JTable(contents, header){
+
+        table = object : JTable(contents, header){
             override fun isCellEditable(rowIndex: Int, colIndex: Int): Boolean {
                 return false
             }
         }
+
         table.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
                 super.mouseClicked(e)
-                statusBar.setLoc(table.selectedRow + 1 , table.selectedColumn + 1)
+                val row = table.selectedRow
+                val col = table.selectedColumn
+                statusBar.setLoc(row, col)
+                statusBar.setValue(row, col)
             }
         })
 
@@ -122,29 +129,54 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         add(tableScrollPane)
     }
 
-    private class ToolBar : JPanel(){
+    private class ToolBar() : JPanel(){
 
-    }
+        val goButton = JButton("go")
+        val textField = JTextField("0")
+        init {
+            textField.preferredSize = Dimension(55,30)
+
+            goButton.addMouseListener(object : MouseAdapter(){
+                override fun mouseClicked(e: MouseEvent?) {
+                    super.mouseClicked(e)
+                    val row = textField.text.toInt() / 16
+                    val col = textField.text.toInt() % 16
+
+                    table.changeSelection(row, col, false, false)
+                    table.requestFocus()
+                }
+            }
+            )
+
+            this.add(textField)
+            this.add(goButton)
+            }
+        }
+
 
 
     private class StatusBar : JPanel(){
         private val locationLabel = JLabel("Byte Viewer")
+        private val valueLabel = JLabel("Value")
         init {
             add(locationLabel, BorderLayout.EAST)
+            add(valueLabel)
         }
         fun setLoc(row : Int, col : Int){
-            locationLabel.text = "$row x $col : ${((row - 1) * 16 + col)}"
+            locationLabel.text = "[Loc = $row x $col : ${(row * 16 + col)}]"
+        }
+
+        fun setValue(row : Int, col : Int){
+            valueLabel.text = "[Value = ${table.getValueAt(row, col).toString()}]"
         }
     }
 
     private fun buildMenuBar() {
         val menuBar = JMenuBar()
 
-        val findDialog = buildDialog("find")
         val contactDialog = buildDialog("contact")
 
         val fileMenu = JMenu("File")
-        val toolMenu = JMenu("Tool")
         val aboutMenu = JMenu("About")
 
         val openMenuItem = JMenuItem("open")
@@ -163,10 +195,6 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
             }
         }
 
-        val findMenuItem = JMenuItem("find")
-        findMenuItem.addActionListener {
-            findDialog.isVisible = true
-        }
 
         val contactMenuItem = JMenuItem("contact")
         contactMenuItem.addActionListener {
@@ -174,11 +202,9 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         }
 
         fileMenu.add(openMenuItem)
-        toolMenu.add(findMenuItem)
         aboutMenu.add(contactMenuItem)
 
         menuBar.add(fileMenu)
-        menuBar.add(toolMenu)
         menuBar.add(aboutMenu)
 
         jMenuBar = menuBar
