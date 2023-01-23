@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation ("com.github.volta2030:bumblebee:1.0.6")
+    implementation ("com.github.volta2030:bumblebee:1.0.13")
 }
 
 ```
@@ -29,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.volta2030:bumblebee:1.0.6"
+    implementation "com.github.volta2030:bumblebee:1.0.13"
 }
 ```
 
@@ -46,6 +46,11 @@ png bmp tiff
 ![image](https://user-images.githubusercontent.com/65960990/214049911-19a16311-759e-48ca-8f32-40f5ecf88d7a.png)
 
 ## 2. Support
+
+```
+https://github.com/volta2030/bumblebee/discussions
+```
+
 ```
 bumblebee_api@googlegroups.com
 ```
