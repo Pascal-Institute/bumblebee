@@ -16,6 +16,16 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private var ifh = IFH()
     private var ifdArray = ArrayList<IFD>()
 
+    companion object{
+        private fun endianArray(imgFileType : ImgFileType ,byteArray: ByteArray, startIdx : Int, endIdx : Int) : ByteArray{
+            return if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+                invert(byteArray.sliceArray(startIdx until endIdx))
+            }else{
+                byteArray.sliceArray(startIdx until endIdx)
+            }
+        }
+    }
+
     init {
         metaData.colorType = ColorType.TRUE_COLOR
         this.pixelBufferArray = ByteBuffer.allocate(0)
@@ -35,17 +45,17 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private class IFH {
         lateinit var byteOrder : ByteArray
         lateinit var fortyTwo : ByteArray
-        lateinit var firstIFDOffset : ByteArray
+        lateinit var ifdOffset : ByteArray
 
         fun extract(imgFileType: ImgFileType, ifdArray: ArrayList<IFD>, byteArray: ByteArray){
             byteOrder = byteArray.sliceArray(0 until 2)
             fortyTwo = byteArray.sliceArray(2 until 4)
-            firstIFDOffset = byteArray.sliceArray(4 until 8)
+            ifdOffset = byteArray.sliceArray(4 until 8)
 
             val startIdx = if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                hexToInt(byteToHex(invert(firstIFDOffset)))
+                hexToInt(byteToHex(invert(ifdOffset)))
             }else{
-                hexToInt(byteToHex(firstIFDOffset))
+                hexToInt(byteToHex(ifdOffset))
             }
 
             do{
@@ -57,12 +67,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     //Image File Directory
     private class IFD(imgFileType: ImgFileType, byteArray: ByteArray){
-        var numOfTags : ByteArray =
-            if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                invert(byteArray.sliceArray(0 until 2))
-            }else{
-                byteArray.sliceArray(0 until 2)
-            }
+        var numOfTags : ByteArray = endianArray(imgFileType, byteArray, 0, 2)
         var tagArray = ArrayList<Tag>() //12 Byte * numOfTags
         var nextIFDOffset : ByteArray //4 Byte
 
@@ -72,24 +77,13 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 var tag = Tag(imgFileType, byteArray.sliceArray(2 + i*12 until 2 + (i+1) * 12))
                 tagArray.add(tag)
             }
-
-            nextIFDOffset =   if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                invert(byteArray.sliceArray(2 + 12 * value until 2 + 12 * value + 4))
-            }else{
-                byteArray.sliceArray(2 + 12 * value until 2 + 12 * value + 4)
-            }
+            nextIFDOffset = endianArray(imgFileType, byteArray, 2 + 12 * value, 2 + 12 * value + 4)
         }
     }
 
     private class Tag(imgFileType: ImgFileType, byteArray: ByteArray) {
 
-        var tagId : TagType = TagType.fromByteArray(
-            if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                invert(byteArray.sliceArray(0 until 2))
-            }else{
-                byteArray.sliceArray(0 until 2)
-            }
-        )
+        var tagId : TagType = TagType.fromByteArray(endianArray(imgFileType, byteArray, 0, 2))
 
         //data type
         /*
