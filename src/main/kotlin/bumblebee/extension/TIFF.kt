@@ -26,7 +26,11 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             }
         }
 
-        private fun endianArray(imgFileType: ImgFileType, byteArray: ByteArray, dataType: DataType) : ByteArray{
+        private fun endianArray(imgFileType: ImgFileType, byteArray: ByteArray, dataType: DataType, dataCount : Int) : ByteArray{
+
+            if(dataCount > 1){
+               return endianArray(imgFileType, byteArray)
+            }
 
            return when(dataType){
                 DataType.SHORT -> {
@@ -49,8 +53,6 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     }
 
     init {
-        metaData.colorType = ColorType.GRAY_SCALE
-        this.pixelBufferArray = ByteBuffer.allocate(0)
         imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
             ImgFileType.TIFF_LITTLE
         }else{
@@ -82,7 +84,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     private fun extractRasterImage(tag: Tag) {
 
-        val stripCount = byteToInt(tag.dataCount)
+        val stripCount = tag.dataCount
         var stripOffset = byteToInt(tag.dataOffset)
         this.pixelBufferArray = ByteBuffer.allocate(width * height)
         var copy = stripOffset
@@ -141,8 +143,20 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
         var tagId : TagType = TagType.fromByteArray(endianArray(imgFileType, byteArray, 0, 2))
         var dataType : DataType = DataType.fromByteArray(endianArray(imgFileType,byteArray.sliceArray(2 until 4))) //2 Byte
-        var dataCount : ByteArray = endianArray(imgFileType,byteArray.sliceArray(4 until 8)) //4 Byte
-        var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12), dataType) // 4Byte
+        var dataCount : Int = byteToInt(endianArray(imgFileType,byteArray.sliceArray(4 until 8))) //4 Byte
+        var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12), dataType, dataCount) // 4Byte
+
+        init {
+            println(tagId.name)
+            println(dataType.name)
+            println(dataCount)
+            println(byteToHex(dataOffset[0]))
+            println(byteToHex(dataOffset[1]))
+            println(byteToHex(dataOffset[2]))
+            println(byteToHex(dataOffset[3]))
+        }
+
+
     }
 
     private enum class TagType (val byteArray : ByteArray) {

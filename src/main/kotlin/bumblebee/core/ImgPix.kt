@@ -2,7 +2,6 @@
 
 import bumblebee.FileManager
 import bumblebee.util.Converter.Companion.byteToHex
-import bumblebee.util.Converter.Companion.colorToByte
 import bumblebee.ImgExtractor
 import bumblebee.color.Color
 import bumblebee.type.*
@@ -16,7 +15,7 @@ import javax.swing.*
 
  open class ImgPix() : ImgExtractor, Cloneable {
 
-    var metaData = MetaData(0, 0)
+    var metaData = MetaData(0, 0, ColorType.GRAY_SCALE)
 
     //PNG
     protected val OCTA = 8
@@ -27,9 +26,8 @@ import javax.swing.*
      val height : Int
         get() = metaData.height
 
-     var manipulatedInstance = false
-
-    lateinit var pixelBufferArray: ByteBuffer
+    private var manipulatedInstance = false
+    var pixelBufferArray: ByteBuffer = ByteBuffer.allocate(0)
     var imgFileType : ImgFileType = ImgFileType.PIX
 
     constructor(width: Int, height: Int, colorType: ColorType) : this() {
