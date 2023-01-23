@@ -5,6 +5,7 @@ import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.invert
 import java.nio.ByteBuffer
@@ -16,15 +17,13 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private var ifdArray = ArrayList<IFD>()
 
     init {
-
+        metaData.colorType = ColorType.TRUE_COLOR
+        this.pixelBufferArray = ByteBuffer.allocate(0)
         imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
             ImgFileType.TIFF_LITTLE
         }else{
             ImgFileType.TIFF_BIG
         }
-        metaData.colorType = ColorType.TRUE_COLOR
-        this.pixelBufferArray = ByteBuffer.allocate(0)
-
         extract()
     }
 
@@ -49,7 +48,10 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 hexToInt(byteToHex(firstIFDOffset))
             }
 
-            ifdArray.add(IFD(imgFileType, byteArray.sliceArray(startIdx until byteArray.size)))
+            do{
+                var ifd = IFD(imgFileType, byteArray.sliceArray(startIdx until byteArray.size))
+                ifdArray.add(ifd)
+            }while(!ifd.nextIFDOffset.contentEquals(byteArrayOf(0, 0, 0, 0)))
         }
     }
 
@@ -67,10 +69,15 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         init {
             var value = hexToInt(byteToHex(numOfTags))
             for(i : Int in 0 until  value){
-                tagArray.add(Tag(imgFileType, byteArray.sliceArray(2 + i*12 until 2 + (i+1) * 12)))
+                var tag = Tag(imgFileType, byteArray.sliceArray(2 + i*12 until 2 + (i+1) * 12))
+                tagArray.add(tag)
             }
-            println(byteArray.size)
-            nextIFDOffset = byteArray.sliceArray(2 + 12 * value until 2 + 12 * value + 4)
+
+            nextIFDOffset =   if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+                invert(byteArray.sliceArray(2 + 12 * value until 2 + 12 * value + 4))
+            }else{
+                byteArray.sliceArray(2 + 12 * value until 2 + 12 * value + 4)
+            }
         }
     }
 
