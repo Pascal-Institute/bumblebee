@@ -26,7 +26,8 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
 
     private lateinit var tableScrollPane : JScrollPane
     private lateinit var textScrollPane: JScrollPane
-    private lateinit var statusPanel : StatusPanel
+    private lateinit var statusBar : StatusBar
+    private lateinit var toolBar : ToolBar
 
     init {
 
@@ -50,8 +51,23 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         rootPane.actionMap.put("myAction", action)
 
         buildMenuBar()
+        buildToolBar()
+        buildStatusBar()
         buildTable(byteArray)
         buildText(byteArray)
+
+        isVisible = true
+    }
+
+    private fun buildStatusBar() {
+        this.statusBar = StatusBar()
+        this.add(statusBar, BorderLayout.PAGE_END)
+    }
+
+    private fun buildToolBar() {
+
+        this.toolBar = ToolBar()
+        this.add(toolBar, BorderLayout.PAGE_START)
     }
 
     private fun buildText(byteArray: ByteArray) {
@@ -92,11 +108,10 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
                 return false
             }
         }
-
         table.addMouseListener(object : MouseAdapter() {
             override fun mouseClicked(e: MouseEvent?) {
                 super.mouseClicked(e)
-                statusPanel.setLoc(table.selectedRow + 1 , table.selectedColumn + 1)
+                statusBar.setLoc(table.selectedRow + 1 , table.selectedColumn + 1)
             }
         })
 
@@ -105,13 +120,14 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
         tableScrollPane = JScrollPane(table)
         tableScrollPane.setRowHeaderView(rowTable)
         add(tableScrollPane)
-
-        this.statusPanel = StatusPanel()
-        this.add(statusPanel, BorderLayout.PAGE_END)
-        isVisible = true
     }
 
-    private class StatusPanel : JPanel(){
+    private class ToolBar : JPanel(){
+
+    }
+
+
+    private class StatusBar : JPanel(){
         private val locationLabel = JLabel("Byte Viewer")
         init {
             add(locationLabel, BorderLayout.EAST)
@@ -137,10 +153,13 @@ class ByteViewer(val byteArray : ByteArray) : JFrame(){
             val returnVal = fileChooser.showOpenDialog(this)
             if(returnVal == JFileChooser.APPROVE_OPTION) {
                 val byteArray = FileManager.readBytes(fileChooser.selectedFile.path)
+
+                this.isVisible = false
                 this.remove(this.tableScrollPane)
                 this.remove(this.textScrollPane)
                 buildTable(byteArray)
                 buildText(byteArray)
+                this.isVisible = true
             }
         }
 
