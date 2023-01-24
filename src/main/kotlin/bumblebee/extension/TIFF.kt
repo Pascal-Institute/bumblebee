@@ -1,7 +1,6 @@
 package bumblebee.extension
 
 import bumblebee.core.ImgPix
-import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteToHex
@@ -92,8 +91,12 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             stripOffset += 4
         }
 
-        val startIdx = byteToInt(byteArray.sliceArray(copy until copy+4))
-        val endIdx = byteToInt(byteArray.sliceArray(stripOffset- 4 until stripOffset)) + (width * (height / stripCount))
+        val startIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(copy until copy+4)))
+        val endIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripOffset- 4 until stripOffset))) + (width * (height / stripCount))
+
+        println(startIdx)
+        println(endIdx)
+
         pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
     }
 
