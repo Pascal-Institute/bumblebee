@@ -94,6 +94,8 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         val startIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(copy until copy+4)))
         val endIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripOffset- 4 until stripOffset))) + (width * (height / stripCount))
 
+        println(stripCount)
+        println(copy)
         println(startIdx)
         println(endIdx)
 
@@ -147,18 +149,6 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         var dataType : DataType = DataType.fromByteArray(endianArray(imgFileType,byteArray.sliceArray(2 until 4))) //2 Byte
         var dataCount : Int = byteToInt(endianArray(imgFileType,byteArray.sliceArray(4 until 8))) //4 Byte
         var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12), dataType, dataCount) // 4Byte
-
-        init {
-            println(tagId.name)
-            println(dataType.name)
-            println(dataCount)
-            println(byteToHex(dataOffset[0]))
-            println(byteToHex(dataOffset[1]))
-            println(byteToHex(dataOffset[2]))
-            println(byteToHex(dataOffset[3]))
-        }
-
-
     }
 
     private enum class TagType (val byteArray : ByteArray) {
