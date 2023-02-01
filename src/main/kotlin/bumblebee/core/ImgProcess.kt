@@ -107,9 +107,11 @@ class ImgProcess {
 
             for(i : Int in 0 until height){
                 for(j : Int in 0 until width){
+                    var integer = 0
                     for(k : Int in 0 until oldBytesPerPixel){
-                        pixelBufferArray.put(i * width + j, imgPix.pixelBufferArray.get((i * oldBytesPerPixel* width) + (j * oldBytesPerPixel) + k))
+                         integer += imgPix.pixelBufferArray.get((i * oldBytesPerPixel* width) + (j * oldBytesPerPixel) + k).toUByte().toInt()
                     }
+                    pixelBufferArray.put(i * width + j, (integer / oldBytesPerPixel).toByte())
                 }
             }
 
