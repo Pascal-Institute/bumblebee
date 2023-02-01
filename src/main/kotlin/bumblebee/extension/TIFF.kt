@@ -14,7 +14,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     private var ifh = IFH()
     private var ifdArray = ArrayList<IFD>()
-
+    private var compressionType = CompressionType.NONE
     companion object{
 
         private fun endianArray(imgFileType: ImgFileType, byteArray: ByteArray) : ByteArray{
@@ -68,6 +68,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                     TagType.IMAGE_WIDTH -> metaData.width = byteToInt(tag.dataOffset.sliceArray(0 until 2))
                     TagType.IMAGE_LENGTH -> metaData.height = byteToInt(tag.dataOffset.sliceArray(0 until 2))
                     TagType.SAMPLES_PER_PIXEL -> bytesPerPixel = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                    TagType.COMPRESSION -> compressionType = CompressionType.fromInt(byteToInt(tag.dataOffset.sliceArray(0 until 2)))
                     else -> {}
                 }
             }
@@ -93,11 +94,6 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
         val startIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(copy until copy+4)))
         val endIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripOffset- 4 until stripOffset))) + (width * (height / stripCount))
-
-        println(stripCount)
-        println(copy)
-        println(startIdx)
-        println(endIdx)
 
         pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
     }
@@ -246,6 +242,37 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         DOUBLE(byteArrayOf(0,12));
         companion object {
             fun fromByteArray(byteArray : ByteArray) = DataType.values().first { it.byteArray.contentEquals(byteArray) }
+        }
+    }
+
+    private enum class CompressionType (val integer : Int){
+        NONE(1),
+        CCITTRLE(2),
+        CCITTFAX3(3),
+        CCITTFAX4(4),
+        LZW(5),
+        OJPEG(6),
+        JPEG(7),
+        NEXT(32766),
+        CCITTRLEW(32771),
+        PACKBITS(32773),
+        THUNDERSCAN(32809),
+        IT8CTPAD(32895),
+        IT8LW(32896),
+        IT8MP(32897),
+        IT8BL(32898),
+        PIXARFILM(32908),
+        PIXARLOG(32909),
+        DEFLATE(32946),
+        ADOBE_DEFLATE(8),
+        DCS(32947),
+        JBIG(34661),
+        SGILOG(34676),
+        SGILOG24(34677),
+        JP2000(34712);
+
+        companion object {
+            fun fromInt(integer : Int) = CompressionType.values().first { it.integer == integer }
         }
     }
 }
