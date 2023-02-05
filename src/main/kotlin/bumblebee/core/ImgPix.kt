@@ -8,6 +8,7 @@ import bumblebee.type.*
 import bumblebee.util.Histogram
 import java.awt.Dimension
 import java.awt.Graphics
+import java.awt.Image
 import java.awt.image.*
 import java.nio.ByteBuffer
 import javax.swing.*
@@ -92,7 +93,8 @@ import javax.swing.*
         }
 
         val frame = JFrame()
-
+        val img: Image = frame.toolkit.getImage("bumblebee_icon.png")
+        frame.iconImage = img
         frame.defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         frame.title = "image"
         frame.isResizable = false
