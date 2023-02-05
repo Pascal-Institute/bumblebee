@@ -1,6 +1,7 @@
 package bumblebee.extension
 
 import bumblebee.core.ImgPix
+import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteToHex
@@ -15,6 +16,9 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private var ifh = IFH()
     private var ifdArray = ArrayList<IFD>()
     private var compressionType = CompressionType.NONE
+    private var rowsPerStrip = 0
+    private var stripByteCounts = 0
+
     companion object{
 
         private fun endianArray(imgFileType: ImgFileType, byteArray: ByteArray) : ByteArray{
@@ -52,23 +56,36 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     }
 
     init {
+        extract()
+    }
+
+    override fun extract() {
         imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
             ImgFileType.TIFF_LITTLE
         }else{
             ImgFileType.TIFF_BIG
         }
-        extract()
-    }
-
-    override fun extract() {
         ifh.extract(imgFileType, ifdArray, byteArray)
+
+        //don't need to make endianArray from here
         ifdArray.forEach {
             it.tagArray.forEach {tag->
                 when(tag.tagId){
                     TagType.IMAGE_WIDTH -> metaData.width = byteToInt(tag.dataOffset.sliceArray(0 until 2))
                     TagType.IMAGE_LENGTH -> metaData.height = byteToInt(tag.dataOffset.sliceArray(0 until 2))
-                    TagType.SAMPLES_PER_PIXEL -> bytesPerPixel = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                    TagType.SAMPLES_PER_PIXEL -> {
+                        bytesPerPixel = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                        if(bytesPerPixel == 3){
+                            metaData.colorType = ColorType.TRUE_COLOR
+                        }
+                    }
                     TagType.COMPRESSION -> compressionType = CompressionType.fromInt(byteToInt(tag.dataOffset.sliceArray(0 until 2)))
+                    TagType.ROWS_PER_STRIP -> {
+                        rowsPerStrip = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                    }
+                    TagType.STRIP_BYTE_COUNTS -> {
+                        stripByteCounts = byteToInt(tag.dataOffset)
+                    }
                     else -> {}
                 }
             }
@@ -86,14 +103,15 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         val stripCount = tag.dataCount
         val firstStripOffset = byteToInt(tag.dataOffset)
         val lastStripOffset = firstStripOffset + (4 * stripCount)
-        this.pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
         val startIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(firstStripOffset until firstStripOffset + 4)))
-        //width * height / stripCount is needed because of last stripOffset is only single.
-        val endIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(lastStripOffset - 4 until lastStripOffset))) + (width * (height / stripCount))
+        val endIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(lastStripOffset - 4 until lastStripOffset))) +
+                byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripByteCounts + (4 * stripCount) - 4 until stripByteCounts + 4 * stripCount)))
+
+        this.pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
 
         when(compressionType){
             CompressionType.LZW->{
-
+                pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
             }
             else->{
                 pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
@@ -113,15 +131,14 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             ifdOffset = byteArray.sliceArray(4 until 8)
 
             val startIdx = if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                hexToInt(byteToHex(invert(ifdOffset)))
+                  hexToInt(byteToHex(invert(ifdOffset)))
             }else{
-                hexToInt(byteToHex(ifdOffset))
+                 hexToInt(byteToHex(ifdOffset))
             }
 
             do{
                 val ifd = IFD(imgFileType, byteArray.sliceArray(startIdx until byteArray.size))
                 ifdArray.add(ifd)
-
             }while(!ifd.nextIFDOffset.contentEquals(byteArrayOf(0, 0, 0, 0)))
         }
     }
@@ -143,7 +160,6 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     }
 
     private class Tag(imgFileType: ImgFileType, byteArray: ByteArray) {
-
         var tagId : TagType = TagType.fromByteArray(endianArray(imgFileType, byteArray, 0, 2))
         var dataType : DataType = DataType.fromByteArray(endianArray(imgFileType,byteArray.sliceArray(2 until 4))) //2 Byte
         var dataCount : Int = byteToInt(endianArray(imgFileType,byteArray.sliceArray(4 until 8))) //4 Byte
