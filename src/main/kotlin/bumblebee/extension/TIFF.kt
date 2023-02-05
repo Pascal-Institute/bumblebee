@@ -84,18 +84,21 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private fun extractRasterImage(tag: Tag) {
 
         val stripCount = tag.dataCount
-        var stripOffset = byteToInt(tag.dataOffset)
+        val firstStripOffset = byteToInt(tag.dataOffset)
+        val lastStripOffset = firstStripOffset + (4 * stripCount)
         this.pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
-        var copy = stripOffset
+        val startIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(firstStripOffset until firstStripOffset + 4)))
+        //width * height / stripCount is needed because of last stripOffset is only single.
+        val endIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(lastStripOffset - 4 until lastStripOffset))) + (width * (height / stripCount))
 
-        for(i : Int in 0 until stripCount){
-            stripOffset += 4
+        when(compressionType){
+            CompressionType.LZW->{
+
+            }
+            else->{
+                pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
+            }
         }
-
-        val startIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(copy until copy+4)))
-        val endIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripOffset- 4 until stripOffset))) + (width * (height / stripCount))
-
-        pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
     }
 
     //Image File Header
@@ -145,6 +148,14 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         var dataType : DataType = DataType.fromByteArray(endianArray(imgFileType,byteArray.sliceArray(2 until 4))) //2 Byte
         var dataCount : Int = byteToInt(endianArray(imgFileType,byteArray.sliceArray(4 until 8))) //4 Byte
         var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12), dataType, dataCount) // 4Byte
+    }
+
+    private class LZW{
+        companion object{
+           fun decode(byteArray: ByteArray){
+
+           }
+        }
     }
 
     private enum class TagType (val byteArray : ByteArray) {
