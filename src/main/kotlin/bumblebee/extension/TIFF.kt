@@ -178,8 +178,13 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
            fun decode(byteArray: ByteArray){
                 var binaryString = ""
                 byteArray.forEach {
-                       binaryString += it.toUByte().toString(2)
+                       binaryString += it.toUByte().toString(2).padStart(8, '0')
                 }
+
+               var length = binaryString.length
+               for(i : Int in 0 until length step 9){
+                    binaryString.subSequence(i, i + 9)
+               }
            }
         }
     }
