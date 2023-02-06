@@ -103,7 +103,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         val stripCount = tag.dataCount
         val firstStripOffset = byteToInt(tag.dataOffset)
         val lastStripOffset = firstStripOffset + (4 * stripCount)
-        val startIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(firstStripOffset until firstStripOffset + 4)))
+        var startIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(firstStripOffset until firstStripOffset + 4)))
         val endIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(lastStripOffset - 4 until lastStripOffset))) +
                 byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripByteCounts + (4 * stripCount) - 4 until stripByteCounts + 4 * stripCount)))
 
@@ -111,7 +111,14 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
         when(compressionType){
             CompressionType.LZW->{
-                pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
+                var offset = 0
+                for(i : Int in 0 until stripCount){
+                    offset = byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripByteCounts + 4 * i until stripByteCounts + 4 * (i + 1))))
+                    var temp = byteArray.sliceArray(startIdx until startIdx + offset)
+                    startIdx += offset
+                    LZW.decode(temp)
+                }
+//              pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
             }
             else->{
                 pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
@@ -169,7 +176,10 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private class LZW{
         companion object{
            fun decode(byteArray: ByteArray){
-
+                var binaryString = ""
+                byteArray.forEach {
+                       binaryString += it.toUByte().toString(2)
+                }
            }
         }
     }
