@@ -1,6 +1,7 @@
 package bumblebee.extension
 
 import bumblebee.core.ImgPix
+import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteToHex
@@ -8,13 +9,25 @@ import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.invert
 import java.nio.ByteBuffer
+import kotlin.math.pow
 
 //TIFF Revision 6.0 / Author : Aldus Corporation
 class TIFF(private var byteArray: ByteArray) : ImgPix() {
-
     private var ifh = IFH()
     private var ifdArray = ArrayList<IFD>()
     private var compressionType = CompressionType.NONE
+    private var rowsPerStrip = 0
+    private var stripByteCounts = 0
+
+    init {
+        imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+            ImgFileType.TIFF_LITTLE
+        }else{
+            ImgFileType.TIFF_BIG
+        }
+        extract()
+    }
+
     companion object{
 
         private fun endianArray(imgFileType: ImgFileType, byteArray: ByteArray) : ByteArray{
@@ -33,7 +46,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
            return when(dataType){
                 DataType.SHORT -> {
-                    endianArray(imgFileType, byteArray.sliceArray(0 until 2)).plus(byteArray.sliceArray(2 until byteArray.size))
+                    endianArray(imgFileType, byteArray.sliceArray(0 until 2)) + byteArray.sliceArray(2 until byteArray.size)
                 }
                 else->{
                     endianArray(imgFileType, byteArray)
@@ -51,24 +64,32 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     }
 
-    init {
-        imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-            ImgFileType.TIFF_LITTLE
-        }else{
-            ImgFileType.TIFF_BIG
-        }
-        extract()
-    }
-
     override fun extract() {
+
         ifh.extract(imgFileType, ifdArray, byteArray)
+
+        //don't need to make endianArray from here
         ifdArray.forEach {
             it.tagArray.forEach {tag->
                 when(tag.tagId){
                     TagType.IMAGE_WIDTH -> metaData.width = byteToInt(tag.dataOffset.sliceArray(0 until 2))
                     TagType.IMAGE_LENGTH -> metaData.height = byteToInt(tag.dataOffset.sliceArray(0 until 2))
-                    TagType.SAMPLES_PER_PIXEL -> bytesPerPixel = byteToInt(tag.dataOffset.sliceArray(0 until 2))
-                    TagType.COMPRESSION -> compressionType = CompressionType.fromInt(byteToInt(tag.dataOffset.sliceArray(0 until 2)))
+                    TagType.SAMPLES_PER_PIXEL -> {
+                        bytesPerPixel = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                        if(bytesPerPixel == 3){
+                            metaData.colorType = ColorType.TRUE_COLOR
+                        }
+                    }
+                    TagType.COMPRESSION -> {
+                        compressionType = CompressionType.fromInt(byteToInt(tag.dataOffset.sliceArray(0 until 2)))
+                    }
+                    TagType.ROWS_PER_STRIP -> {
+                        rowsPerStrip = byteToInt(tag.dataOffset.sliceArray(0 until 2))
+                    }
+                    TagType.STRIP_BYTE_COUNTS -> {
+                        stripByteCounts = byteToInt(tag.dataOffset)
+                    }
+                    TagType.BITS_PER_SAMPLE -> {}
                     else -> {}
                 }
             }
@@ -84,18 +105,30 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private fun extractRasterImage(tag: Tag) {
 
         val stripCount = tag.dataCount
-        var stripOffset = byteToInt(tag.dataOffset)
+        val firstStripOffset = byteToInt(tag.dataOffset)
+        val lastStripOffset = firstStripOffset + (4 * stripCount)
+        var startIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(firstStripOffset until firstStripOffset + 4)))
+        val endIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(lastStripOffset - 4 until lastStripOffset))) +
+                byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripByteCounts + (4 * stripCount) - 4 until stripByteCounts + 4 * stripCount)))
+
         this.pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
-        var copy = stripOffset
 
-        for(i : Int in 0 until stripCount){
-            stripOffset += 4
+        when(compressionType){
+            CompressionType.LZW->{
+                var offset = 0
+                var tempByteArray = byteArrayOf()
+                println(stripCount)
+                for(i : Int in 0 until stripCount){
+                    offset = byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripByteCounts + 4 * i until stripByteCounts + 4 * (i + 1))))
+                    tempByteArray += LZW.decode(byteArray.sliceArray(startIdx until startIdx + offset))
+                    startIdx += offset
+                }
+                pixelBufferArray.put(tempByteArray)
+            }
+            else->{
+                pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
+            }
         }
-
-        val startIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(copy until copy+4)))
-        val endIdx = byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripOffset- 4 until stripOffset))) + (width * (height / stripCount))
-
-        pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
     }
 
     //Image File Header
@@ -110,15 +143,14 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             ifdOffset = byteArray.sliceArray(4 until 8)
 
             val startIdx = if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                hexToInt(byteToHex(invert(ifdOffset)))
+                  hexToInt(byteToHex(invert(ifdOffset)))
             }else{
-                hexToInt(byteToHex(ifdOffset))
+                 hexToInt(byteToHex(ifdOffset))
             }
 
             do{
                 val ifd = IFD(imgFileType, byteArray.sliceArray(startIdx until byteArray.size))
                 ifdArray.add(ifd)
-
             }while(!ifd.nextIFDOffset.contentEquals(byteArrayOf(0, 0, 0, 0)))
         }
     }
@@ -140,11 +172,77 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     }
 
     private class Tag(imgFileType: ImgFileType, byteArray: ByteArray) {
-
         var tagId : TagType = TagType.fromByteArray(endianArray(imgFileType, byteArray, 0, 2))
         var dataType : DataType = DataType.fromByteArray(endianArray(imgFileType,byteArray.sliceArray(2 until 4))) //2 Byte
         var dataCount : Int = byteToInt(endianArray(imgFileType,byteArray.sliceArray(4 until 8))) //4 Byte
         var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12), dataType, dataCount) // 4Byte
+    }
+
+    private class LZW{
+        companion object{
+//           1. Initialize the dictionary with the standard 9-bit
+//           2. Read the compressed code from the file one at a time.
+//           3. If the code is in the dictionary, output the corresponding sequence of characters.
+//           4. If the code is not in the dictionary, output the sequence corresponding to the previous code, followed by the first character of that sequence.
+//           5. Add the sequence corresponding to the previous code, followed by the first character of the current code, to the dictionary.
+//           6. Repeat steps 3-5 until all codes have been read and decoded.
+            fun decode(encodedData: ByteArray) : ByteArray {
+                var byteArrays = byteArrayOf()
+                var dictionary = hashMapOf<String, ByteArray>()
+                var binaryString = ""
+
+                encodedData.forEach {
+                    binaryString += it.toUByte().toString(2).padStart(8, '0')
+                }
+
+                var weight = 9
+
+                // initialize dictionary
+                for (i : Int in 0 until 256) {
+                    dictionary[i.toString(2).padStart(weight, '0')] = byteArrayOf(i.toByte())
+                }
+
+                var length = binaryString.length
+                var firstSequence = 1
+                for (i : Int in 0 until length - weight step weight) {
+                    var currentCode = binaryString.slice(i until i + weight)
+
+                    if (currentCode.contains("100000000")){
+                        //SOH
+                        dictionary = hashMapOf<String, ByteArray>()
+                        for (i : Int in 0 until 256) {
+                            dictionary[i.toString(2).padStart(weight, '0')] = byteArrayOf(i.toByte())
+                        }
+                        continue
+                    }else if (currentCode.contains("100000001")) {
+                        //EOF
+                        break
+                    }else{
+                        if (dictionary.containsKey(currentCode)) {
+                            byteArrays += dictionary[currentCode]!!
+                            firstSequence = 1
+                        } else {
+                            println(binaryString.slice(i until i + weight))
+                            var previousCode = binaryString.slice(i - weight until i)
+                            println(previousCode)
+                            var previousSequence = dictionary[previousCode]!!
+                            var newSequence = previousSequence + dictionary[binaryString.slice(i - weight * firstSequence until i - weight * (firstSequence - 1))]!!
+                            dictionary[binaryString.slice(i  until i + weight)] = newSequence
+                            byteArrays += newSequence
+                            firstSequence++
+                        }
+
+                        if(dictionary.size >= 2.0.pow(weight) -2){
+                            weight++
+                        }
+
+                    }
+                }
+                println(byteArrays.size)
+                return byteArrays
+            }
+
+        }
     }
 
     private enum class TagType (val byteArray : ByteArray) {

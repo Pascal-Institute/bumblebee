@@ -15,12 +15,12 @@ import kotlin.experimental.inv
 class ImgProcess {
     companion object{
         fun set(imgPix : ImgPix, row : Int, col : Int, color : Color) : ImgPix {
-            if (imgPix.metaData.colorType != color.colorType){
+            if (imgPix.colorType != color.colorType){
                 System.err.println("ERROR : ColorType does not match")
             }else{
                 val byteArray : ByteArray = colorToByte(color)
                 for (i : Int in 0 until imgPix.bytesPerPixel){
-                    imgPix.pixelBufferArray.put(i + imgPix.bytesPerPixel * col + (imgPix.metaData.width * imgPix.bytesPerPixel) * row, byteArray[i])
+                    imgPix.pixelBufferArray.put(i + imgPix.bytesPerPixel * col + (imgPix.width * imgPix.bytesPerPixel) * row, byteArray[i])
                 }
             }
             return imgPix
@@ -30,12 +30,12 @@ class ImgProcess {
 
             val bytesPerPixel = imgPix.bytesPerPixel
             val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
-            val startIdx = row * (imgPix.metaData.width * bytesPerPixel) + col * bytesPerPixel
+            val startIdx = row * (imgPix.width * bytesPerPixel) + col * bytesPerPixel
 
             for(i : Int in 0 until height){
                 for(j : Int in 0 until width){
                     for(k : Int in 0 until bytesPerPixel){
-                        pixelBufferArray.put(imgPix.pixelBufferArray.get(startIdx  + j * bytesPerPixel + k + (i * bytesPerPixel * imgPix.metaData.width)))
+                        pixelBufferArray.put(imgPix.pixelBufferArray.get(startIdx  + j * bytesPerPixel + k + (i * bytesPerPixel * imgPix.width)))
                     }
                 }
             }
@@ -126,7 +126,7 @@ class ImgProcess {
             val height = imgPix.height
             val bytesPerPixel = imgPix.bytesPerPixel
 
-            if(imgPix.metaData.colorType != ColorType.GRAY_SCALE){
+            if(imgPix.colorType != ColorType.GRAY_SCALE){
                toGrayScale(imgPix)
             }
 
@@ -139,7 +139,7 @@ class ImgProcess {
         }
 
         fun threshold(imgPix : ImgPix, thresholdType : ThresholdType) : ImgPix{
-            if(imgPix.metaData.colorType != ColorType.GRAY_SCALE){
+            if(imgPix.colorType != ColorType.GRAY_SCALE){
                 toGrayScale(imgPix)
             }
 
@@ -166,7 +166,7 @@ class ImgProcess {
                 }
 
                 PadType.AVERAGE -> {
-                    var averagePixel = Histogram(imgPix).getAverage(imgPix.metaData.colorType)
+                    var averagePixel = Histogram(imgPix).getAverage(imgPix.colorType)
 
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){

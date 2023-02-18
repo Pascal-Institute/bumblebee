@@ -15,7 +15,7 @@ data class Histogram(val imgPix: ImgPix) {
 
     private fun extract(){
 
-        when(imgPix.metaData.colorType){
+        when(imgPix.colorType){
 
             ColorType.GRAY_SCALE->{
                 channelG = MutableList(256) { 0 }

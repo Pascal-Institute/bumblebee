@@ -58,29 +58,32 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         }
 
         val outputStream = ByteArrayOutputStream()
-        var tempByteArray = ByteArray(0)
+        var byteArray = ByteArray(0)
 
-        chunkArray.forEach{ it ->
+        chunkArray.forEach{
             when(byteToHex(it.type)){
                 byteToHex(ChunkType.IHDR.byte) -> {
-                    metaData.width = it.getWidth(it.data.sliceArray(0..3))
-                    metaData.height = it.getHeight(it.data.sliceArray(4..7))
+                    metaData.width = it.getWidth(it.data.sliceArray(0 until 4))
+                    metaData.height = it.getHeight(it.data.sliceArray(4 until 8))
                     bitDepth = it.getBitDepth(it.data[8])
                     metaData.colorType = ColorType.fromInt(it.getColorType(it.data[9]))
                     bytesPerPixel = metaData.colorType.colorSpace * (bitDepth / OCTA)
                 }
 
                 byteToHex(ChunkType.IDAT.byte) -> {
-
-                    if(tempByteArray.isNotEmpty()){
-                        tempByteArray += it.data
+                    if(byteArray.isNotEmpty()){
+                        byteArray += it.data
                     }else{
-                        tempByteArray = it.data
+                        byteArray = it.data
                     }
+                }
+
+                byteToHex(ChunkType.PLTE.byte)->{
                 }
             }
         }
-        outputStream.write(tempByteArray)
+
+        outputStream.write(byteArray)
         val decompressedByteBuffer = decompress(outputStream.toByteArray())
         offFilter(decompressedByteBuffer)
     }
@@ -150,9 +153,8 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
     }
 
     private fun up(byteArray: ByteArray, from: Int) {
-
         var idx = from
-        byteArray.forEachIndexed { index, it ->
+        byteArray.forEach{
             pixelBufferArray.put((pixelBufferArray.get(idx - (metaData.width * bytesPerPixel)) + it).toByte())
             idx++
         }

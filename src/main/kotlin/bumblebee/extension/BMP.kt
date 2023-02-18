@@ -15,9 +15,7 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
 
     init {
         imgFileType = ImgFileType.BMP
-
         extract()
-
     }
 
     private class Header{
@@ -61,8 +59,6 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
             yPixelsPerM = invert(byteArray.sliceArray(28 until 32))
             colorsUsed = invert(byteArray.sliceArray(32 until 36))
             colorsImportant = invert(byteArray.sliceArray(36 until 40))
-
-
         }
     }
 
@@ -75,14 +71,13 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
         metaData.colorType = if (hexToInt(byteToHex(infoHeader.bitCount)) == 24) {
             ColorType.TRUE_COLOR
         } else {
-            println()
             ColorType.GRAY_SCALE
         }
-        bytesPerPixel = metaData.colorType.colorSpace
-        pixelBufferArray = ByteBuffer.allocate(metaData.width * metaData.height * bytesPerPixel)
+        bytesPerPixel = colorType.colorSpace
+        pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
 
         byteArray.sliceArray(54 until byteArray.size).forEachIndexed { index, byte ->
-            pixelBufferArray.put( bytesPerPixel * metaData.width * (metaData.height - (index / (metaData.width * bytesPerPixel)) - 1) + ((index % (metaData.width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
+            pixelBufferArray.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
         }
 
 
