@@ -2,7 +2,6 @@
 
 import bumblebee.FileManager
 import bumblebee.util.Converter.Companion.byteToHex
-import bumblebee.ImgExtractor
 import bumblebee.color.Color
 import bumblebee.type.*
 import bumblebee.util.Histogram
@@ -14,9 +13,9 @@ import java.nio.ByteBuffer
 import javax.swing.*
 
 
- open class ImgPix() : ImgExtractor, Cloneable {
+ abstract class ImgPix() : Cloneable {
 
-    var metaData = MetaData(0, 0, ColorType.GRAY_SCALE)
+    val metaData = MetaData(0, 0, ColorType.GRAY_SCALE)
     protected val OCTA = 8
     var bytesPerPixel = 0
     var bitDepth = 0
@@ -117,9 +116,7 @@ import javax.swing.*
         frame.pack()
     }
 
-     override fun extract() {
-         TODO("Not yet implemented")
-     }
+     abstract fun extract()
 
      fun set(row : Int, col : Int, color : Color) : ImgPix {
          return ImgProcess.set(this, row, col, color)
