@@ -13,7 +13,7 @@ import java.nio.ByteBuffer
 import javax.swing.*
 
 
- abstract class ImgPix() : Cloneable {
+ open class ImgPix() : Cloneable {
 
     val metaData = MetaData(0, 0, ColorType.GRAY_SCALE)
     protected val OCTA = 8
@@ -115,8 +115,7 @@ import javax.swing.*
         frame.add(pane)
         frame.pack()
     }
-
-     abstract fun extract()
+     open fun extract(){}
 
      fun set(row : Int, col : Int, color : Color) : ImgPix {
          return ImgProcess.set(this, row, col, color)
