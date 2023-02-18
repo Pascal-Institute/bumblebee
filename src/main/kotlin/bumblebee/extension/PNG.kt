@@ -58,7 +58,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         }
 
         val outputStream = ByteArrayOutputStream()
-        var tempByteArray = ByteArray(0)
+        var byteArray = ByteArray(0)
 
         chunkArray.forEach{
             when(byteToHex(it.type)){
@@ -71,10 +71,10 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                 }
 
                 byteToHex(ChunkType.IDAT.byte) -> {
-                    if(tempByteArray.isNotEmpty()){
-                        tempByteArray += it.data
+                    if(byteArray.isNotEmpty()){
+                        byteArray += it.data
                     }else{
-                        tempByteArray = it.data
+                        byteArray = it.data
                     }
                 }
 
@@ -82,7 +82,8 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                 }
             }
         }
-        outputStream.write(tempByteArray)
+
+        outputStream.write(byteArray)
         val decompressedByteBuffer = decompress(outputStream.toByteArray())
         offFilter(decompressedByteBuffer)
     }

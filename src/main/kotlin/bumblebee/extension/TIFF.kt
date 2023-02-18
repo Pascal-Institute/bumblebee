@@ -9,15 +9,24 @@ import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.invert
 import java.nio.ByteBuffer
+import kotlin.math.pow
 
 //TIFF Revision 6.0 / Author : Aldus Corporation
 class TIFF(private var byteArray: ByteArray) : ImgPix() {
-
     private var ifh = IFH()
     private var ifdArray = ArrayList<IFD>()
     private var compressionType = CompressionType.NONE
     private var rowsPerStrip = 0
     private var stripByteCounts = 0
+
+    init {
+        imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+            ImgFileType.TIFF_LITTLE
+        }else{
+            ImgFileType.TIFF_BIG
+        }
+        extract()
+    }
 
     companion object{
 
@@ -37,7 +46,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
            return when(dataType){
                 DataType.SHORT -> {
-                    endianArray(imgFileType, byteArray.sliceArray(0 until 2)).plus(byteArray.sliceArray(2 until byteArray.size))
+                    endianArray(imgFileType, byteArray.sliceArray(0 until 2)) + byteArray.sliceArray(2 until byteArray.size)
                 }
                 else->{
                     endianArray(imgFileType, byteArray)
@@ -55,16 +64,8 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     }
 
-    init {
-        extract()
-    }
-
     override fun extract() {
-        imgFileType = if (byteArray.sliceArray(0 until 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-            ImgFileType.TIFF_LITTLE
-        }else{
-            ImgFileType.TIFF_BIG
-        }
+
         ifh.extract(imgFileType, ifdArray, byteArray)
 
         //don't need to make endianArray from here
@@ -79,13 +80,16 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                             metaData.colorType = ColorType.TRUE_COLOR
                         }
                     }
-                    TagType.COMPRESSION -> compressionType = CompressionType.fromInt(byteToInt(tag.dataOffset.sliceArray(0 until 2)))
+                    TagType.COMPRESSION -> {
+                        compressionType = CompressionType.fromInt(byteToInt(tag.dataOffset.sliceArray(0 until 2)))
+                    }
                     TagType.ROWS_PER_STRIP -> {
                         rowsPerStrip = byteToInt(tag.dataOffset.sliceArray(0 until 2))
                     }
                     TagType.STRIP_BYTE_COUNTS -> {
                         stripByteCounts = byteToInt(tag.dataOffset)
                     }
+                    TagType.BITS_PER_SAMPLE -> {}
                     else -> {}
                 }
             }
@@ -112,13 +116,14 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         when(compressionType){
             CompressionType.LZW->{
                 var offset = 0
+                var tempByteArray = byteArrayOf()
+                println(stripCount)
                 for(i : Int in 0 until stripCount){
                     offset = byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripByteCounts + 4 * i until stripByteCounts + 4 * (i + 1))))
-                    var temp = byteArray.sliceArray(startIdx until startIdx + offset)
+                    tempByteArray += LZW.decode(byteArray.sliceArray(startIdx until startIdx + offset))
                     startIdx += offset
-                    LZW.decode(temp)
                 }
-//              pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
+                pixelBufferArray.put(tempByteArray)
             }
             else->{
                 pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
@@ -175,17 +180,68 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     private class LZW{
         companion object{
-           fun decode(byteArray: ByteArray){
+//           1. Initialize the dictionary with the standard 9-bit
+//           2. Read the compressed code from the file one at a time.
+//           3. If the code is in the dictionary, output the corresponding sequence of characters.
+//           4. If the code is not in the dictionary, output the sequence corresponding to the previous code, followed by the first character of that sequence.
+//           5. Add the sequence corresponding to the previous code, followed by the first character of the current code, to the dictionary.
+//           6. Repeat steps 3-5 until all codes have been read and decoded.
+            fun decode(encodedData: ByteArray) : ByteArray {
+                var byteArrays = byteArrayOf()
+                var dictionary = hashMapOf<String, ByteArray>()
                 var binaryString = ""
-                byteArray.forEach {
-                       binaryString += it.toUByte().toString(2).padStart(8, '0')
+
+                encodedData.forEach {
+                    binaryString += it.toUByte().toString(2).padStart(8, '0')
                 }
 
-               var length = binaryString.length
-               for(i : Int in 0 until length step 9){
-                    binaryString.subSequence(i, i + 9)
-               }
-           }
+                var weight = 9
+
+                // initialize dictionary
+                for (i : Int in 0 until 256) {
+                    dictionary[i.toString(2).padStart(weight, '0')] = byteArrayOf(i.toByte())
+                }
+
+                var length = binaryString.length
+                var firstSequence = 1
+                for (i : Int in 0 until length - weight step weight) {
+                    var currentCode = binaryString.slice(i until i + weight)
+
+                    if (currentCode.contains("100000000")){
+                        //SOH
+                        dictionary = hashMapOf<String, ByteArray>()
+                        for (i : Int in 0 until 256) {
+                            dictionary[i.toString(2).padStart(weight, '0')] = byteArrayOf(i.toByte())
+                        }
+                        continue
+                    }else if (currentCode.contains("100000001")) {
+                        //EOF
+                        break
+                    }else{
+                        if (dictionary.containsKey(currentCode)) {
+                            byteArrays += dictionary[currentCode]!!
+                            firstSequence = 1
+                        } else {
+                            println(binaryString.slice(i until i + weight))
+                            var previousCode = binaryString.slice(i - weight until i)
+                            println(previousCode)
+                            var previousSequence = dictionary[previousCode]!!
+                            var newSequence = previousSequence + dictionary[binaryString.slice(i - weight * firstSequence until i - weight * (firstSequence - 1))]!!
+                            dictionary[binaryString.slice(i  until i + weight)] = newSequence
+                            byteArrays += newSequence
+                            firstSequence++
+                        }
+
+                        if(dictionary.size >= 2.0.pow(weight) -2){
+                            weight++
+                        }
+
+                    }
+                }
+                println(byteArrays.size)
+                return byteArrays
+            }
+
         }
     }
 
