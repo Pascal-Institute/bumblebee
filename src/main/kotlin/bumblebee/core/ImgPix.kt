@@ -18,14 +18,15 @@ import javax.swing.*
 
     var metaData = MetaData(0, 0, ColorType.GRAY_SCALE)
 
-    //PNG
     protected val OCTA = 8
     var bytesPerPixel = 0
     var bitDepth = 0
     val width : Int
         get() = metaData.width
-     val height : Int
+    val height : Int
         get() = metaData.height
+    val colorType : ColorType
+        get() = metaData.colorType
 
     private var manipulatedInstance = false
     var pixelBufferArray: ByteBuffer = ByteBuffer.allocate(0)
@@ -43,7 +44,7 @@ import javax.swing.*
 
         metaData.width = imgPix.width
         metaData.height = imgPix.height
-        metaData.colorType = imgPix.metaData.colorType
+        metaData.colorType = imgPix.colorType
         bytesPerPixel = imgPix.bytesPerPixel
         bitDepth = imgPix.bitDepth
         this.pixelBufferArray = imgPix.pixelBufferArray
@@ -55,9 +56,9 @@ import javax.swing.*
     }
 
     fun get(row : Int, col : Int) : String{
-        val byteArray = ByteArray((metaData.colorType.colorSpace * (bitDepth/OCTA)))
+        val byteArray = ByteArray((colorType.colorSpace * (bitDepth/OCTA)))
         for (i : Int in 0 until bytesPerPixel){
-            byteArray[i] = pixelBufferArray.get(i + bytesPerPixel * col + (metaData.width * bytesPerPixel) * row)
+            byteArray[i] = pixelBufferArray.get(i + bytesPerPixel * col + (width * bytesPerPixel) * row)
         }
         return byteToHex(byteArray)
     }
@@ -70,25 +71,30 @@ import javax.swing.*
         val buffer = DataBufferByte(pixelBufferArray.array(), pixelBufferArray.array().size)
 
         val bufferedImage : BufferedImage
-        when(metaData.colorType){
+        when(colorType){
             ColorType.GRAY_SCALE ->{
-                bufferedImage = BufferedImage(metaData.width, metaData.height, BufferedImage.TYPE_BYTE_GRAY)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, metaData.width, metaData.height, metaData.width * 1, 1, intArrayOf(0), null)
+                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 1, 1, intArrayOf(0), null)
             }
 
             ColorType.TRUE_COLOR ->{
-               bufferedImage = BufferedImage(metaData.width, metaData.height, BufferedImage.TYPE_INT_RGB)
-               bufferedImage.data = Raster.createInterleavedRaster(buffer, metaData.width, metaData.height, metaData.width * 3, 3, intArrayOf(0,1,2), null)
+               bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+               bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 3, 3, intArrayOf(0,1,2), null)
             }
 
             ColorType.TRUE_COLOR_ALPHA->{
-                bufferedImage = BufferedImage(metaData.width, metaData.height, BufferedImage.TYPE_INT_ARGB)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, metaData.width, metaData.height, metaData.width * 4, 4, intArrayOf(0,1,2,3), null)
+                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(0,1,2,3), null)
+            }
+
+            ColorType.INDEXED_COLOR->{
+                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 1, 1, intArrayOf(0), null)
             }
 
             else -> {
-                bufferedImage = BufferedImage(metaData.width, metaData.height, BufferedImage.TYPE_INT_RGB)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, metaData.width, metaData.height, metaData.width * 3, 3, intArrayOf(0,1,2), null)
+                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 3, 3, intArrayOf(0,1,2), null)
             }
         }
 
@@ -108,7 +114,7 @@ import javax.swing.*
             }
         }
 
-        pane.preferredSize = Dimension(metaData.width, metaData.height)
+        pane.preferredSize = Dimension(width, height)
         frame.add(pane)
         frame.pack()
     }
