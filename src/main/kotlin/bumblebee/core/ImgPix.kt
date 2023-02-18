@@ -17,7 +17,6 @@ import javax.swing.*
  open class ImgPix() : ImgExtractor, Cloneable {
 
     var metaData = MetaData(0, 0, ColorType.GRAY_SCALE)
-
     protected val OCTA = 8
     var bytesPerPixel = 0
     var bitDepth = 0
@@ -41,7 +40,6 @@ import javax.swing.*
 
     constructor(filePath : String) : this() {
        var imgPix  = FileManager.read(filePath)
-
         metaData.width = imgPix.width
         metaData.height = imgPix.height
         metaData.colorType = imgPix.colorType
