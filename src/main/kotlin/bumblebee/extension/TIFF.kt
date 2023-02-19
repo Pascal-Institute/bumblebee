@@ -143,9 +143,9 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             ifdOffset = byteArray.sliceArray(4 until 8)
 
             val startIdx = if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                  hexToInt(byteToHex(invert(ifdOffset)))
+                  byteToInt(invert(ifdOffset))
             }else{
-                 hexToInt(byteToHex(ifdOffset))
+                 byteToInt(ifdOffset)
             }
 
             do{

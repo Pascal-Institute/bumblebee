@@ -5,9 +5,8 @@ import bumblebee.type.ColorType
 import bumblebee.type.OrientationType
 import bumblebee.type.PadType
 import bumblebee.type.ThresholdType
-import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.colorToByte
-import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Histogram
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
@@ -131,7 +130,7 @@ class ImgProcess {
             }
 
             for(i : Int in 0 until width * height * bytesPerPixel){
-                val byte = if (hexToInt(byteToHex(imgPix.pixelBufferArray.get(i))) > level) (255).toByte() else (0).toByte()
+                val byte = if (byteToInt(imgPix.pixelBufferArray.get(i)) > level) (255).toByte() else (0).toByte()
                 imgPix.pixelBufferArray.put(i, byte)
             }
 
