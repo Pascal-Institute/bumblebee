@@ -85,8 +85,8 @@ import javax.swing.*
             }
 
             ColorType.INDEXED_COLOR->{
-                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 1, 1, intArrayOf(0), null)
+                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(0,1,2,3), null)
             }
 
             else -> {
@@ -96,7 +96,7 @@ import javax.swing.*
         }
 
         val frame = JFrame()
-        val img: Image = frame.toolkit.getImage("bumblebee_icon.png")
+        val img: Image = frame.toolkit.getImage("src/main/resources/bumblebee_icon.png")
         frame.iconImage = img
         frame.defaultCloseOperation = WindowConstants.EXIT_ON_CLOSE
         frame.title = "image"

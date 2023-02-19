@@ -1,7 +1,6 @@
 import bumblebee.FileManager
-import bumblebee.application.ByteViewer
+import bumblebee.core.ImgPix
 
 fun main(){
-    val imgPix = FileManager.read("src/main/resources/blackbuck.bmp")
-    imgPix.show()
+    ImgPix("src/main/resources/f14.tif").show()
 }
