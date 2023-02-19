@@ -94,26 +94,13 @@ class Converter {
         }
 
         fun byteToHex(byte : Byte) : String{
-
-            var string = ""
-            val first =  byte.toUByte().toInt() / 16
-            val second = byte.toUByte().toInt() % 16
-
-            string += String.format("%01X", first)
-            string += String.format("%01X", second)
-
-            return string
+            return String.format("%02X", byte.toUByte().toInt())
         }
         fun byteToHex(byteArray : ByteArray) : String{
             var string = ""
 
             byteArray.forEach {
-
-                val first =  it.toUByte().toInt() / 16
-                val second = it.toUByte().toInt() % 16
-
-                string += String.format("%01X", first)
-                string += String.format("%01X", second)
+                string += String.format("%02X", it.toUByte().toInt())
             }
 
             return string
