@@ -149,9 +149,14 @@ import javax.swing.*
          return ImgProcess.threshold(this, level)
      }
 
-     fun pad(padType: PadType, padPixelSize : Int) : ImgPix{
+     fun pad(padType: PadType, padSize : Int) : ImgPix{
          manipulatedInstance = true
-         return ImgProcess.pad(this, padType, padPixelSize)
+         return ImgProcess.pad(this, padType, padSize)
+     }
+
+     fun filter(filterType: FilterType, filterSize : Int) : ImgPix{
+         manipulatedInstance = true
+         return ImgProcess.filter(this, filterType, filterSize)
      }
 
      fun histogram() : Histogram{
