@@ -4,6 +4,7 @@ import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.invert
 import java.nio.ByteBuffer
@@ -65,10 +66,9 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
     override fun extract() {
         header.extract(byteArray.sliceArray(0 until 14))
         infoHeader.extract(byteArray.sliceArray(14 until 54))
-
-        metaData.width = hexToInt(byteToHex(infoHeader.width))
-        metaData.height = hexToInt(byteToHex(infoHeader.height))
-        metaData.colorType = if (hexToInt(byteToHex(infoHeader.bitCount)) == 24) {
+        metaData.width = byteToInt(infoHeader.width)
+        metaData.height = byteToInt(infoHeader.height)
+        metaData.colorType = if (byteToInt(infoHeader.bitCount) == 24) {
             ColorType.TRUE_COLOR
         } else {
             ColorType.GRAY_SCALE
