@@ -159,6 +159,13 @@ class ImgProcess {
 
             when(padType){
                 PadType.ZERO -> {
+                    for(i : Int in 0 until height){
+                        for(j : Int in 0 until width){
+                            for(k : Int in 0 until bytesPerPixel){
+                                pixelBufferArray.put(0)
+                            }
+                        }
+                    }
                 }
 
                 PadType.AVERAGE -> {
@@ -177,8 +184,8 @@ class ImgProcess {
             imgPix.metaData.width = width
             imgPix.metaData.height = height
 
-            for(i : Int in padSize * bytesPerPixel until height - padSize * bytesPerPixel){
-                for(j : Int in padSize * bytesPerPixel until width - padSize * bytesPerPixel){
+            for(i : Int in padSize until height - padSize){
+                for(j : Int in padSize  until width - padSize){
                     for(k : Int in 0 until bytesPerPixel){
                         pixelBufferArray.put(j * bytesPerPixel + k + i * bytesPerPixel * width,
                             imgPix.pixelBufferArray.get((j-padSize) * bytesPerPixel + k + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
@@ -199,6 +206,7 @@ class ImgProcess {
                     val width = imgPix.width
                     val height = imgPix.height
                     val tempImgPix = imgPix.pad(PadType.AVERAGE,filterSize/2)
+                    println(tempImgPix.width)
                     val tempPixelBufferArray = tempImgPix.pixelBufferArray
                     val pixelBufferArray = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
 
@@ -235,11 +243,11 @@ class ImgProcess {
                                 var list = mutableListOf<UByte>()
                                 for(l : Int in 0 until filterSize){
                                     for(m : Int in 0 until filterSize){
-                                        list.add(tempPixelBufferArray.get(((i - filterSize/2 + m) * imgPix.bytesPerPixel * tempImgPix.width) + ((j - filterSize/2 + l) * imgPix.bytesPerPixel) + k).toUByte())
+                                        list.add(tempPixelBufferArray.get(((i - filterSize/2 + l) * imgPix.bytesPerPixel * tempImgPix.width) + ((j - filterSize/2 + m) * imgPix.bytesPerPixel) + k).toUByte())
                                     }
                                 }
                                 list.sort()
-                                pixelBufferArray.put((list.get((filterSize * filterSize)/2)).toByte())
+                                pixelBufferArray.put((list[(filterSize * filterSize)/2]).toByte())
                             }
                         }
                     }
