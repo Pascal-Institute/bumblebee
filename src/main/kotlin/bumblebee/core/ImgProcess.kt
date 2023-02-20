@@ -174,7 +174,6 @@ class ImgProcess {
                 }
             }
 
-
             imgPix.metaData.width = width
             imgPix.metaData.height = height
 
@@ -193,7 +192,6 @@ class ImgProcess {
         }
 
         fun filter(imgPix: ImgPix, filterType : FilterType, filterSize : Int) : ImgPix{
-
 
             when(filterType){
                 FilterType.AVERAGE->{
@@ -214,6 +212,34 @@ class ImgProcess {
                                     }
                                 }
                                 pixelBufferArray.put((intValue/(filterSize*filterSize)).toByte())
+                            }
+                        }
+                    }
+
+                    imgPix.metaData.width = width
+                    imgPix.metaData.height = height
+                    imgPix.pixelBufferArray = pixelBufferArray
+                }
+
+                FilterType.MEDIAN->{
+
+                    val width = imgPix.width
+                    val height = imgPix.height
+                    val tempImgPix = imgPix.pad(PadType.AVERAGE,filterSize/2)
+                    val tempPixelBufferArray = tempImgPix.pixelBufferArray
+                    val pixelBufferArray = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
+
+                    for(i : Int in filterSize/2 until height + filterSize/2){
+                        for(j : Int in filterSize/2 until width + filterSize/2){
+                            for(k : Int in 0 until imgPix.bytesPerPixel){
+                                var list = mutableListOf<UByte>()
+                                for(l : Int in 0 until filterSize){
+                                    for(m : Int in 0 until filterSize){
+                                        list.add(tempPixelBufferArray.get(((i - filterSize/2 + m) * imgPix.bytesPerPixel * tempImgPix.width) + ((j - filterSize/2 + l) * imgPix.bytesPerPixel) + k).toUByte())
+                                    }
+                                }
+                                list.sort()
+                                pixelBufferArray.put((list.get((filterSize * filterSize)/2)).toByte())
                             }
                         }
                     }
