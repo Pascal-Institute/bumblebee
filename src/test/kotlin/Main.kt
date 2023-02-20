@@ -1,7 +1,10 @@
 import bumblebee.FileManager
-import bumblebee.application.ByteViewer
+import bumblebee.core.ImgPix
+import bumblebee.core.ImgProcess
+import bumblebee.type.FilterType
 
 fun main(){
-    val imgPix = FileManager.read("src/main/resources/blackbuck.bmp")
+    val imgPix = ImgPix("src/main/resources/lenna.png").filter(FilterType.AVERAGE, 15)
     imgPix.show()
 }
+

@@ -1,13 +1,9 @@
 package bumblebee.core
 
 import bumblebee.color.Color
-import bumblebee.type.ColorType
-import bumblebee.type.OrientationType
-import bumblebee.type.PadType
-import bumblebee.type.ThresholdType
-import bumblebee.util.Converter.Companion.byteToHex
+import bumblebee.type.*
+import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.colorToByte
-import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Histogram
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
@@ -131,7 +127,7 @@ class ImgProcess {
             }
 
             for(i : Int in 0 until width * height * bytesPerPixel){
-                val byte = if (hexToInt(byteToHex(imgPix.pixelBufferArray.get(i))) > level) (255).toByte() else (0).toByte()
+                val byte = if (byteToInt(imgPix.pixelBufferArray.get(i)) > level) (255).toByte() else (0).toByte()
                 imgPix.pixelBufferArray.put(i, byte)
             }
 
@@ -153,16 +149,23 @@ class ImgProcess {
             return imgPix
         }
 
-        fun  pad(imgPix: ImgPix, padType: PadType, padPixelSize: Int) : ImgPix{
+        fun  pad(imgPix: ImgPix, padType: PadType, padSize: Int) : ImgPix{
 
-            val width = padPixelSize + imgPix.width + padPixelSize
-            val height = padPixelSize + imgPix.height + padPixelSize
+            val width = padSize + imgPix.width + padSize
+            val height = padSize + imgPix.height + padSize
             val bytesPerPixel = imgPix.bytesPerPixel
 
             val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
 
             when(padType){
                 PadType.ZERO -> {
+                    for(i : Int in 0 until height){
+                        for(j : Int in 0 until width){
+                            for(k : Int in 0 until bytesPerPixel){
+                                pixelBufferArray.put(0)
+                            }
+                        }
+                    }
                 }
 
                 PadType.AVERAGE -> {
@@ -178,20 +181,89 @@ class ImgProcess {
                 }
             }
 
-
             imgPix.metaData.width = width
             imgPix.metaData.height = height
 
-            for(i : Int in padPixelSize * bytesPerPixel until height - padPixelSize * bytesPerPixel){
-                for(j : Int in padPixelSize * bytesPerPixel until width - padPixelSize * bytesPerPixel){
+            for(i : Int in padSize until height - padSize){
+                for(j : Int in padSize  until width - padSize){
                     for(k : Int in 0 until bytesPerPixel){
                         pixelBufferArray.put(j * bytesPerPixel + k + i * bytesPerPixel * width,
-                            imgPix.pixelBufferArray.get((j-padPixelSize) * bytesPerPixel + k + (i-padPixelSize) * bytesPerPixel * (width - 2 * padPixelSize)))
+                            imgPix.pixelBufferArray.get((j-padSize) * bytesPerPixel + k + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
                     }
                 }
             }
 
             imgPix.pixelBufferArray = pixelBufferArray
+
+            return imgPix
+        }
+
+        fun filter(imgPix: ImgPix, filterType : FilterType, filterSize : Int) : ImgPix{
+
+            when(filterType){
+                FilterType.AVERAGE->{
+                    val width = imgPix.width
+                    val height = imgPix.height
+                    val bytesPerPixel = imgPix.bytesPerPixel
+                    val windowSize = filterSize * filterSize
+                    val halfFilterSize = filterSize / 2
+
+                    val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
+                    val padImgPixWidth = tempImgPix.width
+                    val tempPixelBufferArray = tempImgPix.pixelBufferArray
+                    val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
+
+                    for(i : Int in halfFilterSize until height + halfFilterSize){
+                        for(j : Int in halfFilterSize until width + halfFilterSize){
+                            for(k : Int in 0 until bytesPerPixel){
+                                var intValue = 0
+                                for(l : Int in 0 until windowSize){
+                                       intValue += tempPixelBufferArray.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k).toUByte().toInt()
+                                }
+                                pixelBufferArray.put((intValue/windowSize).toByte())
+                            }
+                        }
+                    }
+
+                    imgPix.metaData.width = width
+                    imgPix.metaData.height = height
+                    imgPix.pixelBufferArray = pixelBufferArray
+                }
+
+                FilterType.MEDIAN->{
+
+                    val width = imgPix.width
+                    val height = imgPix.height
+                    val bytesPerPixel = imgPix.bytesPerPixel
+                    val windowSize = filterSize * filterSize
+                    val middleSize = windowSize/2
+                    val halfFilterSize = filterSize/2
+
+                    val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
+                    val padImgPixWidth = tempImgPix.width
+                    val tempPixelBufferArray = tempImgPix.pixelBufferArray
+                    val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
+
+
+                    for(i : Int in halfFilterSize until height + halfFilterSize){
+                        for(j : Int in halfFilterSize until width + halfFilterSize){
+                            repeat(bytesPerPixel){
+                                k->
+                                var uByteArray = UByteArray(windowSize)
+                                repeat(windowSize){
+                                    l-> uByteArray[l] = (tempPixelBufferArray.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k)).toUByte()
+                                }
+                                uByteArray.sort()
+                                pixelBufferArray.put((uByteArray[middleSize]).toByte())
+                            }
+                        }
+                    }
+
+                    imgPix.metaData.width = width
+                    imgPix.metaData.height = height
+                    imgPix.pixelBufferArray = pixelBufferArray
+                }
+            }
 
             return imgPix
         }

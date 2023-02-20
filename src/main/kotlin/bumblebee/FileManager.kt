@@ -12,33 +12,17 @@ class FileManager {
         fun read(filePath : String) : ImgPix {
             val byteArray = File(filePath).readBytes()
             var fileSignature = byteArray.sliceArray(0 until 8)
+            if(fileSignature.contentEquals(ImgFileType.PNG.signature)){ return PNG(byteArray) }
 
-                if(fileSignature.contentEquals(ImgFileType.PNG.signature)){
-                    return PNG(byteArray)
-                }else{
-                    fileSignature = fileSignature.sliceArray(0 until 3)
+            fileSignature = fileSignature.sliceArray(0 until 3)
+            if(fileSignature.contentEquals(ImgFileType.PIX.signature)){ return PIX(byteArray) }
 
-                    if(fileSignature.contentEquals(ImgFileType.PIX.signature)){
-                        return PIX(byteArray)
-                    }else{
-                        fileSignature = fileSignature.sliceArray(0 until 2)
-
-                        if(fileSignature.contentEquals(ImgFileType.TIFF_BIG.signature) || fileSignature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                            return TIFF(byteArray)
-                        }else if(fileSignature.contentEquals(ImgFileType.BMP.signature)){
-                            return BMP(byteArray)
-                        }else if(fileSignature.contentEquals(ImgFileType.JPG.signature)){
-                            return JPG(byteArray)
-                        }
-                    }
-
-                }
+            fileSignature = fileSignature.sliceArray(0 until 2)
+            if(fileSignature.contentEquals(ImgFileType.TIFF_BIG.signature) || fileSignature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){ return TIFF(byteArray) }
+            if(fileSignature.contentEquals(ImgFileType.BMP.signature)){ return BMP(byteArray) }
+            if(fileSignature.contentEquals(ImgFileType.JPG.signature)){ return JPG(byteArray) }
 
             return PIX(byteArray)
-        }
-
-        fun readBytes(filePath : String) : ByteArray{
-            return File(filePath).readBytes()
         }
 
         fun write(filePath: String, imgPix : ImgPix, imgFileType : ImgFileType){

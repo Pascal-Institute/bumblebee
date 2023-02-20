@@ -6,6 +6,7 @@ import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter
+import bumblebee.util.Converter.Companion.byteToInt
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.util.zip.CRC32
@@ -270,24 +271,23 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         }
 
         fun getWidth(byteArray: ByteArray): Int {
-            return hexToInt(byteToHex(byteArray))
+            return byteToInt(byteArray)
         }
 
         fun getHeight(byteArray: ByteArray): Int {
-            return hexToInt(byteToHex(byteArray))
+            return byteToInt(byteArray)
         }
 
         fun getLength(): Int {
-            var string = byteToHex(length)
-            return hexToInt(string)
+            return byteToInt(length)
         }
 
         fun getColorType(byte: Byte): Int {
-            return hexToInt(byteToHex(byte))
+            return byteToInt(byte)
         }
 
         fun getBitDepth(byte: Byte): Int {
-            return hexToInt(byteToHex(byte))
+            return byteToInt(byte)
         }
 
         fun getCRC(): ByteArray {

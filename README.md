@@ -41,14 +41,10 @@ dependencies {
 png bmp tiff
 ```
 
-### Extended Application : Byte Viewer (built in library)
-
-![image](https://user-images.githubusercontent.com/65960990/214049911-19a16311-759e-48ca-8f32-40f5ecf88d7a.png)
-
 ## 2. Support
 
 ```
-https://github.com/volta2030/bumblebee/discussions
+discussions
 ```
 
 ```
