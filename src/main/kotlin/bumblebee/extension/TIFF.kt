@@ -115,15 +115,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
         when(compressionType){
             CompressionType.LZW->{
-                var offset = 0
-                var tempByteArray = byteArrayOf()
-                println(stripCount)
-                for(i : Int in 0 until stripCount){
-                    offset = byteToInt(endianArray(imgFileType, byteArray.sliceArray(stripByteCounts + 4 * i until stripByteCounts + 4 * (i + 1))))
-                    tempByteArray += LZW.decode(byteArray.sliceArray(startIdx until startIdx + offset))
-                    startIdx += offset
-                }
-                pixelBufferArray.put(tempByteArray)
+                pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
             }
             else->{
                 pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
@@ -177,74 +169,6 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         var dataCount : Int = byteToInt(endianArray(imgFileType,byteArray.sliceArray(4 until 8))) //4 Byte
         var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12), dataType, dataCount) // 4Byte
     }
-
-    private class LZW{
-        companion object{
-//           1. Initialize the dictionary with the standard 9-bit
-//           2. Read the compressed code from the file one at a time.
-//           3. If the code is in the dictionary, output the corresponding sequence of characters.
-//           4. If the code is not in the dictionary, output the sequence corresponding to the previous code, followed by the first character of that sequence.
-//           5. Add the sequence corresponding to the previous code, followed by the first character of the current code, to the dictionary.
-//           6. Repeat steps 3-5 until all codes have been read and decoded.
-            fun decode(encodedData: ByteArray) : ByteArray {
-                var byteArrays = byteArrayOf()
-                var dictionary = hashMapOf<String, ByteArray>()
-                var binaryString = ""
-
-                encodedData.forEach {
-                    binaryString += it.toUByte().toString(2).padStart(8, '0')
-                }
-
-                var weight = 9
-
-                // initialize dictionary
-                for (i : Int in 0 until 256) {
-                    dictionary[i.toString(2).padStart(weight, '0')] = byteArrayOf(i.toByte())
-                }
-
-                var length = binaryString.length
-                var firstSequence = 1
-                for (i : Int in 0 until length - weight step weight) {
-                    var currentCode = binaryString.slice(i until i + weight)
-
-                    if (currentCode.contains("100000000")){
-                        //SOH
-                        dictionary = hashMapOf<String, ByteArray>()
-                        for (i : Int in 0 until 256) {
-                            dictionary[i.toString(2).padStart(weight, '0')] = byteArrayOf(i.toByte())
-                        }
-                        continue
-                    }else if (currentCode.contains("100000001")) {
-                        //EOF
-                        break
-                    }else{
-                        if (dictionary.containsKey(currentCode)) {
-                            byteArrays += dictionary[currentCode]!!
-                            firstSequence = 1
-                        } else {
-                            println(binaryString.slice(i until i + weight))
-                            var previousCode = binaryString.slice(i - weight until i)
-                            println(previousCode)
-                            var previousSequence = dictionary[previousCode]!!
-                            var newSequence = previousSequence + dictionary[binaryString.slice(i - weight * firstSequence until i - weight * (firstSequence - 1))]!!
-                            dictionary[binaryString.slice(i  until i + weight)] = newSequence
-                            byteArrays += newSequence
-                            firstSequence++
-                        }
-
-                        if(dictionary.size >= 2.0.pow(weight) -2){
-                            weight++
-                        }
-
-                    }
-                }
-                println(byteArrays.size)
-                return byteArrays
-            }
-
-        }
-    }
-
     private enum class TagType (val byteArray : ByteArray) {
 
         NEW_SUBFILE_TYPE(Converter.intToByteArray(254, 2)),
