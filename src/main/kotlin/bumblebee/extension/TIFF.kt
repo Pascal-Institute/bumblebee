@@ -53,15 +53,6 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 }
             }
         }
-
-        private fun endianArray(imgFileType : ImgFileType ,byteArray: ByteArray, startIdx : Int, endIdx : Int) : ByteArray{
-            return if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-                invert(byteArray.sliceArray(startIdx until endIdx))
-            }else{
-                byteArray.sliceArray(startIdx until endIdx)
-            }
-        }
-
     }
 
     override fun extract() {
@@ -149,7 +140,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     //Image File Directory
     private class IFD(imgFileType: ImgFileType, byteArray: ByteArray){
-        var numOfTags : ByteArray = endianArray(imgFileType, byteArray, 0, 2)
+        var numOfTags : ByteArray = endianArray(imgFileType, byteArray.sliceArray(0 until 2))
         var tagArray = ArrayList<Tag>() //12 Byte * numOfTags
         var nextIFDOffset : ByteArray //4 Byte
 
@@ -159,12 +150,12 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 var tag = Tag(imgFileType, byteArray.sliceArray(2 + i*12 until 2 + (i+1) * 12))
                 tagArray.add(tag)
             }
-            nextIFDOffset = endianArray(imgFileType, byteArray, 2 + 12 * value, 2 + 12 * value + 4)
+            nextIFDOffset = endianArray(imgFileType, byteArray.sliceArray(2 + 12 * value until 2 + 12 * value + 4))
         }
     }
 
     private class Tag(imgFileType: ImgFileType, byteArray: ByteArray) {
-        var tagId : TagType = TagType.fromByteArray(endianArray(imgFileType, byteArray, 0, 2))
+        var tagId : TagType = TagType.fromByteArray(endianArray(imgFileType, byteArray.sliceArray(0 until 2)))
         var dataType : DataType = DataType.fromByteArray(endianArray(imgFileType,byteArray.sliceArray(2 until 4))) //2 Byte
         var dataCount : Int = byteToInt(endianArray(imgFileType,byteArray.sliceArray(4 until 8))) //4 Byte
         var dataOffset : ByteArray = endianArray(imgFileType,byteArray.sliceArray(8 until 12), dataType, dataCount) // 4Byte
