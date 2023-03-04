@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation ("com.github.volta2030:bumblebee:1.0.13")
+    implementation ("com.github.volta2030:bumblebee:1.0.16")
 }
 
 ```
@@ -29,24 +29,25 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.volta2030:bumblebee:1.0.13"
+    implementation "com.github.volta2030:bumblebee:1.0.16"
 }
 ```
 
 ## 1. Introduction
 
-### Extension support
+### - Extension support
 
-```aidl
+```
 png bmp tiff
 ```
 
 ## 2. Support
 
+### - API documentation : use Dokka
 ```
-discussions
+./gradlew dokkaHTML
 ```
 
-```
-bumblebee_api@googlegroups.com
-```
+### - Github : discussions
+
+### - Email : bumblebee_api@googlegroups.com
