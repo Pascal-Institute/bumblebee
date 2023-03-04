@@ -200,18 +200,20 @@ class ImgProcess {
 
         fun filter(imgPix: ImgPix, filterType : FilterType, filterSize : Int) : ImgPix{
 
+            val width = imgPix.width
+            val height = imgPix.height
+            val bytesPerPixel = imgPix.bytesPerPixel
+            val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
+
             when(filterType){
                 FilterType.AVERAGE->{
-                    val width = imgPix.width
-                    val height = imgPix.height
-                    val bytesPerPixel = imgPix.bytesPerPixel
+
                     val windowSize = filterSize * filterSize
                     val halfFilterSize = filterSize / 2
 
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
                     val padImgPixWidth = tempImgPix.width
                     val tempPixelBufferArray = tempImgPix.pixelBufferArray
-                    val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
 
                     for(i : Int in halfFilterSize until height + halfFilterSize){
                         for(j : Int in halfFilterSize until width + halfFilterSize){
@@ -224,17 +226,10 @@ class ImgProcess {
                             }
                         }
                     }
-
-                    imgPix.metaData.width = width
-                    imgPix.metaData.height = height
-                    imgPix.pixelBufferArray = pixelBufferArray
                 }
 
                 FilterType.MEDIAN->{
 
-                    val width = imgPix.width
-                    val height = imgPix.height
-                    val bytesPerPixel = imgPix.bytesPerPixel
                     val windowSize = filterSize * filterSize
                     val middleSize = windowSize/2
                     val halfFilterSize = filterSize/2
@@ -242,8 +237,6 @@ class ImgProcess {
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
                     val padImgPixWidth = tempImgPix.width
                     val tempPixelBufferArray = tempImgPix.pixelBufferArray
-                    val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
-
 
                     for(i : Int in halfFilterSize until height + halfFilterSize){
                         for(j : Int in halfFilterSize until width + halfFilterSize){
@@ -259,11 +252,43 @@ class ImgProcess {
                         }
                     }
 
-                    imgPix.metaData.width = width
-                    imgPix.metaData.height = height
-                    imgPix.pixelBufferArray = pixelBufferArray
                 }
+
+                FilterType.SHARPEN -> {
+                    val padSize = 1
+                    val windowSize = 9
+                    val filterSize = 3
+                    val strength = 9
+                    val exceptStrength = -1
+                    val tempImgPix = imgPix.pad(PadType.AVERAGE, padSize)
+                    val padImgPixWidth = tempImgPix.width
+                    val tempPixelBufferArray = tempImgPix.pixelBufferArray
+
+                    for(i : Int in padSize until height + padSize){
+                        for(j : Int in padSize until width + padSize){
+                            for(k : Int in 0 until bytesPerPixel){
+                                var intValue = 0
+                                for(l : Int in 0 until windowSize){
+                                    var temp = (tempPixelBufferArray.get(((i - padSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - padSize + (l / filterSize)) * bytesPerPixel) + k).toInt())
+                                    intValue += if(l == 4){
+                                        strength * temp
+                                    }else{
+                                        exceptStrength * temp
+                                    }
+                                }
+                                pixelBufferArray.put(intValue.toByte())
+                            }
+                        }
+                    }
+
+                }
+
+                else->{}
             }
+
+            imgPix.metaData.width = width
+            imgPix.metaData.height = height
+            imgPix.pixelBufferArray = pixelBufferArray
 
             return imgPix
         }
