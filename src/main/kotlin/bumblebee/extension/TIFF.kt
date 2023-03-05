@@ -51,22 +51,22 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         ifdArray.forEach {
             it.tagArray.forEach {tag->
                 when(tag.tagId){
-                    TagType.IMAGE_WIDTH -> metaData.width = tag.dataOffset.sliceArray(0 until 2).byteToInt()
-                    TagType.IMAGE_LENGTH -> metaData.height = tag.dataOffset.sliceArray(0 until 2).byteToInt()
+                    TagType.IMAGE_WIDTH -> metaData.width = tag.data.byteToInt()
+                    TagType.IMAGE_LENGTH -> metaData.height = tag.data.byteToInt()
                     TagType.SAMPLES_PER_PIXEL -> {
-                        bytesPerPixel = tag.dataOffset.sliceArray(0 until 2).byteToInt()
+                        bytesPerPixel = tag.data.byteToInt()
                         if(bytesPerPixel == 3){
                             metaData.colorType = ColorType.TRUE_COLOR
                         }
                     }
                     TagType.COMPRESSION -> {
-                        compressionType = CompressionType.fromInt(tag.dataOffset.sliceArray(0 until 2).byteToInt())
+                        compressionType = CompressionType.fromInt(tag.data.byteToInt())
                     }
                     TagType.ROWS_PER_STRIP -> {
-                        rowsPerStrip = tag.dataOffset.sliceArray(0 until 2).byteToInt()
+                        rowsPerStrip = tag.data.byteToInt()
                     }
                     TagType.STRIP_BYTE_COUNTS -> {
-                        stripByteCounts = tag.dataOffset.byteToInt()
+                        stripByteCounts = tag.data.byteToInt()
                     }
                     TagType.BITS_PER_SAMPLE -> {}
                     else -> {}
@@ -84,7 +84,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     private fun extractRasterImage(tag: Tag) {
 
         val stripCount = tag.dataCount
-        val firstStripOffset = tag.dataOffset.byteToInt()
+        val firstStripOffset = tag.data.byteToInt()
         val lastStripOffset = firstStripOffset + (4 * stripCount)
         var startIdx = byteArray.sliceArray(firstStripOffset until firstStripOffset + 4).toEndian().byteToInt()
         val endIdx = byteArray.sliceArray(lastStripOffset - 4 until lastStripOffset).toEndian().byteToInt() + byteArray.sliceArray(stripByteCounts + (4 * stripCount) - 4 until stripByteCounts + 4 * stripCount).toEndian().byteToInt()
@@ -158,7 +158,8 @@ private class Tag(byteArray: ByteArray) {
     var tagId : TagType = TagType.fromByteArray(byteArray.sliceArray(0 until 2).toEndian())
     var dataType : DataType = DataType.fromByteArray(byteArray.sliceArray(2 until 4).toEndian()) //2 Byte
     var dataCount : Int = byteArray.sliceArray(4 until 8).toEndian().byteToInt() //4 Byte
-    var dataOffset : ByteArray = byteArray.sliceArray(8 until 12).toEndian(dataType)// 4Byte
+    var dataOffset : ByteArray = byteArray.sliceArray(8 until 12).toEndian()// 4 Byte
+    var data : ByteArray = byteArray.sliceArray(8 until 12).toEndian(dataType) // n Byte
 }
 private enum class TagType (val byteArray : ByteArray) {
 
