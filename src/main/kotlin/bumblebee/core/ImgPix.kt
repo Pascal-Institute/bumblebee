@@ -1,9 +1,9 @@
  package bumblebee.core
 
 import bumblebee.FileManager
-import bumblebee.util.Converter.Companion.byteToHex
 import bumblebee.color.Color
 import bumblebee.type.*
+import bumblebee.util.Converter.Companion.toHex
 import bumblebee.util.Histogram
 import java.awt.Dimension
 import java.awt.Graphics
@@ -57,7 +57,7 @@ import javax.swing.*
         for (i : Int in 0 until bytesPerPixel){
             byteArray[i] = pixelBufferArray.get(i + bytesPerPixel * col + (width * bytesPerPixel) * row)
         }
-        return byteToHex(byteArray)
+        return byteArray.toHex()
     }
 
     fun get() : ByteArray {

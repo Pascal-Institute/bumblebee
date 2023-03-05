@@ -51,7 +51,7 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
             xThumbnail = byteArray.sliceArray(16 until 17)
             yThumbnail = byteArray.sliceArray(17 until 18)
 
-            n = (byteToInt(length) - 16)/3
+            n = (length.byteToInt() - 16)/3
             endIndex = 18 + 3 * n
             thumbnail = byteArray.sliceArray(18 until endIndex)
         }
@@ -66,7 +66,7 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         init {
             app1Marker = byteArray.sliceArray(0 until 2)
             length = byteArray.sliceArray(2 until 4)
-            endIndex = 2 + byteToInt(length)
+            endIndex = 2 + length.byteToInt()
         }
     }
 

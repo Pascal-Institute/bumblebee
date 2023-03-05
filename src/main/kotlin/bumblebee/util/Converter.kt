@@ -62,11 +62,11 @@ class Converter {
             return hexString.reversed()
         }
 
-        fun hexToInt(hexString :String) : Int{
+        fun String.hexToInt() : Int{
             var coef = 1
             var num = 0
 
-            hexString.reversed().forEach {
+            this.reversed().forEach {
 
                 val hex = when(it){
                     '0' -> 0
@@ -93,43 +93,44 @@ class Converter {
             return num
         }
 
-        fun byteToHex(byte : Byte) : String{
-            return String.format("%02X", byte.toUByte().toInt())
+        fun Byte.toHex() : String{
+            return String.format("%02X", this.toUByte().toInt())
         }
-        fun byteToHex(byteArray : ByteArray) : String{
+
+        fun ByteArray.toHex() : String{
             var string = ""
 
-            byteArray.forEach {
-                string += String.format("%02X", it.toUByte().toInt())
+            this.forEach {
+                string += it.toHex()
             }
 
             return string
         }
 
-        fun byteToInt(byte: Byte) : Int{
-            return hexToInt(byteToHex(byte))
+        fun Byte.byteToInt() : Int{
+            return this.toHex().hexToInt()
         }
 
-        fun byteToInt(byteArray: ByteArray) : Int{
-            return hexToInt(byteToHex(byteArray))
+        fun ByteArray.byteToInt() : Int{
+            return this.toHex().hexToInt()
         }
 
-        fun invert(byteArray : ByteArray) : ByteArray {
-            return byteArray.reversedArray()
+        fun ByteArray.invert() : ByteArray{
+            return this.reversedArray()
         }
         fun hexToRGB(hex : String) : RGB {
-            var r = hexToInt(hex.slice(0 until 2))
-            var g = hexToInt(hex.slice(2 until 4))
-            var b = hexToInt(hex.slice(4 until 6))
+            var r = hex.slice(0 until 2).hexToInt()
+            var g = hex.slice(2 until 4).hexToInt()
+            var b = hex.slice(4 until 6).hexToInt()
 
             return RGB(r, g, b)
         }
 
         fun hexToRGBA(hex : String) : RGBA {
-            var r = hexToInt(hex.slice(0 until 2))
-            var g = hexToInt(hex.slice(2 until 4))
-            var b = hexToInt(hex.slice(4 until 6))
-            var a = hexToInt(hex.slice(6 until 8))
+            var r = hex.slice(0 until 2).hexToInt()
+            var g = hex.slice(2 until 4).hexToInt()
+            var b = hex.slice(4 until 6).hexToInt()
+            var a = hex.slice(6 until 8).hexToInt()
 
             return RGBA(r, g, b, a)
         }
