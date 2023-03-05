@@ -45,7 +45,7 @@ png bmp tiff
 
 ### - API documentation : use Dokka
 ```
-./gradlew dokkaHTML
+./gradlew dokkaHtml
 ```
 
 ### - Github : discussions
