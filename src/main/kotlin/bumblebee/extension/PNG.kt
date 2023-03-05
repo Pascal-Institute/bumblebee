@@ -1,12 +1,11 @@
 package bumblebee.extension
 
-import bumblebee.util.Converter.Companion.byteToHex
-import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteToInt
+import bumblebee.util.Converter.Companion.toHex
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.util.zip.CRC32
@@ -62,8 +61,8 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         var byteArray = ByteArray(0)
 
         chunkArray.forEach{
-            when(byteToHex(it.type)){
-                byteToHex(ChunkType.IHDR.byte) -> {
+            when(it.type.toHex()){
+                ChunkType.IHDR.byte.toHex() -> {
                     metaData.width = it.getWidth(it.data.sliceArray(0 until 4))
                     metaData.height = it.getHeight(it.data.sliceArray(4 until 8))
                     bitDepth = it.getBitDepth(it.data[8])
@@ -71,7 +70,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     bytesPerPixel = metaData.colorType.colorSpace * (bitDepth / OCTA)
                 }
 
-                byteToHex(ChunkType.IDAT.byte) -> {
+                ChunkType.IDAT.byte.toHex() -> {
                     if(byteArray.isNotEmpty()){
                         byteArray += it.data
                     }else{
@@ -79,7 +78,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     }
                 }
 
-                byteToHex(ChunkType.PLTE.byte)->{
+                ChunkType.PLTE.byte.toHex()->{
                 }
             }
         }
@@ -105,11 +104,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
             var filterType: FilterType = try{
                 FilterType.fromInt(
-                    hexToInt(
-                        byteToHex(
-                            decompressedByteBuffer.get(((metaData.width * bytesPerPixel) + 1) * col)
-                        )
-                    )
+                    decompressedByteBuffer.get(((metaData.width * bytesPerPixel) + 1) * col).byteToInt()
                 )
             }catch (e : Exception){
                 FilterType.NONE
@@ -271,23 +266,23 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         }
 
         fun getWidth(byteArray: ByteArray): Int {
-            return byteToInt(byteArray)
+            return byteArray.byteToInt()
         }
 
         fun getHeight(byteArray: ByteArray): Int {
-            return byteToInt(byteArray)
+            return byteArray.byteToInt()
         }
 
         fun getLength(): Int {
-            return byteToInt(length)
+            return length.byteToInt()
         }
 
         fun getColorType(byte: Byte): Int {
-            return byteToInt(byte)
+            return byte.byteToInt()
         }
 
         fun getBitDepth(byte: Byte): Int {
-            return byteToInt(byte)
+            return byte.byteToInt()
         }
 
         fun getCRC(): ByteArray {

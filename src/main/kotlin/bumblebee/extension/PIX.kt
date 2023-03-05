@@ -1,7 +1,5 @@
 package bumblebee.extension
 
-import bumblebee.util.Converter.Companion.byteToHex
-import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
@@ -26,9 +24,9 @@ class PIX(private var byteArray : ByteArray) : ImgPix() {
     }
 
     override fun extract() {
-        metaData.width = byteToInt(byteArray.copyOfRange(3, 7))
-        metaData.height = byteToInt(byteArray.copyOfRange(7, 11))
-        metaData.colorType = ColorType.fromInt(byteToInt(byteArray[11]))
+        metaData.width = byteArray.copyOfRange(3, 7).byteToInt()
+        metaData.height = byteArray.copyOfRange(7, 11).byteToInt()
+        metaData.colorType = ColorType.fromInt(byteArray[11].byteToInt())
         pixelBufferArray = ByteBuffer.allocate(metaData.width * metaData.height * metaData.colorType.colorSpace)
         pixelBufferArray.put(byteArray.copyOfRange(12 , 12 + metaData.width * metaData.height * metaData.colorType.colorSpace))
     }

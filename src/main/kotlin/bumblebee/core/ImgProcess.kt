@@ -127,7 +127,7 @@ class ImgProcess {
             }
 
             for(i : Int in 0 until width * height * bytesPerPixel){
-                val byte = if (byteToInt(imgPix.pixelBufferArray.get(i)) > level) (255).toByte() else (0).toByte()
+                val byte = if (imgPix.pixelBufferArray.get(i).byteToInt() > level) (255).toByte() else (0).toByte()
                 imgPix.pixelBufferArray.put(i, byte)
             }
 
@@ -198,6 +198,15 @@ class ImgProcess {
             return imgPix
         }
 
+        /**
+         *
+         * This function process image filtering : Average, Median
+         *
+         * @param[imgPix] The ImgPix
+         * @param[filterType] The FilterType
+         * @param[filterSize] The filterSize it will be odd number
+         * @return[imgPix]
+         */
         fun filter(imgPix: ImgPix, filterType : FilterType, filterSize : Int) : ImgPix{
 
             val width = imgPix.width
