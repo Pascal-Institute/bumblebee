@@ -59,6 +59,9 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                             metaData.colorType = ColorType.TRUE_COLOR
                         }
                     }
+                    TagType.COLOR_MAP -> {
+//                        metaData.colorType = ColorType.TRUE_COLOR
+                    }
                     TagType.COMPRESSION -> {
                         compressionType = CompressionType.fromInt(tag.data.byteToInt())
                     }
@@ -91,7 +94,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
         this.pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
         when(compressionType){
-            CompressionType.LZW->{
+            CompressionType.LZW -> {
 
                 for(i : Int in 0 until stripCount){
 
@@ -101,6 +104,18 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                     startIdx += counts
                 }
             }
+
+            CompressionType.PACKBITS -> {
+
+                for(i : Int in 0 until stripCount){
+                    var counts = byteArray.sliceArray(stripByteCounts + (4 * i) until stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
+                    pixelBufferArray.put(packBitsDecode(byteArray.sliceArray(startIdx until startIdx + counts)))
+
+                    startIdx += counts
+                }
+
+            }
+
             else->{
                 pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
             }
@@ -112,6 +127,29 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             println(it.toUByte().toString(2).padStart(8, '0'))
         }
         return byteArray
+    }
+
+    private fun packBitsDecode(byteArray: ByteArray) : ByteArray{
+
+        var returnByteArray = byteArrayOf()
+
+        var i = 0
+        while(i < byteArray.size){
+            val integer = byteArray[i].toInt()
+            if(integer == -128){
+                i = byteArray.size
+            }else if(integer in 0 until 128){
+                returnByteArray += byteArray.sliceArray(i+ 1 until i + 1 + (integer + 1))
+                i += integer + 2
+            }else if (integer in -127 until 0){
+                for(j : Int in 0 until -integer + 1){
+                    returnByteArray += byteArray[i + 1]
+                }
+                i += 2
+            }
+        }
+        println(returnByteArray.size)
+        return returnByteArray
     }
 
 //Image File Header
