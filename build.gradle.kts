@@ -27,7 +27,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.volta2030"
             artifactId = "bumblebee"
-            version = "1.0.16"
+            version = "1.0.18"
 
             from(components["java"])
         }
