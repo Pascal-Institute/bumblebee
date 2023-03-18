@@ -42,18 +42,23 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
         infoHeader["colorsUsed"] = byteArray.cut(46, 50).invert()
         infoHeader["colorsImportant"] = byteArray.cut(50, 54).invert()
 
+        setMetaData()
+
+        bytesPerPixel = colorType.colorSpace
+        pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
+
+        byteArray.cut(54, byteArray.size).forEachIndexed { index, byte ->
+            pixelBufferArray.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
+        }
+    }
+
+    override fun setMetaData() {
         metaData.width = infoHeader[WIDTH]!!.byteToInt()
         metaData.height = infoHeader[HEIGHT]!!.byteToInt()
         metaData.colorType = if (infoHeader["bitCount"]!!.byteToInt() == 24) {
             ColorType.TRUE_COLOR
         } else {
             ColorType.GRAY_SCALE
-        }
-        bytesPerPixel = colorType.colorSpace
-        pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
-
-        byteArray.cut(54, byteArray.size).forEachIndexed { index, byte ->
-            pixelBufferArray.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
         }
     }
 }
