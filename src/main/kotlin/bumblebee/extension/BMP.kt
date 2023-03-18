@@ -45,10 +45,10 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
         setMetaData()
 
         bytesPerPixel = colorType.colorSpace
-        pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
+        pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
 
         byteArray.cut(54, byteArray.size).forEachIndexed { index, byte ->
-            pixelBufferArray.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
+            pixelByteBuffer.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
         }
     }
 
