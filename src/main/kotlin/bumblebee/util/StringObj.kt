@@ -1,6 +1,7 @@
 package bumblebee.util
 
 object StringObj {
-    val WIDTH = "width"
-    val HEIGHT = "height"
+    const val WIDTH = "width"
+    const val HEIGHT = "height"
+    const val BIT_COUNT = "bitCount"
 }

@@ -7,6 +7,7 @@ import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.invert
 import bumblebee.util.ImgHeader
+import bumblebee.util.StringObj.BIT_COUNT
 import bumblebee.util.StringObj.HEIGHT
 import bumblebee.util.StringObj.WIDTH
 import java.nio.ByteBuffer
@@ -33,7 +34,7 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
         infoHeader[WIDTH] = byteArray.cut(18, 22).invert()
         infoHeader[HEIGHT] = byteArray.cut(22, 26).invert()
         infoHeader["planes"] = byteArray.cut(26, 28).invert()
-        infoHeader["bitCount"] = byteArray.cut(28, 32).invert()
+        infoHeader[BIT_COUNT] = byteArray.cut(28, 32).invert()
         infoHeader["compression"] = byteArray.cut(32, 36).invert()
         infoHeader["imageSize"] = byteArray.cut(36, 40).invert()
         infoHeader["xPixelsPerM"] = byteArray.cut(40, 42).invert()
