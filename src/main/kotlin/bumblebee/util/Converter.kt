@@ -118,6 +118,11 @@ class Converter {
         fun ByteArray.invert() : ByteArray{
             return this.reversedArray()
         }
+
+        fun ByteArray.cut(start : Int, end : Int) : ByteArray{
+            return this.sliceArray(start until end)
+        }
+
         fun hexToRGB(hex : String) : RGB {
             var r = hex.slice(0 until 2).hexToInt()
             var g = hex.slice(2 until 4).hexToInt()

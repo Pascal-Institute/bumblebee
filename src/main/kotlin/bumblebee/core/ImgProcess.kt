@@ -16,7 +16,7 @@ class ImgProcess {
             }else{
                 val byteArray : ByteArray = colorToByte(color)
                 for (i : Int in 0 until imgPix.bytesPerPixel){
-                    imgPix.pixelBufferArray.put(i + imgPix.bytesPerPixel * col + (imgPix.width * imgPix.bytesPerPixel) * row, byteArray[i])
+                    imgPix.pixelByteBuffer.put(i + imgPix.bytesPerPixel * col + (imgPix.width * imgPix.bytesPerPixel) * row, byteArray[i])
                 }
             }
             return imgPix
@@ -25,20 +25,20 @@ class ImgProcess {
         fun crop(imgPix : ImgPix, row : Int, col : Int, width : Int, height : Int) : ImgPix {
 
             val bytesPerPixel = imgPix.bytesPerPixel
-            val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
+            val pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
             val startIdx = row * (imgPix.width * bytesPerPixel) + col * bytesPerPixel
 
             for(i : Int in 0 until height){
                 for(j : Int in 0 until width){
                     for(k : Int in 0 until bytesPerPixel){
-                        pixelBufferArray.put(imgPix.pixelBufferArray.get(startIdx  + j * bytesPerPixel + k + (i * bytesPerPixel * imgPix.width)))
+                        pixelByteBuffer.put(imgPix.pixelByteBuffer.get(startIdx  + j * bytesPerPixel + k + (i * bytesPerPixel * imgPix.width)))
                     }
                 }
             }
 
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-            imgPix.pixelBufferArray = pixelBufferArray
+            imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
         }
@@ -50,7 +50,7 @@ class ImgProcess {
             val bytesPerPixel = imgPix.bytesPerPixel
 
             for(i : Int in 0 until width * height * bytesPerPixel){
-                imgPix.pixelBufferArray.put(i, imgPix.pixelBufferArray[i].inv())
+                imgPix.pixelByteBuffer.put(i, imgPix.pixelByteBuffer[i].inv())
                }
             return imgPix
         }
@@ -61,14 +61,14 @@ class ImgProcess {
             val height = imgPix.height
             val bytesPerPixel = imgPix.bytesPerPixel
 
-            val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
+            val pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
 
             when(orientation){
                 OrientationType.HORIZONTAL -> {
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
-                                pixelBufferArray.put(imgPix.pixelBufferArray.get(((i + 1) * bytesPerPixel * width - 1) - (j * bytesPerPixel + (bytesPerPixel - 1) - k)))
+                                pixelByteBuffer.put(imgPix.pixelByteBuffer.get(((i + 1) * bytesPerPixel * width - 1) - (j * bytesPerPixel + (bytesPerPixel - 1) - k)))
                             }
                         }
                     }
@@ -78,14 +78,14 @@ class ImgProcess {
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
-                                pixelBufferArray.put(imgPix.pixelBufferArray.get(width * (height - (i + 1)) * bytesPerPixel + j * bytesPerPixel + k))
+                                pixelByteBuffer.put(imgPix.pixelByteBuffer.get(width * (height - (i + 1)) * bytesPerPixel + j * bytesPerPixel + k))
                             }
                         }
                     }
                 }
             }
 
-            imgPix.pixelBufferArray = pixelBufferArray
+            imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
         }
@@ -99,19 +99,19 @@ class ImgProcess {
             imgPix.bytesPerPixel = 1
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
 
-            val pixelBufferArray = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
+            val pixelByteBuffer = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
 
             for(i : Int in 0 until height){
                 for(j : Int in 0 until width){
                     var integer = 0
                     for(k : Int in 0 until oldBytesPerPixel){
-                         integer += imgPix.pixelBufferArray.get((i * oldBytesPerPixel* width) + (j * oldBytesPerPixel) + k).toUByte().toInt()
+                         integer += imgPix.pixelByteBuffer.get((i * oldBytesPerPixel* width) + (j * oldBytesPerPixel) + k).toUByte().toInt()
                     }
-                    pixelBufferArray.put(i * width + j, (integer / oldBytesPerPixel).toByte())
+                    pixelByteBuffer.put(i * width + j, (integer / oldBytesPerPixel).toByte())
                 }
             }
 
-            imgPix.pixelBufferArray = pixelBufferArray
+            imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
         }
@@ -127,8 +127,8 @@ class ImgProcess {
             }
 
             for(i : Int in 0 until width * height * bytesPerPixel){
-                val byte = if (imgPix.pixelBufferArray.get(i).byteToInt() > level) (255).toByte() else (0).toByte()
-                imgPix.pixelBufferArray.put(i, byte)
+                val byte = if (imgPix.pixelByteBuffer.get(i).byteToInt() > level) (255).toByte() else (0).toByte()
+                imgPix.pixelByteBuffer.put(i, byte)
             }
 
             return imgPix
@@ -155,14 +155,14 @@ class ImgProcess {
             val height = padSize + imgPix.height + padSize
             val bytesPerPixel = imgPix.bytesPerPixel
 
-            val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
+            val pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
 
             when(padType){
                 PadType.ZERO -> {
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
-                                pixelBufferArray.put(0)
+                                pixelByteBuffer.put(0)
                             }
                         }
                     }
@@ -174,7 +174,7 @@ class ImgProcess {
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
-                                pixelBufferArray.put(averagePixel[k])
+                                pixelByteBuffer.put(averagePixel[k])
                             }
                         }
                     }
@@ -187,13 +187,13 @@ class ImgProcess {
             for(i : Int in padSize until height - padSize){
                 for(j : Int in padSize  until width - padSize){
                     for(k : Int in 0 until bytesPerPixel){
-                        pixelBufferArray.put(j * bytesPerPixel + k + i * bytesPerPixel * width,
-                            imgPix.pixelBufferArray.get((j-padSize) * bytesPerPixel + k + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
+                        pixelByteBuffer.put(j * bytesPerPixel + k + i * bytesPerPixel * width,
+                            imgPix.pixelByteBuffer.get((j-padSize) * bytesPerPixel + k + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
                     }
                 }
             }
 
-            imgPix.pixelBufferArray = pixelBufferArray
+            imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
         }
@@ -212,7 +212,7 @@ class ImgProcess {
             val width = imgPix.width
             val height = imgPix.height
             val bytesPerPixel = imgPix.bytesPerPixel
-            val pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
+            val pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
 
             when(filterType){
                 FilterType.AVERAGE->{
@@ -222,16 +222,16 @@ class ImgProcess {
 
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
                     val padImgPixWidth = tempImgPix.width
-                    val tempPixelBufferArray = tempImgPix.pixelBufferArray
+                    val temppixelByteBuffer = tempImgPix.pixelByteBuffer
 
                     for(i : Int in halfFilterSize until height + halfFilterSize){
                         for(j : Int in halfFilterSize until width + halfFilterSize){
                             for(k : Int in 0 until bytesPerPixel){
                                 var intValue = 0
                                 for(l : Int in 0 until windowSize){
-                                       intValue += tempPixelBufferArray.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k).toUByte().toInt()
+                                       intValue += temppixelByteBuffer.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k).toUByte().toInt()
                                 }
-                                pixelBufferArray.put((intValue/windowSize).toByte())
+                                pixelByteBuffer.put((intValue/windowSize).toByte())
                             }
                         }
                     }
@@ -245,7 +245,7 @@ class ImgProcess {
 
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
                     val padImgPixWidth = tempImgPix.width
-                    val tempPixelBufferArray = tempImgPix.pixelBufferArray
+                    val temppixelByteBuffer = tempImgPix.pixelByteBuffer
 
                     for(i : Int in halfFilterSize until height + halfFilterSize){
                         for(j : Int in halfFilterSize until width + halfFilterSize){
@@ -253,10 +253,10 @@ class ImgProcess {
                                 k->
                                 var uByteArray = UByteArray(windowSize)
                                 repeat(windowSize){
-                                    l-> uByteArray[l] = (tempPixelBufferArray.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k)).toUByte()
+                                    l-> uByteArray[l] = (temppixelByteBuffer.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k)).toUByte()
                                 }
                                 uByteArray.sort()
-                                pixelBufferArray.put((uByteArray[middleSize]).toByte())
+                                pixelByteBuffer.put((uByteArray[middleSize]).toByte())
                             }
                         }
                     }
@@ -271,21 +271,21 @@ class ImgProcess {
                     val exceptStrength = -1
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, padSize)
                     val padImgPixWidth = tempImgPix.width
-                    val tempPixelBufferArray = tempImgPix.pixelBufferArray
+                    val temppixelByteBuffer = tempImgPix.pixelByteBuffer
 
                     for(i : Int in padSize until height + padSize){
                         for(j : Int in padSize until width + padSize){
                             for(k : Int in 0 until bytesPerPixel){
                                 var intValue = 0
                                 for(l : Int in 0 until windowSize){
-                                    var temp = (tempPixelBufferArray.get(((i - padSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - padSize + (l / filterSize)) * bytesPerPixel) + k).toInt())
+                                    var temp = (temppixelByteBuffer.get(((i - padSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - padSize + (l / filterSize)) * bytesPerPixel) + k).toInt())
                                     intValue += if(l == 4){
                                         strength * temp
                                     }else{
                                         exceptStrength * temp
                                     }
                                 }
-                                pixelBufferArray.put(intValue.toByte())
+                                pixelByteBuffer.put(intValue.toByte())
                             }
                         }
                     }
@@ -297,7 +297,7 @@ class ImgProcess {
 
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-            imgPix.pixelBufferArray = pixelBufferArray
+            imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
         }

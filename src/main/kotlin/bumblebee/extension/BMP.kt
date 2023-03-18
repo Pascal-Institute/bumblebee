@@ -4,80 +4,61 @@ import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter.Companion.byteToInt
+import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.invert
+import bumblebee.util.ImgHeader
+import bumblebee.util.StringObj.BIT_COUNT
+import bumblebee.util.StringObj.HEIGHT
+import bumblebee.util.StringObj.WIDTH
 import java.nio.ByteBuffer
 
 class BMP(private var byteArray: ByteArray) : ImgPix() {
 
-    private var header = Header()
-    private var infoHeader = InfoHeader()
+    private var fileHeader = ImgHeader()
+    private var infoHeader = ImgHeader()
 
     init {
         imgFileType = ImgFileType.BMP
         extract()
     }
 
-    private class Header{
-        lateinit var signature : ByteArray
-        lateinit var fileSize : ByteArray
-        lateinit var reversed1 : ByteArray
-        lateinit var reversed2 : ByteArray
-        lateinit var dataOffset : ByteArray
-
-        fun extract(byteArray: ByteArray){
-            signature = byteArray.sliceArray(0 until 2)
-            fileSize = byteArray.sliceArray(2 until 6).invert()
-            reversed1 = byteArray.sliceArray(6 until 8).invert()
-            reversed2 = byteArray.sliceArray(8 until 10).invert()
-            dataOffset = byteArray.sliceArray(10 until 14).invert()
-        }
-    }
-
-    private class InfoHeader{
-        lateinit var size : ByteArray
-        lateinit var width : ByteArray
-        lateinit var height : ByteArray
-        lateinit var planes : ByteArray
-        lateinit var bitCount : ByteArray
-        lateinit var compression : ByteArray
-        lateinit var imageSize : ByteArray
-        lateinit var xPixelsPerM : ByteArray
-        lateinit var yPixelsPerM : ByteArray
-        lateinit var colorsUsed : ByteArray
-        lateinit var colorsImportant : ByteArray
-
-        fun extract(byteArray: ByteArray) {
-            size = byteArray.sliceArray(0 until 4).invert()
-            width = byteArray.sliceArray(4 until 8).invert()
-            height = byteArray.sliceArray(8 until 12).invert()
-            planes = byteArray.sliceArray(12 until 14).invert()
-            bitCount = byteArray.sliceArray(14 until 16).invert()
-            compression = byteArray.sliceArray(16 until 20).invert()
-            imageSize = byteArray.sliceArray(20 until 24).invert()
-            xPixelsPerM = byteArray.sliceArray(24 until 28).invert()
-            yPixelsPerM = byteArray.sliceArray(28 until 32).invert()
-            colorsUsed = byteArray.sliceArray(32 until 36).invert()
-            colorsImportant = byteArray.sliceArray(36 until 40).invert()
-        }
-    }
-
     override fun extract() {
-        header.extract(byteArray.sliceArray(0 until 14))
-        infoHeader.extract(byteArray.sliceArray(14 until 54))
-        metaData.width = infoHeader.width.byteToInt()
-        metaData.height = infoHeader.height.byteToInt()
-        metaData.colorType = if (infoHeader.bitCount.byteToInt() == 24) {
+
+        fileHeader["signature"] = byteArray.cut(0, 2)
+        fileHeader["filterSize"] = byteArray.cut(2, 6).invert()
+        fileHeader["reversed1"] = byteArray.cut(6, 8).invert()
+        fileHeader["reversed2"] = byteArray.cut(8, 10).invert()
+        fileHeader["dataOffset"] = byteArray.cut(10, 14).invert()
+
+        infoHeader["size"] = byteArray.cut(14, 18).invert()
+        infoHeader[WIDTH] = byteArray.cut(18, 22).invert()
+        infoHeader[HEIGHT] = byteArray.cut(22, 26).invert()
+        infoHeader["planes"] = byteArray.cut(26, 28).invert()
+        infoHeader[BIT_COUNT] = byteArray.cut(28, 32).invert()
+        infoHeader["compression"] = byteArray.cut(32, 36).invert()
+        infoHeader["imageSize"] = byteArray.cut(36, 40).invert()
+        infoHeader["xPixelsPerM"] = byteArray.cut(40, 42).invert()
+        infoHeader["yPixelsPerM"] = byteArray.cut(42, 46).invert()
+        infoHeader["colorsUsed"] = byteArray.cut(46, 50).invert()
+        infoHeader["colorsImportant"] = byteArray.cut(50, 54).invert()
+
+        setMetaData()
+
+        bytesPerPixel = colorType.colorSpace
+        pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
+
+        byteArray.cut(54, byteArray.size).forEachIndexed { index, byte ->
+            pixelByteBuffer.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
+        }
+    }
+
+    override fun setMetaData() {
+        metaData.width = infoHeader[WIDTH]!!.byteToInt()
+        metaData.height = infoHeader[HEIGHT]!!.byteToInt()
+        metaData.colorType = if (infoHeader["bitCount"]!!.byteToInt() == 24) {
             ColorType.TRUE_COLOR
         } else {
             ColorType.GRAY_SCALE
         }
-        bytesPerPixel = colorType.colorSpace
-        pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
-
-        byteArray.sliceArray(54 until byteArray.size).forEachIndexed { index, byte ->
-            pixelBufferArray.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
-        }
-
-
     }
 }

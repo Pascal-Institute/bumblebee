@@ -8,9 +8,13 @@ import bumblebee.util.Histogram
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Image
-import java.awt.image.*
+import java.awt.image.BufferedImage
+import java.awt.image.DataBufferByte
+import java.awt.image.Raster
 import java.nio.ByteBuffer
-import javax.swing.*
+import javax.swing.JFrame
+import javax.swing.JPanel
+import javax.swing.WindowConstants
 
 
  open class ImgPix() : Cloneable {
@@ -27,14 +31,14 @@ import javax.swing.*
         get() = metaData.colorType
 
     private var manipulatedInstance = false
-    var pixelBufferArray: ByteBuffer = ByteBuffer.allocate(0)
+    var pixelByteBuffer: ByteBuffer = ByteBuffer.allocate(0)
     var imgFileType : ImgFileType = ImgFileType.PIX
 
     constructor(width: Int, height: Int, colorType: ColorType) : this() {
         metaData.width = width
         metaData.height = height
         metaData.colorType = colorType
-        this.pixelBufferArray = ByteBuffer.allocate(width * height * colorType.colorSpace)
+        this.pixelByteBuffer = ByteBuffer.allocate(width * height * colorType.colorSpace)
     }
 
     constructor(filePath : String) : this() {
@@ -44,7 +48,7 @@ import javax.swing.*
         metaData.colorType = imgPix.colorType
         bytesPerPixel = imgPix.bytesPerPixel
         bitDepth = imgPix.bitDepth
-        this.pixelBufferArray = imgPix.pixelBufferArray
+        this.pixelByteBuffer = imgPix.pixelByteBuffer
 
     }
 
@@ -55,17 +59,18 @@ import javax.swing.*
     fun get(row : Int, col : Int) : String{
         val byteArray = ByteArray((colorType.colorSpace * (bitDepth/OCTA)))
         for (i : Int in 0 until bytesPerPixel){
-            byteArray[i] = pixelBufferArray.get(i + bytesPerPixel * col + (width * bytesPerPixel) * row)
+            byteArray[i] = pixelByteBuffer.get(i + bytesPerPixel * col + (width * bytesPerPixel) * row)
         }
         return byteArray.toHex()
     }
 
     fun get() : ByteArray {
-        return pixelBufferArray.array()
+        return pixelByteBuffer.array()
     }
 
     fun show(){
-        val buffer = DataBufferByte(pixelBufferArray.array(), pixelBufferArray.array().size)
+        val pixelByteBufferArray = pixelByteBuffer.array()
+        val buffer = DataBufferByte(pixelByteBufferArray, pixelByteBufferArray.size)
 
         val bufferedImage : BufferedImage
         when(colorType){
@@ -81,12 +86,12 @@ import javax.swing.*
 
             ColorType.TRUE_COLOR_ALPHA->{
                 bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(0,1,2,3), null)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(1,2,3,0), null)
             }
 
             ColorType.INDEXED_COLOR->{
-                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(0,1,2,3), null)
+                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(1,2,3,0), null)
             }
 
             else -> {
@@ -102,7 +107,7 @@ import javax.swing.*
         frame.title = "image"
         frame.isResizable = false
         frame.isVisible = true
-        frame.setLocation(0,0)
+        frame.isResizable = true
 
         val pane: JPanel = object : JPanel() {
             override fun paintComponent(g: Graphics) {
@@ -116,6 +121,7 @@ import javax.swing.*
         frame.pack()
     }
      open fun extract(){}
+     open fun setMetaData(){}
 
      fun set(row : Int, col : Int, color : Color) : ImgPix {
          return ImgProcess.set(this, row, col, color)

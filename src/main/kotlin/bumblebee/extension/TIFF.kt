@@ -92,14 +92,14 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         var startIdx = byteArray.sliceArray(firstStripOffset until firstStripOffset + 4).toEndian().byteToInt()
         val endIdx = byteArray.sliceArray(lastStripOffset - 4 until lastStripOffset).toEndian().byteToInt() + byteArray.sliceArray(stripByteCounts + (4 * stripCount) - 4 until stripByteCounts + 4 * stripCount).toEndian().byteToInt()
 
-        this.pixelBufferArray = ByteBuffer.allocate(width * height * bytesPerPixel)
+        this.pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
         when(compressionType){
             CompressionType.LZW -> {
 
                 for(i : Int in 0 until stripCount){
 
                     var counts =  byteArray.sliceArray(stripByteCounts + (4 * i) until stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
-                    pixelBufferArray.put(lzwDecode(byteArray.sliceArray(startIdx until startIdx + counts)))
+                    pixelByteBuffer.put(lzwDecode(byteArray.sliceArray(startIdx until startIdx + counts)))
 
                     startIdx += counts
                 }
@@ -109,7 +109,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                 for(i : Int in 0 until stripCount){
                     var counts = byteArray.sliceArray(stripByteCounts + (4 * i) until stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
-                    pixelBufferArray.put(packBitsDecode(byteArray.sliceArray(startIdx until startIdx + counts)))
+                    pixelByteBuffer.put(packBitsDecode(byteArray.sliceArray(startIdx until startIdx + counts)))
 
                     startIdx += counts
                 }
@@ -117,7 +117,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             }
 
             else->{
-                pixelBufferArray.put(byteArray.sliceArray(startIdx until endIdx))
+                pixelByteBuffer.put(byteArray.sliceArray(startIdx until endIdx))
             }
         }
     }

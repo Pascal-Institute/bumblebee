@@ -14,6 +14,9 @@ class FileManager {
             var fileSignature = byteArray.sliceArray(0 until 8)
             if(fileSignature.contentEquals(ImgFileType.PNG.signature)){ return PNG(byteArray) }
 
+            fileSignature = byteArray.sliceArray(0 until 4)
+            if(fileSignature.contentEquals(ImgFileType.ICO_ICON.signature) || fileSignature.contentEquals(ImgFileType.ICO_CURSOR.signature)){return ICO(byteArray)}
+
             fileSignature = fileSignature.sliceArray(0 until 3)
             if(fileSignature.contentEquals(ImgFileType.PIX.signature)){ return PIX(byteArray) }
 
