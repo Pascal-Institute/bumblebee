@@ -8,9 +8,13 @@ import bumblebee.util.Histogram
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Image
-import java.awt.image.*
+import java.awt.image.BufferedImage
+import java.awt.image.DataBufferByte
+import java.awt.image.Raster
 import java.nio.ByteBuffer
-import javax.swing.*
+import javax.swing.JFrame
+import javax.swing.JPanel
+import javax.swing.WindowConstants
 
 
  open class ImgPix() : Cloneable {
@@ -82,12 +86,12 @@ import javax.swing.*
 
             ColorType.TRUE_COLOR_ALPHA->{
                 bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(0,1,2,3), null)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(1,2,3,0), null)
             }
 
             ColorType.INDEXED_COLOR->{
-                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(0,1,2,3), null)
+                bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(1,2,3,0), null)
             }
 
             else -> {
@@ -103,7 +107,7 @@ import javax.swing.*
         frame.title = "image"
         frame.isResizable = false
         frame.isVisible = true
-        frame.setLocation(0,0)
+        frame.isResizable = true
 
         val pane: JPanel = object : JPanel() {
             override fun paintComponent(g: Graphics) {
