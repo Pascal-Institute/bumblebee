@@ -116,6 +116,7 @@ import javax.swing.*
         frame.pack()
     }
      open fun extract(){}
+     open fun setMetaData(){}
 
      fun set(row : Int, col : Int, color : Color) : ImgPix {
          return ImgProcess.set(this, row, col, color)
