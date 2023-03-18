@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation ("com.github.volta2030:bumblebee:1.0.16")
+    implementation ("com.github.volta2030:bumblebee:1.0.18")
 }
 
 ```
@@ -38,7 +38,7 @@ dependencies {
 ### - Extension support
 
 ```
-png bmp tiff
+png bmp tiff ico
 ```
 
 ## 2. Support
