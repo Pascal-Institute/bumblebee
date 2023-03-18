@@ -1,6 +1,7 @@
 package bumblebee.extension
 
 import bumblebee.core.ImgPix
+import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.invert
 import bumblebee.util.ImgHeader
@@ -33,7 +34,18 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
         imageDir["size"] = byteArray.cut(14, 18).invert()
         imageDir["offset"] = byteArray.cut(18, 22).invert()
 
-        println()
+        println(imageDir[WIDTH]!!.byteToInt())
+        println(imageDir[HEIGHT]!!.byteToInt())
+        println(imageDir["size"]!!.byteToInt())
+        println(byteArray.cut(imageDir["offset"]!!.byteToInt(), byteArray.size).size)
 
+        setMetaData()
+
+    }
+
+    override fun setMetaData() {
+        metaData.width = imageDir[WIDTH]!!.byteToInt()
+        metaData.height = imageDir[HEIGHT]!!.byteToInt()
+        metaData.width = imageDir[WIDTH]!!.byteToInt()
     }
 }
