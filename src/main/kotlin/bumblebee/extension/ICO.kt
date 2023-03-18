@@ -48,19 +48,6 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
         byteArray.cut(imageDir["offset"]!!.byteToInt(), imageDir["offset"]!!.byteToInt() + pixelByteBuffer.capacity()).forEachIndexed { index, byte ->
           pixelByteBuffer.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
         }
-
-        var count = 0
-
-        pixelByteBuffer.array().forEach {
-            print(it.toUByte().toInt())
-            print(",")
-            if(count % (width * bytesPerPixel) == 0){
-                println()
-                println()
-            }
-                count++
-        }
-
     }
 
     override fun setMetaData() {
