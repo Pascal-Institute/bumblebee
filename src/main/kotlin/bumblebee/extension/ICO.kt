@@ -8,6 +8,7 @@ import bumblebee.util.Converter.Companion.invert
 import bumblebee.util.ImgHeader
 import bumblebee.util.StringObj.BIT_COUNT
 import bumblebee.util.StringObj.HEIGHT
+import bumblebee.util.StringObj.SIZE
 import bumblebee.util.StringObj.WIDTH
 import java.nio.ByteBuffer
 
@@ -33,13 +34,8 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
         imageDir["reversed"] = byteArray.cut(9, 10).invert()
         imageDir["planes"] = byteArray.cut(10, 12).invert()
         imageDir[BIT_COUNT] = byteArray.cut(12, 14).invert()
-        imageDir["size"] = byteArray.cut(14, 18).invert()
+        imageDir[SIZE] = byteArray.cut(14, 18).invert()
         imageDir["offset"] = byteArray.cut(18, 22).invert()
-
-//        println(imageDir[WIDTH]!!.byteToInt())
-//        println(imageDir[HEIGHT]!!.byteToInt())
-//        println(imageDir["size"]!!.byteToInt())
-//        println(byteArray.cut(imageDir["offset"]!!.byteToInt(), byteArray.size).size)
 
         setMetaData()
 

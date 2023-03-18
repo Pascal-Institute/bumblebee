@@ -9,6 +9,7 @@ import bumblebee.util.Converter.Companion.invert
 import bumblebee.util.ImgHeader
 import bumblebee.util.StringObj.BIT_COUNT
 import bumblebee.util.StringObj.HEIGHT
+import bumblebee.util.StringObj.SIZE
 import bumblebee.util.StringObj.WIDTH
 import java.nio.ByteBuffer
 
@@ -30,7 +31,7 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
         fileHeader["reversed2"] = byteArray.cut(8, 10).invert()
         fileHeader["dataOffset"] = byteArray.cut(10, 14).invert()
 
-        infoHeader["size"] = byteArray.cut(14, 18).invert()
+        infoHeader[SIZE] = byteArray.cut(14, 18).invert()
         infoHeader[WIDTH] = byteArray.cut(18, 22).invert()
         infoHeader[HEIGHT] = byteArray.cut(22, 26).invert()
         infoHeader["planes"] = byteArray.cut(26, 28).invert()
