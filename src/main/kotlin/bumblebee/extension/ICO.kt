@@ -1,6 +1,7 @@
 package bumblebee.extension
 
 import bumblebee.core.ImgPix
+import bumblebee.type.ColorType
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.invert
@@ -8,6 +9,7 @@ import bumblebee.util.ImgHeader
 import bumblebee.util.StringObj.BIT_COUNT
 import bumblebee.util.StringObj.HEIGHT
 import bumblebee.util.StringObj.WIDTH
+import java.nio.ByteBuffer
 
 class ICO(private var byteArray: ByteArray) : ImgPix() {
 
@@ -34,18 +36,40 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
         imageDir["size"] = byteArray.cut(14, 18).invert()
         imageDir["offset"] = byteArray.cut(18, 22).invert()
 
-        println(imageDir[WIDTH]!!.byteToInt())
-        println(imageDir[HEIGHT]!!.byteToInt())
-        println(imageDir["size"]!!.byteToInt())
-        println(byteArray.cut(imageDir["offset"]!!.byteToInt(), byteArray.size).size)
+//        println(imageDir[WIDTH]!!.byteToInt())
+//        println(imageDir[HEIGHT]!!.byteToInt())
+//        println(imageDir["size"]!!.byteToInt())
+//        println(byteArray.cut(imageDir["offset"]!!.byteToInt(), byteArray.size).size)
 
         setMetaData()
+
+        bytesPerPixel = colorType.colorSpace
+        pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
+        byteArray.cut(imageDir["offset"]!!.byteToInt(), imageDir["offset"]!!.byteToInt() + pixelByteBuffer.capacity()).forEachIndexed { index, byte ->
+          pixelByteBuffer.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
+        }
+
+        var count = 0
+
+        pixelByteBuffer.array().forEach {
+            print(it.toUByte().toInt())
+            print(",")
+            if(count % (width * bytesPerPixel) == 0){
+                println()
+                println()
+            }
+                count++
+        }
 
     }
 
     override fun setMetaData() {
         metaData.width = imageDir[WIDTH]!!.byteToInt()
         metaData.height = imageDir[HEIGHT]!!.byteToInt()
-        metaData.width = imageDir[WIDTH]!!.byteToInt()
+        when((imageDir[BIT_COUNT]!!.byteToInt() / 8)){
+            1->metaData.colorType = ColorType.GRAY_SCALE
+            3->metaData.colorType = ColorType.TRUE_COLOR
+            4->metaData.colorType = ColorType.TRUE_COLOR_ALPHA
+        }
     }
 }
