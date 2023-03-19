@@ -9,6 +9,7 @@ import bumblebee.util.ImgHeader
 import bumblebee.util.StringObj.BIT_COUNT
 import bumblebee.util.StringObj.HEIGHT
 import bumblebee.util.StringObj.SIZE
+import bumblebee.util.StringObj.START_OFFSET
 import bumblebee.util.StringObj.WIDTH
 import java.nio.ByteBuffer
 
@@ -35,16 +36,18 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
         imageDir["planes"] = byteArray.cut(10, 12).invert()
         imageDir[BIT_COUNT] = byteArray.cut(12, 14).invert()
         imageDir[SIZE] = byteArray.cut(14, 18).invert()
-        imageDir["offset"] = byteArray.cut(18, 22).invert()
+        imageDir[START_OFFSET] = byteArray.cut(18, 22).invert()
 
         setMetaData()
 
         bytesPerPixel = colorType.colorSpace
         pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
-        val offset = imageDir["offset"]!!.byteToInt()
+
+        val startIdx = imageDir[START_OFFSET].byteToInt()
+        val endIdx = startIdx + pixelByteBuffer.capacity()
 
         //BGR, ABGR
-        byteArray.cut(offset, offset + pixelByteBuffer.capacity()).forEachIndexed { index, byte ->
+        byteArray.cut(startIdx, endIdx).forEachIndexed { index, byte ->
             pixelByteBuffer.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
         }
 
@@ -61,12 +64,14 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
     }
 
     override fun setMetaData() {
-        metaData.width = imageDir[WIDTH]!!.byteToInt()
-        metaData.height = imageDir[HEIGHT]!!.byteToInt()
-        when((imageDir[BIT_COUNT]!!.byteToInt() / 8)){
-            1->metaData.colorType = ColorType.GRAY_SCALE
-            3->metaData.colorType = ColorType.TRUE_COLOR
-            4->metaData.colorType = ColorType.TRUE_COLOR_ALPHA
+        metaData.width = imageDir[WIDTH].byteToInt()
+        metaData.height = imageDir[HEIGHT].byteToInt()
+        metaData.colorType = when(imageDir[BIT_COUNT].byteToInt()) {
+            32-> ColorType.TRUE_COLOR_ALPHA
+            24-> ColorType.TRUE_COLOR
+            16 -> ColorType.GRAY_SCALE_ALPHA
+            8 -> ColorType.GRAY_SCALE
+            else -> ColorType.GRAY_SCALE
         }
     }
 }
