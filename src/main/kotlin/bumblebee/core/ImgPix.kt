@@ -86,12 +86,12 @@ import javax.swing.WindowConstants
 
             ColorType.TRUE_COLOR_ALPHA->{
                 bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(1,2,3,0), null)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(0,1,2,3), null)
             }
 
             ColorType.INDEXED_COLOR->{
                 bufferedImage = BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED)
-                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(1,2,3,0), null)
+                bufferedImage.data = Raster.createInterleavedRaster(buffer, width, height, width * 4, 4, intArrayOf(0,1,2,3), null)
             }
 
             else -> {
