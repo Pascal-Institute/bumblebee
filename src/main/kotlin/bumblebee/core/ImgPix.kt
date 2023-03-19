@@ -5,6 +5,7 @@ import bumblebee.color.Color
 import bumblebee.type.*
 import bumblebee.util.Converter.Companion.toHex
 import bumblebee.util.Histogram
+import bumblebee.util.ImgHeader
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Image
@@ -121,7 +122,7 @@ import javax.swing.WindowConstants
         frame.pack()
     }
      open fun extract(){}
-     open fun setMetaData(){}
+     open fun setMetaData(imgHeader: ImgHeader){}
 
      fun set(row : Int, col : Int, color : Color) : ImgPix {
          return ImgProcess.set(this, row, col, color)

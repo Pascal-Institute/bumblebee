@@ -10,6 +10,7 @@ import bumblebee.util.StringObj.BIT_COUNT
 import bumblebee.util.StringObj.HEIGHT
 import bumblebee.util.StringObj.SIZE
 import bumblebee.util.StringObj.START_OFFSET
+import bumblebee.util.StringObj.TYPE
 import bumblebee.util.StringObj.WIDTH
 import java.nio.ByteBuffer
 
@@ -25,7 +26,7 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
     override fun extract() {
         //6 bytes.
         header["reversed"] = byteArray.cut(0, 2)
-        header["type"] = byteArray.cut(2, 4)
+        header[TYPE] = byteArray.cut(2, 4)
         header["count"] = byteArray.cut(4, 6)
 
         //16 bytes.
@@ -38,7 +39,7 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
         imageDir[SIZE] = byteArray.cut(14, 18).invert()
         imageDir[START_OFFSET] = byteArray.cut(18, 22).invert()
 
-        setMetaData()
+        setMetaData(imageDir)
 
         bytesPerPixel = colorType.colorSpace
         pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
@@ -63,10 +64,10 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
         }
     }
 
-    override fun setMetaData() {
-        metaData.width = imageDir[WIDTH].byteToInt()
-        metaData.height = imageDir[HEIGHT].byteToInt()
-        metaData.colorType = when(imageDir[BIT_COUNT].byteToInt()) {
+    override fun setMetaData(header: ImgHeader) {
+        metaData.width = header[WIDTH].byteToInt()
+        metaData.height = header[HEIGHT].byteToInt()
+        metaData.colorType = when(header[BIT_COUNT].byteToInt()) {
             32-> ColorType.TRUE_COLOR_ALPHA
             24-> ColorType.TRUE_COLOR
             16 -> ColorType.GRAY_SCALE_ALPHA

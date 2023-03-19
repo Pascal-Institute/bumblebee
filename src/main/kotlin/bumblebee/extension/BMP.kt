@@ -44,7 +44,7 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
         infoHeader["colorsUsed"] = byteArray.cut(46, 50).invert()
         infoHeader["colorsImportant"] = byteArray.cut(50, 54).invert()
 
-        setMetaData()
+        setMetaData(infoHeader)
 
         bytesPerPixel = colorType.colorSpace
         pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
@@ -57,10 +57,10 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
         }
     }
 
-    override fun setMetaData() {
-        metaData.width = infoHeader[WIDTH].byteToInt()
-        metaData.height = infoHeader[HEIGHT].byteToInt()
-        metaData.colorType = when(infoHeader["bitCount"].byteToInt()) {
+    override fun setMetaData(imgHeader : ImgHeader) {
+        metaData.width = imgHeader[WIDTH].byteToInt()
+        metaData.height = imgHeader[HEIGHT].byteToInt()
+        metaData.colorType = when(imgHeader[BIT_COUNT].byteToInt()) {
             32-> ColorType.TRUE_COLOR_ALPHA
             24-> ColorType.TRUE_COLOR
             16 -> ColorType.GRAY_SCALE_ALPHA

@@ -6,4 +6,7 @@ object StringObj {
     const val BIT_COUNT = "bitCount"
     const val SIZE = "size"
     const val START_OFFSET = "startOffset"
+    const val DATA = "data"
+    const val TYPE = "type"
+    const val CRC = "crc"
 }
