@@ -1,4 +1,4 @@
-package bumblebee.util
+package bumblebee.core
 
 import org.jetbrains.annotations.NotNull
 import java.util.Objects

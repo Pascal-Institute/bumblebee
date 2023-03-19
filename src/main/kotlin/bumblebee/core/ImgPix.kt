@@ -5,7 +5,6 @@ import bumblebee.color.Color
 import bumblebee.type.*
 import bumblebee.util.Converter.Companion.toHex
 import bumblebee.util.Histogram
-import bumblebee.util.ImgHeader
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Image

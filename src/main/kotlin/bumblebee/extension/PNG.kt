@@ -7,7 +7,7 @@ import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.toHex
-import bumblebee.util.ImgHeader
+import bumblebee.core.ImgHeader
 import bumblebee.util.StringObj.CRC
 import bumblebee.util.StringObj.DATA
 import bumblebee.util.StringObj.SIZE
