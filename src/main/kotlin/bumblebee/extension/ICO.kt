@@ -41,8 +41,22 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
 
         bytesPerPixel = colorType.colorSpace
         pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
-        byteArray.cut(imageDir["offset"]!!.byteToInt(), imageDir["offset"]!!.byteToInt() + pixelByteBuffer.capacity()).forEachIndexed { index, byte ->
-          pixelByteBuffer.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
+        val offset = imageDir["offset"]!!.byteToInt()
+
+        //BGR, ABGR
+        byteArray.cut(offset, offset + pixelByteBuffer.capacity()).forEachIndexed { index, byte ->
+            pixelByteBuffer.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
+        }
+
+        //RGBA to GBAR
+        if(bytesPerPixel == 4){
+            val copyPixelByteArray = pixelByteBuffer.array().clone()
+            for(i : Int in copyPixelByteArray.indices step 4){
+                pixelByteBuffer.put(i, copyPixelByteArray[i + 1])
+                pixelByteBuffer.put(i + 1, copyPixelByteArray[i + 2])
+                pixelByteBuffer.put(i + 2, copyPixelByteArray[i + 3])
+                pixelByteBuffer.put(i + 3, copyPixelByteArray[i])
+            }
         }
     }
 
