@@ -3,6 +3,7 @@ package bumblebee.extension
 import bumblebee.core.ImgPix
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
+import bumblebee.util.Converter.Companion.toHex
 
 class JPG(private var byteArray: ByteArray) : ImgPix(){
     var startIndex = 0
@@ -15,6 +16,14 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
     }
 
     override fun extract() {
+
+        byteArray.forEachIndexed { idx, it ->
+            if(it.toHex() + byteArray.get(idx + 1).toHex() == "FFE0"){
+                println()
+            }
+            print(it.toHex())
+        }
+
         soi = byteArray.cut(startIndex, 2)
         startIndex += 2
         app0 = APP0(byteArray.cut(startIndex, byteArray.size))
@@ -22,11 +31,9 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         app1 = APP1(byteArray.cut(startIndex, byteArray.size))
         startIndex += app1.endIndex
         var bytes = byteArray.cut(startIndex, byteArray.size)
-        println(app0.size())
-        println(app1.size())
     }
 
-    private class APP0(byteArray: ByteArray) : Segment(byteArray) {
+    private class APP0(byteArray: ByteArray) {
 
         var endIndex = 0
         private var n = 0
@@ -58,7 +65,7 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         }
     }
 
-    private class APP1(byteArray: ByteArray) : Segment(byteArray) {
+    private class APP1(byteArray: ByteArray) {
 
         var endIndex = 0
         private var n = 0
@@ -71,9 +78,4 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         }
     }
 
-    open class Segment(var byteArray: ByteArray) {
-        fun size() : Int{
-            return byteArray.size
-        }
-    }
 }
