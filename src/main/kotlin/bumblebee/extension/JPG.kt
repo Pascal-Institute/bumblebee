@@ -2,6 +2,7 @@ package bumblebee.extension
 
 import bumblebee.core.ImgPix
 import bumblebee.util.Converter.Companion.byteToInt
+import bumblebee.util.Converter.Companion.cut
 
 class JPG(private var byteArray: ByteArray) : ImgPix(){
     var startIndex = 0
@@ -14,13 +15,13 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
     }
 
     override fun extract() {
-        soi = byteArray.sliceArray(startIndex until 2)
+        soi = byteArray.cut(startIndex, 2)
         startIndex += 2
-        app0 = APP0(byteArray.sliceArray(startIndex until byteArray.size))
+        app0 = APP0(byteArray.cut(startIndex, byteArray.size))
         startIndex += app0.endIndex
-        app1 = APP1(byteArray.sliceArray(startIndex until byteArray.size))
+        app1 = APP1(byteArray.cut(startIndex, byteArray.size))
         startIndex += app1.endIndex
-        var bytes = byteArray.sliceArray(startIndex until byteArray.size)
+        var bytes = byteArray.cut(startIndex, byteArray.size)
         println(app0.size())
         println(app1.size())
     }
@@ -41,19 +42,19 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         private var thumbnail : ByteArray
 
         init {
-            app0Marker = byteArray.sliceArray(0 until 2)
-            length = byteArray.sliceArray(2 until 4)
-            identifier = byteArray.sliceArray(4 until 9)
-            version = byteArray.sliceArray(9 until 11)
-            densityUnits = byteArray.sliceArray(11 until 12)
-            xDensity = byteArray.sliceArray(12 until 14)
-            yDensity = byteArray.sliceArray(14 until 16)
-            xThumbnail = byteArray.sliceArray(16 until 17)
-            yThumbnail = byteArray.sliceArray(17 until 18)
+            app0Marker = byteArray.cut(0, 2)
+            length = byteArray.cut(2, 4)
+            identifier = byteArray.cut(4, 9)
+            version = byteArray.cut(9, 11)
+            densityUnits = byteArray.cut(11, 12)
+            xDensity = byteArray.cut(12, 14)
+            yDensity = byteArray.cut(14, 16)
+            xThumbnail = byteArray.cut(16, 17)
+            yThumbnail = byteArray.cut(17, 18)
 
             n = (length.byteToInt() - 16)/3
             endIndex = 18 + 3 * n
-            thumbnail = byteArray.sliceArray(18 until endIndex)
+            thumbnail = byteArray.cut(18, endIndex)
         }
     }
 
@@ -64,8 +65,8 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         private var app1Marker : ByteArray
         private var length : ByteArray
         init {
-            app1Marker = byteArray.sliceArray(0 until 2)
-            length = byteArray.sliceArray(2 until 4)
+            app1Marker = byteArray.cut(0, 2)
+            length = byteArray.cut(2, 4)
             endIndex = 2 + length.byteToInt()
         }
     }
