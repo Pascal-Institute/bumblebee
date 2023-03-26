@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation ("com.github.volta2030:bumblebee:1.0.18")
+    implementation ("com.github.volta2030:bumblebee:1.0.19")
 }
 
 ```
