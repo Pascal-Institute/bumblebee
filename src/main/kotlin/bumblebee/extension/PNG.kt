@@ -5,7 +5,13 @@ import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteToInt
+import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.toHex
+import bumblebee.core.ImgHeader
+import bumblebee.util.StringObj.CRC
+import bumblebee.util.StringObj.DATA
+import bumblebee.util.StringObj.SIZE
+import bumblebee.util.StringObj.TYPE
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.util.zip.CRC32
@@ -16,7 +22,7 @@ import kotlin.math.floor
 
 //PNG Version 1.2 / Author : G. Randers-Pehrson, et. al.
 class PNG(private var byteArray: ByteArray) : ImgPix() {
-    private val chunkArray = ArrayList<Chunk>()
+    private val chunkArray = ArrayList<ImgHeader>()
     init {
         imgFileType = ImgFileType.PNG
         extract()
@@ -24,34 +30,32 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
     override fun extract() {
 
-        val size = byteArray.size
+        val totalSize = byteArray.size
         var idx = 8
 
-        while (idx < size){
+        while (idx < totalSize){
 
-            val chunk = Chunk()
+            val chunk = ImgHeader()
 
             //length 4 byte
-            chunk.length = byteArray.sliceArray(idx until idx + 4)
+            chunk[SIZE] = byteArray.cut(idx , idx + 4)
             idx += 4
 
             //type 4 byte
-            chunk.type = byteArray.sliceArray(idx until idx + 4)
+            chunk[TYPE] = byteArray.cut(idx, idx + 4)
             idx += 4
 
-            val length = chunk.getLength()
-            chunk.initData(length)
-
+            val size = chunk[SIZE].byteToInt()
             try{
-                chunk.data = byteArray.sliceArray(idx until idx + length)
+                chunk[DATA] = byteArray.cut(idx, idx + size)
             }catch (e : Exception){
                 System.err.println("ERROR : Extract failed")
             }
 
-            idx += length
+            idx += size
 
             //crc 4 byte
-            chunk.crc = byteArray.sliceArray(idx until idx + 4)
+            chunk[CRC] = byteArray.cut(idx, idx + 4)
             idx += 4
 
             chunkArray.add(chunk)
@@ -61,25 +65,25 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         var byteArray = ByteArray(0)
 
         chunkArray.forEach{
-            when(it.type.toHex()){
-                ChunkType.IHDR.byte.toHex() -> {
-                    metaData.width = it.getWidth(it.data.sliceArray(0 until 4))
-                    metaData.height = it.getHeight(it.data.sliceArray(4 until 8))
-                    bitDepth = it.getBitDepth(it.data[8])
-                    metaData.colorType = ColorType.fromInt(it.getColorType(it.data[9]))
-                    bytesPerPixel = metaData.colorType.colorSpace * (bitDepth / OCTA)
+            when(ChunkType.fromByteArray(it[TYPE])){
+                ChunkType.IHDR -> {
+                    setMetaData(it)
+                    bitDepth = it[DATA][8].byteToInt()
+                    bytesPerPixel = colorType.colorSpace * (bitDepth / OCTA)
                 }
 
-                ChunkType.IDAT.byte.toHex() -> {
+                ChunkType.IDAT -> {
                     if(byteArray.isNotEmpty()){
-                        byteArray += it.data
+                        byteArray += it[DATA]
                     }else{
-                        byteArray = it.data
+                        byteArray = it[DATA]
                     }
                 }
 
-                ChunkType.PLTE.byte.toHex()->{
+                ChunkType.PLTE->{
                 }
+
+                else->{}
             }
         }
 
@@ -88,31 +92,37 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         offFilter(decompressedByteBuffer)
     }
 
+    override fun setMetaData(imgHeader: ImgHeader) {
+        metaData.width = imgHeader[DATA].cut(0, 4).byteToInt()
+        metaData.height = imgHeader[DATA].cut(4, 8).byteToInt()
+        metaData.colorType = ColorType.fromInt(imgHeader[DATA][9].byteToInt())
+    }
+
     private fun decompress(byteArray: ByteArray) : ByteBuffer{
         val decompresser = Inflater()
         decompresser.setInput(byteArray, 0, byteArray.size)
-        val decompressedByteArray = ByteArray(metaData.height * (1 + metaData.width * bytesPerPixel))
+        val decompressedByteArray = ByteArray(height * (1 + width * bytesPerPixel))
         decompresser.inflate(decompressedByteArray)
         decompresser.end()
         return ByteBuffer.wrap(decompressedByteArray)
     }
     private fun offFilter(decompressedByteBuffer: ByteBuffer) {
 
-        pixelByteBuffer = ByteBuffer.allocate(metaData.width * metaData.height * bytesPerPixel)
+        pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
 
-        for(col : Int in 0 until metaData.height ){
+        for(col : Int in 0 until height ){
 
             var filterType: FilterType = try{
                 FilterType.fromInt(
-                    decompressedByteBuffer.get(((metaData.width * bytesPerPixel) + 1) * col).byteToInt()
+                    decompressedByteBuffer.get(((width * bytesPerPixel) + 1) * col).byteToInt()
                 )
             }catch (e : Exception){
                 FilterType.NONE
             }
 
-            val from = ((metaData.width * bytesPerPixel) + 1) * col + 1
-            val fromReal = (metaData.width * bytesPerPixel) * col
-            val size = metaData.width * bytesPerPixel
+            val from = (width * bytesPerPixel + 1) * col + 1
+            val fromReal = width * bytesPerPixel * col
+            val size = width * bytesPerPixel
             val byteArray = ByteArray(size)
 
             for(i : Int in 0 until size){
@@ -151,7 +161,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
     private fun up(byteArray: ByteArray, from: Int) {
         var idx = from
         byteArray.forEach{
-            pixelByteBuffer.put((pixelByteBuffer.get(idx - (metaData.width * bytesPerPixel)) + it).toByte())
+            pixelByteBuffer.put((pixelByteBuffer.get(idx - width * bytesPerPixel) + it).toByte())
             idx++
         }
     }
@@ -163,14 +173,14 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
         byteArray.forEach{
             if(count < bytesPerPixel){
-                val b = pixelByteBuffer.get(idx - (metaData.width * bytesPerPixel)).toUByte().toInt()
+                val b = pixelByteBuffer.get(idx - width * bytesPerPixel).toUByte().toInt()
                 val c = floor( b  * 0.5 ).toInt()
                 pixelByteBuffer.put((c + it).toByte())
 
             }else{
 
                 val a = pixelByteBuffer.get(idx - bytesPerPixel).toUByte().toInt()
-                val b = pixelByteBuffer.get(idx - (metaData.width * bytesPerPixel)).toUByte().toInt()
+                val b = pixelByteBuffer.get(idx - width * bytesPerPixel).toUByte().toInt()
                 val c = floor((a  + b) * 0.5 ).toInt()
                 pixelByteBuffer.put((c + it).toByte())
             }
@@ -188,7 +198,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             if(count < bytesPerPixel){
 
                 val a = 0
-                val b = pixelByteBuffer.get(idx - (metaData.width * bytesPerPixel)).toUByte().toInt()
+                val b = pixelByteBuffer.get(idx - width * bytesPerPixel).toUByte().toInt()
                 val c = 0
 
                 val byteP = (a + b - c)
@@ -209,8 +219,8 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
             }else{
                 val a = pixelByteBuffer.get(idx - bytesPerPixel).toUByte().toInt()
-                val b = pixelByteBuffer.get(idx - (metaData.width * bytesPerPixel)).toUByte().toInt()
-                val c = pixelByteBuffer.get(idx - (metaData.width * bytesPerPixel) - bytesPerPixel).toUByte().toInt()
+                val b = pixelByteBuffer.get(idx - width * bytesPerPixel).toUByte().toInt()
+                val c = pixelByteBuffer.get(idx - width * bytesPerPixel - bytesPerPixel).toUByte().toInt()
 
                 val byteP = (a + b - c)
 
@@ -239,7 +249,10 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         IEND(byteArrayOf(73, 69, 78, 68)),
         PLTE(byteArrayOf(80, 76, 84, 69)),
         SRGB(byteArrayOf(115, 82, 71, 66)),
-        GAMA(byteArrayOf(103, 65, 77, 65)),
+        GAMA(byteArrayOf(103, 65, 77, 65));
+        companion object {
+            fun fromByteArray(byteArray: ByteArray) = ChunkType.values().first { it.byte.contentEquals(byteArray) }
+        }
     }
 
     private enum class FilterType(val num : Int) {
@@ -255,52 +268,29 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         }
     }
 
-    private class Chunk {
-        var length: ByteArray = ByteArray(4)
-        var type: ByteArray = ByteArray(4)
-        lateinit var data: ByteArray
-        var crc: ByteArray = ByteArray(4)
-
-        fun initData(size: Int) {
-            data = ByteArray(size)
-        }
-
-        fun getWidth(byteArray: ByteArray): Int {
-            return byteArray.byteToInt()
-        }
-
-        fun getHeight(byteArray: ByteArray): Int {
-            return byteArray.byteToInt()
-        }
-
-        fun getLength(): Int {
-            return length.byteToInt()
-        }
+    @Deprecated("instead use ImgHeader", ReplaceWith("ImgHeader"), level = DeprecationLevel.WARNING)
+    private class Chunk : ImgHeader() {
 
         fun getColorType(byte: Byte): Int {
             return byte.byteToInt()
         }
 
-        fun getBitDepth(byte: Byte): Int {
-            return byte.byteToInt()
-        }
-
         fun getCRC(): ByteArray {
             val checksum: Checksum = CRC32()
-            var source = type + data
+            var source = this[TYPE] + this[DATA]
             checksum.update(source, 0, source.size)
             return Converter.longToByteArray(checksum.value, 4)
         }
 
         fun generateData(imgPix: ImgPix) {
             var byteArray = imgPix.get()
-            data = ByteArray(imgPix.metaData.height * (imgPix.metaData.width * imgPix.bytesPerPixel + 1))
+            this[DATA] = ByteArray(imgPix.height * (imgPix.width * imgPix.bytesPerPixel + 1))
             var count = 0
-            data.forEachIndexed { index, byte ->
-                if(index % (imgPix.metaData.width * imgPix.bytesPerPixel + 1) == 0){
-                    data[index] = 0
+            this[DATA].forEachIndexed { index, byte ->
+                if(index % (imgPix.width * imgPix.bytesPerPixel + 1) == 0){
+                    this[DATA][index] = 0
                 }else{
-                    data[index] = byteArray[count]
+                    this[DATA][index] = byteArray[count]
                     count++
                 }
 
