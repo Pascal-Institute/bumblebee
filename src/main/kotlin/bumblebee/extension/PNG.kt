@@ -65,14 +65,14 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         var byteArray = ByteArray(0)
 
         chunkArray.forEach{
-            when(it[TYPE].toHex()){
-                ChunkType.IHDR.byte.toHex() -> {
+            when(ChunkType.fromByteArray(it[TYPE])){
+                ChunkType.IHDR -> {
                     setMetaData(it)
                     bitDepth = it[DATA][8].byteToInt()
                     bytesPerPixel = colorType.colorSpace * (bitDepth / OCTA)
                 }
 
-                ChunkType.IDAT.byte.toHex() -> {
+                ChunkType.IDAT -> {
                     if(byteArray.isNotEmpty()){
                         byteArray += it[DATA]
                     }else{
@@ -80,8 +80,10 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     }
                 }
 
-                ChunkType.PLTE.byte.toHex()->{
+                ChunkType.PLTE->{
                 }
+
+                else->{}
             }
         }
 
@@ -247,7 +249,10 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         IEND(byteArrayOf(73, 69, 78, 68)),
         PLTE(byteArrayOf(80, 76, 84, 69)),
         SRGB(byteArrayOf(115, 82, 71, 66)),
-        GAMA(byteArrayOf(103, 65, 77, 65)),
+        GAMA(byteArrayOf(103, 65, 77, 65));
+        companion object {
+            fun fromByteArray(byteArray: ByteArray) = ChunkType.values().first { it.byte.contentEquals(byteArray) }
+        }
     }
 
     private enum class FilterType(val num : Int) {
