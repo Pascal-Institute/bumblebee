@@ -1,11 +1,25 @@
 package bumblebee.extension
 
+import bumblebee.core.ImgHeader
 import bumblebee.core.ImgPix
+import bumblebee.util.Converter
+import bumblebee.util.Converter.Companion.byteArrOf
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.toHex
+import bumblebee.util.StringObj
+import bumblebee.util.StringObj.COEFFICIENT
+import bumblebee.util.StringObj.DATA
+import bumblebee.util.StringObj.ENDIAN
+import bumblebee.util.StringObj.IDENTIFIER
+import bumblebee.util.StringObj.NAME
+import bumblebee.util.StringObj.SIZE
+import bumblebee.util.StringObj.TEXT
+import bumblebee.util.StringObj.TRANSITION_METHOD
 
 class JPG(private var byteArray: ByteArray) : ImgPix(){
+    private val segmentArray = ArrayList<ImgHeader>()
+
     var startIndex = 0
     lateinit var soi : ByteArray
     private lateinit var app0 : APP0
@@ -17,12 +31,69 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
 
     override fun extract() {
 
-        byteArray.forEachIndexed { idx, it ->
-            if(it.toHex() + byteArray.get(idx + 1).toHex() == "FFE0"){
-                println()
+//        byteArray.forEachIndexed { idx, it ->
+//            if((it.toHex() + byteArray.get(idx + 1).toHex()).contains("FFE")){
+//                println()
+//            }
+//            print(it.toHex())
+//        }
+
+        val totalSize = byteArray.size
+        var idx = 2
+        var segmentDetector = byteArrayOf()
+
+        while (idx < totalSize){
+            segmentDetector = byteArray.cut(idx, idx + 2)
+
+            val segment = ImgHeader()
+
+            when(MarkerType.fromByteArray(segmentDetector)){
+
+//                MarkerType.APP0->{
+//                    segment[NAME] = MarkerType.APP0.byteArray
+//                    segment[SIZE] = byteArray.cut(idx + 2, idx + 4)
+//                }
+
+                MarkerType.APP1->{
+                    segment[NAME] = MarkerType.APP1.byteArray
+                    segment[SIZE] = byteArray.cut(idx + 2, idx + 4)
+                    segment[TEXT] = byteArray.cut(idx + 4, idx + 10)
+                    segment[ENDIAN] = byteArray.cut(idx + 10, idx + 12)
+                    val segmentSize = segment[NAME].size + segment[SIZE].byteToInt()
+                    segment[DATA] = byteArray.cut(idx + 12, idx + segmentSize)
+                    idx += segmentSize
+                }
+
+                MarkerType.APP12->{
+                    segment[NAME] = MarkerType.APP12.byteArray
+                    segment[SIZE] = byteArray.cut(idx + 2, idx + 4)
+                    segment[TEXT] = byteArray.cut(idx + 4, idx + 9)
+                    segment[IDENTIFIER] = byteArray.cut(idx + 9, idx + 10)
+                    val segmentSize = segment[NAME].size + segment[SIZE].byteToInt()
+                    segment[DATA] = byteArray.cut(idx + 10, idx + segmentSize)
+                    idx += segmentSize
+                }
+
+                MarkerType.APP14->{
+                    segment[NAME] = MarkerType.APP14.byteArray
+                    segment[SIZE] = byteArray.cut(idx + 2, idx + 4)
+                    segment[TEXT] = byteArray.cut(idx + 4, idx + 9)
+                    segment[TRANSITION_METHOD] = byteArray.cut(idx + 9, idx + 10)
+                    segment[COEFFICIENT] = byteArray.cut(idx + 12, idx + 14)
+                    segment["pointBlack"] = byteArray.cut(idx + 14, idx + 15)
+                    segment["pointWhite"] = byteArray.cut(idx + 15, idx + 16)
+                    segment["specialMethod"] = byteArray.cut(idx + 16, idx + 17)
+                    val segmentSize = segment[NAME].size + segment[SIZE].byteToInt()
+                    idx+=segmentSize
+                }
+
+                else -> {
+                    idx++
+                }
+
             }
-            print(it.toHex())
         }
+
 
         soi = byteArray.cut(startIndex, 2)
         startIndex += 2
@@ -75,6 +146,31 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
             app1Marker = byteArray.cut(0, 2)
             length = byteArray.cut(2, 4)
             endIndex = 2 + length.byteToInt()
+        }
+    }
+
+
+
+    private enum class MarkerType(val byteArray : ByteArray) {
+        DQT(byteArrOf("FF", "D8")),
+        APP0(byteArrOf("FF", "E0")),
+        APP1(byteArrOf("FF", "E1")),
+        APP2(byteArrOf("FF", "E2")),
+        APP3(byteArrOf("FF", "E3")),
+        APP4(byteArrOf("FF", "E4")),
+        APP5(byteArrOf("FF", "E5")),
+        APP6(byteArrOf("FF", "E6")),
+        APP7(byteArrOf("FF", "E7")),
+        APP8(byteArrOf("FF", "E8")),
+        APP9(byteArrOf("FF", "E9")),
+        APP10(byteArrOf("FF", "EA")),
+        APP11(byteArrOf("FF", "EB")),
+        APP12(byteArrOf("FF", "EC")),
+        APP13(byteArrOf("FF", "ED")),
+        APP14(byteArrOf("FF", "EE")),
+        APP15(byteArrOf("FF", "EF"));
+        companion object {
+            fun fromByteArray(byteArray: ByteArray) = MarkerType.values().first { it.byteArray.contentEquals(byteArray) }
         }
     }
 
