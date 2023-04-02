@@ -126,6 +126,12 @@ import javax.swing.WindowConstants
      fun set(row : Int, col : Int, color : Color) : ImgPix {
          return ImgProcess.set(this, row, col, color)
      }
+
+     fun getChannel(channelIndex : Int) : ImgPix{
+         val copy = this.clone()
+         return ImgProcess.getChannel(copy, channelIndex)
+     }
+
      fun invert() : ImgPix {
          manipulatedInstance = true
          return ImgProcess.invert(this)

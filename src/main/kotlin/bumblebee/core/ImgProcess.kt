@@ -149,7 +149,7 @@ class ImgProcess {
             return imgPix
         }
 
-        fun  pad(imgPix: ImgPix, padType: PadType, padSize: Int) : ImgPix{
+        fun pad(imgPix: ImgPix, padType: PadType, padSize: Int) : ImgPix{
 
             val width = padSize + imgPix.width + padSize
             val height = padSize + imgPix.height + padSize
@@ -297,6 +297,24 @@ class ImgProcess {
 
             imgPix.metaData.width = width
             imgPix.metaData.height = height
+            imgPix.pixelByteBuffer = pixelByteBuffer
+
+            return imgPix
+        }
+        fun getChannel(imgPix: ImgPix, chanelIndex : Int) : ImgPix{
+            val width = imgPix.width
+            val height = imgPix.height
+            val pixelByteBuffer = ByteBuffer.allocate(width * height * 1)
+            val originPixelByteBuffer = imgPix.pixelByteBuffer
+
+            for(i : Int in 0 until height){
+                for(j : Int in 0 until width){
+                    pixelByteBuffer.put(originPixelByteBuffer.get(i * imgPix.bytesPerPixel * width + j * imgPix.bytesPerPixel + chanelIndex))
+                }
+            }
+
+            imgPix.bytesPerPixel = 1
+            imgPix.metaData.colorType = ColorType.GRAY_SCALE
             imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
