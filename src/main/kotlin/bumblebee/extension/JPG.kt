@@ -16,6 +16,12 @@ import bumblebee.util.StringObj.NAME
 import bumblebee.util.StringObj.SIZE
 import bumblebee.util.StringObj.TEXT
 import bumblebee.util.StringObj.TRANSITION_METHOD
+import bumblebee.util.StringObj.UNITS
+import bumblebee.util.StringObj.VERSION
+import bumblebee.util.StringObj.X_DENSITY
+import bumblebee.util.StringObj.X_THUMBNAIL
+import bumblebee.util.StringObj.Y_DENSITY
+import bumblebee.util.StringObj.Y_THUMBNAIL
 
 class JPG(private var byteArray: ByteArray) : ImgPix(){
     private val segmentArray = ArrayList<ImgHeader>()
@@ -31,13 +37,6 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
 
     override fun extract() {
 
-//        byteArray.forEachIndexed { idx, it ->
-//            if((it.toHex() + byteArray.get(idx + 1).toHex()).contains("FFE")){
-//                println()
-//            }
-//            print(it.toHex())
-//        }
-
         val totalSize = byteArray.size
         var idx = 2
         var segmentDetector = byteArrayOf()
@@ -49,19 +48,41 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
 
             when(MarkerType.fromByteArray(segmentDetector)){
 
-//                MarkerType.APP0->{
-//                    segment[NAME] = MarkerType.APP0.byteArray
-//                    segment[SIZE] = byteArray.cut(idx + 2, idx + 4)
-//                }
+                MarkerType.APP0->{
+                    segment[NAME] = MarkerType.APP0.byteArray
+                    segment[SIZE] = byteArray.cut(idx + 2, idx + 4)
+                    segment[IDENTIFIER] = byteArray.cut(idx + 4, idx + 9)
+                    segment[VERSION] = byteArray.cut(idx + 9, idx + 11)
+                    segment[UNITS] = byteArray.cut(idx + 11, idx + 12)
+                    segment[X_DENSITY] = byteArray.cut(idx + 12, idx + 14)
+                    segment[Y_DENSITY] = byteArray.cut(idx + 14, idx + 16)
+                    segment[X_THUMBNAIL] = byteArray.cut(idx + 16, idx + 17)
+                    segment[Y_THUMBNAIL] = byteArray.cut(idx + 17, idx + 18)
+
+                    if(segment[SIZE].byteToInt() - 16 > 0){
+                        segment[DATA] = byteArray.cut(idx + 18 , idx + 18 + (segment[SIZE].byteToInt() - 16))
+                    }
+                    val nextIdx = segment[NAME].size + segment[SIZE].byteToInt()
+                    idx += nextIdx
+                }
 
                 MarkerType.APP1->{
                     segment[NAME] = MarkerType.APP1.byteArray
                     segment[SIZE] = byteArray.cut(idx + 2, idx + 4)
                     segment[TEXT] = byteArray.cut(idx + 4, idx + 10)
                     segment[ENDIAN] = byteArray.cut(idx + 10, idx + 12)
-                    val segmentSize = segment[NAME].size + segment[SIZE].byteToInt()
-                    segment[DATA] = byteArray.cut(idx + 12, idx + segmentSize)
-                    idx += segmentSize
+                    segment[DATA] = byteArray.cut(idx + 12, idx + segment[SIZE].byteToInt())
+                    val nextIdx = segment[NAME].size + segment[SIZE].byteToInt()
+                    idx += nextIdx
+                }
+
+                MarkerType.APP2->{
+                    segment[NAME] = MarkerType.APP1.byteArray
+                    segment[SIZE] = byteArray.cut(idx + 2, idx + 4)
+                    segment[TEXT] = byteArray.cut(idx + 4, idx + 10)
+                    segment[DATA] = byteArray.cut(idx + 10, idx + segment[SIZE].byteToInt())
+                    val nextIdx = segment[NAME].size + segment[SIZE].byteToInt()
+                    idx += nextIdx
                 }
 
                 MarkerType.APP12->{
@@ -69,9 +90,18 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
                     segment[SIZE] = byteArray.cut(idx + 2, idx + 4)
                     segment[TEXT] = byteArray.cut(idx + 4, idx + 9)
                     segment[IDENTIFIER] = byteArray.cut(idx + 9, idx + 10)
-                    val segmentSize = segment[NAME].size + segment[SIZE].byteToInt()
-                    segment[DATA] = byteArray.cut(idx + 10, idx + segmentSize)
-                    idx += segmentSize
+                    segment[DATA] = byteArray.cut(idx + 10, idx + segment[SIZE].byteToInt())
+                    val nextIdx = segment[NAME].size + segment[SIZE].byteToInt()
+                    idx += nextIdx
+                }
+
+                MarkerType.APP13->{
+                    segment[NAME] = MarkerType.APP13.byteArray
+                    segment[SIZE] = byteArray.cut(idx + 2, idx + 4)
+                    segment[IDENTIFIER] = byteArray.cut(idx + 4, idx + 9)
+                    segment[DATA] = byteArray.cut(idx + 9, idx + segment[SIZE].byteToInt())
+                    val nextIdx = segment[NAME].size + segment[SIZE].byteToInt()
+                    idx += nextIdx
                 }
 
                 MarkerType.APP14->{
@@ -85,6 +115,14 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
                     segment["specialMethod"] = byteArray.cut(idx + 16, idx + 17)
                     val segmentSize = segment[NAME].size + segment[SIZE].byteToInt()
                     idx+=segmentSize
+                }
+
+                MarkerType.DQT -> {
+
+                }
+
+                MarkerType.SOS -> {
+                    println("welcome!")
                 }
 
                 else -> {
@@ -152,7 +190,9 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
 
 
     private enum class MarkerType(val byteArray : ByteArray) {
+        SOS(byteArrOf("FF","DA")),
         DQT(byteArrOf("FF", "D8")),
+        EOI(byteArrOf("FF", "D9")),
         APP0(byteArrOf("FF", "E0")),
         APP1(byteArrOf("FF", "E1")),
         APP2(byteArrOf("FF", "E2")),

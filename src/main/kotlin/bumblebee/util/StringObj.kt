@@ -13,6 +13,12 @@ object StringObj {
     const val IDENTIFIER = "identifier"
     const val TEXT = "text"
     const val ENDIAN = "endian"
-    const val TRANSITION_METHOD = "transition_method"
+    const val TRANSITION_METHOD = "transitionMethod"
     const val COEFFICIENT = "coefficient"
+    const val UNITS = "units"
+    const val VERSION = "version"
+    const val X_DENSITY = "xDensity"
+    const val X_THUMBNAIL = "xThumbnail"
+    const val Y_THUMBNAIL = "yThumbnail"
+    const val Y_DENSITY = "yDensity"
 }
