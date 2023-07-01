@@ -62,6 +62,14 @@ class Converter {
             return hexString.reversed()
         }
 
+        fun byteArrOf(vararg element : String) : ByteArray{
+            var byteArray = byteArrayOf()
+            element.forEach {
+               byteArray += it.hexToInt().toByte()
+            }
+            return byteArray
+        }
+
         fun String.hexToInt() : Int{
             var coef = 1
             var num = 0
