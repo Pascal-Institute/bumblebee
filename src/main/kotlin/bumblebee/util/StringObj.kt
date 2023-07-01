@@ -17,6 +17,7 @@ object StringObj {
     const val TRANSITION_METHOD = "transitionMethod"
     const val COEFFICIENT = "coefficient"
     const val PRECISION = "precision"
+    const val RESTART_INTERVAL = "restartInterval"
     const val UNITS = "units"
     const val VERSION = "version"
     const val X_DENSITY = "xDensity"
