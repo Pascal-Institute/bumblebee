@@ -7,7 +7,7 @@ import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.intToByteArray
-import bumblebee.util.Converter.Companion.invert
+import bumblebee.util.Operator.Companion.invert
 import bumblebee.util.Converter.Companion.toHex
 import java.nio.ByteBuffer
 
