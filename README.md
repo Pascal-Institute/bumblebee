@@ -43,10 +43,7 @@ png bmp tiff ico
 
 ## 2. Support
 
-### - API documentation : use Dokka
-```
-./gradlew dokkaHtml
-```
+### - API documentation : https://volta2030.github.io/bumblebee_api/index.html
 
 ### - Github : discussions
 
