@@ -7,7 +7,11 @@ import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Operator.Companion.invert
 import bumblebee.core.ImgHeader
 import bumblebee.util.StringObj.BIT_COUNT
+import bumblebee.util.StringObj.COUNT
 import bumblebee.util.StringObj.HEIGHT
+import bumblebee.util.StringObj.NUM_OF_COLORS
+import bumblebee.util.StringObj.PLANES
+import bumblebee.util.StringObj.REVERSED
 import bumblebee.util.StringObj.SIZE
 import bumblebee.util.StringObj.START_OFFSET
 import bumblebee.util.StringObj.TYPE
@@ -25,16 +29,16 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
 
     override fun extract() {
         //6 bytes.
-        header["reversed"] = byteArray.cut(0, 2)
+        header[REVERSED] = byteArray.cut(0, 2)
         header[TYPE] = byteArray.cut(2, 4)
-        header["count"] = byteArray.cut(4, 6)
+        header[COUNT] = byteArray.cut(4, 6)
 
         //16 bytes.
         imageDir[WIDTH] = byteArray.cut(6, 7).invert()
         imageDir[HEIGHT] = byteArray.cut(7, 8).invert()
-        imageDir["numberOfColors"] = byteArray.cut(8, 9).invert()
-        imageDir["reversed"] = byteArray.cut(9, 10).invert()
-        imageDir["planes"] = byteArray.cut(10, 12).invert()
+        imageDir[NUM_OF_COLORS] = byteArray.cut(8, 9).invert()
+        imageDir[REVERSED] = byteArray.cut(9, 10).invert()
+        imageDir[PLANES] = byteArray.cut(10, 12).invert()
         imageDir[BIT_COUNT] = byteArray.cut(12, 14).invert()
         imageDir[SIZE] = byteArray.cut(14, 18).invert()
         imageDir[START_OFFSET] = byteArray.cut(18, 22).invert()
