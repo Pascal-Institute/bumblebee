@@ -11,10 +11,13 @@ import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.intToByteArray
 import bumblebee.util.Operator.Companion.invert
 import bumblebee.util.Converter.Companion.toHex
+import bumblebee.util.StringObj.BYTE_ORDER
 import bumblebee.util.StringObj.DATA
 import bumblebee.util.StringObj.DATA_COUNT
 import bumblebee.util.StringObj.DATA_OFFSET
 import bumblebee.util.StringObj.DATA_TYPE
+import bumblebee.util.StringObj.FORTY_TWO
+import bumblebee.util.StringObj.IFD_OFFSET
 import bumblebee.util.StringObj.TAG_ID
 import java.nio.ByteBuffer
 
@@ -154,20 +157,16 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     }
 
 //Image File Header
-private class IFH {
-    lateinit var byteOrder : ByteArray
-    lateinit var fortyTwo : ByteArray
-    lateinit var ifdOffset : ByteArray
-
+private class IFH  : ImgHeader(){
     fun extract(imgFileType: ImgFileType, ifdArray: ArrayList<IFD>, byteArray: ByteArray){
-        byteOrder = byteArray.cut(0, 2)
-        fortyTwo = byteArray.cut(2, 4)
-        ifdOffset = byteArray.cut(4, 8)
+        this[BYTE_ORDER] = byteArray.cut(0, 2)
+        this[FORTY_TWO] = byteArray.cut(2, 4)
+        this[IFD_OFFSET] = byteArray.cut(4, 8)
 
         val startIdx = if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
-            ifdOffset.invert().byteToInt()
+            this[IFD_OFFSET].invert().byteToInt()
         }else{
-            ifdOffset.byteToInt()
+            this[IFD_OFFSET].byteToInt()
         }
 
         do{

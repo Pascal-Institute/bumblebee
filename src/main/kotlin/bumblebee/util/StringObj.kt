@@ -37,4 +37,7 @@ object StringObj {
     const val X_THUMBNAIL = "xThumbnail"
     const val Y_THUMBNAIL = "yThumbnail"
     const val Y_DENSITY = "yDensity"
+    const val BYTE_ORDER ="byteOrder"
+    const val FORTY_TWO = "42"
+    const val IFD_OFFSET ="ifdOffset"
 }
