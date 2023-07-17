@@ -24,7 +24,6 @@ import javax.swing.WindowConstants
 
     val metaData = MetaData(0, 0, ColorType.GRAY_SCALE)
     protected val OCTA = 8
-    var bytesPerPixel = 0
     var bitDepth = 0
     val width : Int
         get() = metaData.width
@@ -32,6 +31,8 @@ import javax.swing.WindowConstants
         get() = metaData.height
     val colorType : ColorType
         get() = metaData.colorType
+    val bytesPerPixel : Int
+        get() = metaData.colorType.bytesPerPixel
 
     private var manipulatedInstance = false
     var pixelByteBuffer: ByteBuffer = ByteBuffer.allocate(0)
@@ -41,7 +42,7 @@ import javax.swing.WindowConstants
         metaData.width = width
         metaData.height = height
         metaData.colorType = colorType
-        this.pixelByteBuffer = ByteBuffer.allocate(width * height * colorType.colorSpace)
+        this.pixelByteBuffer = ByteBuffer.allocate(width * height * colorType.bytesPerPixel)
     }
 
     constructor(filePath : String) : this() {
@@ -49,7 +50,6 @@ import javax.swing.WindowConstants
         metaData.width = imgPix.width
         metaData.height = imgPix.height
         metaData.colorType = imgPix.colorType
-        bytesPerPixel = imgPix.bytesPerPixel
         bitDepth = imgPix.bitDepth
         this.pixelByteBuffer = imgPix.pixelByteBuffer
 

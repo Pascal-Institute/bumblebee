@@ -46,7 +46,6 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
 
         setMetaData(infoHeader)
 
-        bytesPerPixel = colorType.colorSpace
         pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
 
         val startIdx = fileHeader[START_OFFSET].byteToInt()

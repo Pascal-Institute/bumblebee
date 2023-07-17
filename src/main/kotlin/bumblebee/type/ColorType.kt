@@ -1,6 +1,6 @@
 package bumblebee.type
 
-enum class ColorType(val num: Int, val colorSpace: Int) {
+enum class ColorType(val num: Int, val bytesPerPixel: Int) {
     GRAY_SCALE(0, 1),
     TRUE_COLOR(2, 3),
     INDEXED_COLOR(3, 4),

@@ -69,7 +69,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                 ChunkType.IHDR -> {
                     setMetaData(it)
                     bitDepth = it[DATA][8].byteToInt()
-                    bytesPerPixel = colorType.colorSpace * (bitDepth / OCTA)
+//                  bytesPerPixel = colorType.colorSpace * (bitDepth / OCTA)
                 }
 
                 ChunkType.IDAT -> {

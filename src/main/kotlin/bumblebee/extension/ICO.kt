@@ -45,7 +45,6 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
 
         setMetaData(imageDir)
 
-        bytesPerPixel = colorType.colorSpace
         pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
 
         val startIdx = imageDir[START_OFFSET].byteToInt()

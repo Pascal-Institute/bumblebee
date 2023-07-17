@@ -2,7 +2,6 @@ package bumblebee.extension
 
 import bumblebee.core.ImgHeader
 import bumblebee.core.ImgPix
-import bumblebee.extension.TIFF.Companion.toEndian
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
 import bumblebee.util.Converter.Companion.byteToInt
@@ -64,13 +63,14 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                     TagType.IMAGE_WIDTH -> metaData.width = tag[DATA].byteToInt()
                     TagType.IMAGE_LENGTH -> metaData.height = tag[DATA].byteToInt()
                     TagType.SAMPLES_PER_PIXEL -> {
-                        bytesPerPixel = tag[DATA].byteToInt()
                         if(bytesPerPixel == 3){
                             metaData.colorType = ColorType.TRUE_COLOR
+                        }else{
+                            metaData.colorType = ColorType.GRAY_SCALE
                         }
                     }
                     TagType.COLOR_MAP -> {
-//                        metaData.colorType = ColorType.TRUE_COLOR
+                        metaData.colorType = ColorType.TRUE_COLOR
                     }
                     TagType.COMPRESSION -> {
                         compressionType = CompressionType.fromInt(tag[DATA].byteToInt())
@@ -89,6 +89,8 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
             it.tagArray.forEach {tag->
                 if(TagType.fromByteArray(tag[TAG_ID]) == TagType.STRIP_OFFSETS) {
                         extractRasterImage(tag)
+                }else{
+                    println(TagType.fromByteArray(tag[TAG_ID]))
                 }
             }
         }
@@ -110,7 +112,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                     var counts =  byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
                     //Do LZW
-                    //pixelByteBuffer.put(decodeLZW(byteArray.cut(startIdx until startIdx + counts)))
+                    pixelByteBuffer.put(lzwDecode(byteArray.cut(startIdx, startIdx + counts)))
 
                     startIdx += counts
                 }
@@ -120,8 +122,9 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                 for(i : Int in 0 until stripCount){
                     var counts = byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
-                    pixelByteBuffer.put(packBitsDecode(byteArray.cut(startIdx, startIdx + counts)))
-
+                    var result = packBitsDecode(byteArray.cut(startIdx, startIdx + counts))
+                    pixelByteBuffer.put(result)
+                    println(result.size)
                     startIdx += counts
                 }
 
@@ -131,6 +134,56 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 pixelByteBuffer.put(byteArray.cut(startIdx, endIdx))
             }
         }
+    }
+
+    private fun lzwDecode(encodedData: ByteArray): ByteArray {
+        val dictionary = mutableMapOf<Int, ByteArray>()
+        var nextCode = 256
+        val result = mutableListOf<Byte>()
+
+        // 초기 사전 초기화
+        for (i in 0 until 256) {
+            dictionary[i] = byteArrayOf(i.toByte())
+        }
+
+        var currentCode = encodedData[0].toInt() and 0xFF
+        var currentSequence = dictionary[currentCode]?.toMutableList() ?: mutableListOf()
+
+        for (i in 1 until encodedData.size) {
+            val code = encodedData[i].toInt() and 0xFF
+
+            if (dictionary.containsKey(code)) {
+                val sequence = dictionary[code]
+                currentSequence.addAll(sequence!!.toList())
+
+                // 결과에 현재 시퀀스 추가
+                result.addAll(currentSequence)
+
+                // 새로운 엔트리 생성
+                val newEntry = currentSequence.dropLast(1) + currentSequence.last()
+                dictionary[nextCode] = newEntry.toByteArray()
+                nextCode++
+
+                // 다음 시퀀스 초기화
+                currentSequence = sequence.toMutableList()
+            } else {
+                // 새로운 엔트리 생성
+                val newEntry = currentSequence + currentSequence.first()
+                dictionary[nextCode] = newEntry.toByteArray()
+                nextCode++
+
+                // 결과에 현재 시퀀스 추가
+                result.addAll(currentSequence)
+
+                // 다음 시퀀스 초기화
+                currentSequence = newEntry.toMutableList()
+            }
+        }
+
+        val byteArray = result.toByteArray()
+
+        // 결과 반환
+        return result.toByteArray()
     }
 
     private fun packBitsDecode(byteArray: ByteArray) : ByteArray{
@@ -152,7 +205,6 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 i += 2
             }
         }
-        println(returnByteArray.size)
         return returnByteArray
     }
 

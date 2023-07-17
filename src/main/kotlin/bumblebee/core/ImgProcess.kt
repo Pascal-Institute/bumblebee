@@ -96,7 +96,6 @@ class ImgProcess {
             val width = imgPix.width
             val height = imgPix.height
 
-            imgPix.bytesPerPixel = 1
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
 
             val pixelByteBuffer = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
@@ -313,7 +312,6 @@ class ImgProcess {
                 }
             }
 
-            imgPix.bytesPerPixel = 1
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
             imgPix.pixelByteBuffer = pixelByteBuffer
 

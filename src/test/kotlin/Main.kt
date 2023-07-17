@@ -4,6 +4,7 @@ import bumblebee.core.ImgProcess
 import bumblebee.type.FilterType
 
 fun main(){
-    val img = ImgPix("src/test/resources/abc.jpg")
+    val img = ImgPix("src/main/resources/kids.tif")
+    img.show()
 
 }
