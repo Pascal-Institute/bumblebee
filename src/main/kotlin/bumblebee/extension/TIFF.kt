@@ -137,53 +137,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
     }
 
     private fun lzwDecode(encodedData: ByteArray): ByteArray {
-        val dictionary = mutableMapOf<Int, ByteArray>()
-        var nextCode = 256
-        val result = mutableListOf<Byte>()
-
-        // 초기 사전 초기화
-        for (i in 0 until 256) {
-            dictionary[i] = byteArrayOf(i.toByte())
-        }
-
-        var currentCode = encodedData[0].toInt() and 0xFF
-        var currentSequence = dictionary[currentCode]?.toMutableList() ?: mutableListOf()
-
-        for (i in 1 until encodedData.size) {
-            val code = encodedData[i].toInt() and 0xFF
-
-            if (dictionary.containsKey(code)) {
-                val sequence = dictionary[code]
-                currentSequence.addAll(sequence!!.toList())
-
-                // 결과에 현재 시퀀스 추가
-                result.addAll(currentSequence)
-
-                // 새로운 엔트리 생성
-                val newEntry = currentSequence.dropLast(1) + currentSequence.last()
-                dictionary[nextCode] = newEntry.toByteArray()
-                nextCode++
-
-                // 다음 시퀀스 초기화
-                currentSequence = sequence.toMutableList()
-            } else {
-                // 새로운 엔트리 생성
-                val newEntry = currentSequence + currentSequence.first()
-                dictionary[nextCode] = newEntry.toByteArray()
-                nextCode++
-
-                // 결과에 현재 시퀀스 추가
-                result.addAll(currentSequence)
-
-                // 다음 시퀀스 초기화
-                currentSequence = newEntry.toMutableList()
-            }
-        }
-
-        val byteArray = result.toByteArray()
-
-        // 결과 반환
-        return result.toByteArray()
+        return encodedData
     }
 
     private fun packBitsDecode(byteArray: ByteArray) : ByteArray{
@@ -207,6 +161,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         }
         return returnByteArray
     }
+
 
 //Image File Header
 private class IFH  : ImgHeader(){
