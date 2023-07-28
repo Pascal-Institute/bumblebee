@@ -56,6 +56,8 @@ class ImgProcess {
 
             val processedImgPix = imgPix.pad(PadType.AVERAGE, 1).crop(1, 1, oriW + 1, oriH + 1)
 
+            //Actual pixels that have been truncated
+            val processedPixelByteBuffer = processedImgPix.pixelByteBuffer
 
             for (i: Int in 0 until height) {
                 for (j: Int in 0 until width) {
@@ -70,8 +72,6 @@ class ImgProcess {
                         val y0 = floor(y).toInt()
                         val y1 = y0 + 1
 
-                        //Actual pixels that have been truncated
-                        val processedPixelByteBuffer = processedImgPix.pixelByteBuffer
 
                         val p00 = processedPixelByteBuffer.get(k + imgPix.bytesPerPixel * (x0 + processedImgPix.width * y0))
                         val p10 = processedPixelByteBuffer.get(k + imgPix.bytesPerPixel * (x1 + processedImgPix.width * y0))
@@ -101,54 +101,10 @@ class ImgProcess {
             return imgPix
         }
 
-//        fun resize(imgPix: ImgPix, width: Int, height: Int) : ImgPix{
-//
-//            val pixelByteBuffer = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
-//
-//            val oriW = imgPix.width
-//            val oriH = imgPix.height
-//
-//            val copy = imgPix.pad(PadType.AVERAGE, 1).crop(1, 1, oriW + 1, oriH + 1)
-//
-//            val widthRatioPixel =  oriW/ width.toDouble()
-//            val heightRatioPixel = oriH/ height.toDouble()
-//
-//                for(i : Int in 0 until height){
-//                    for(j : Int in 0 until width){
-//                        for(k : Int in 0 until imgPix.bytesPerPixel){
-//                            val p00 = copy.pixelByteBuffer.get(k + imgPix.bytesPerPixel * (floor(j * widthRatioPixel).toInt())) + copy.width * imgPix.bytesPerPixel * (floor(i * heightRatioPixel).toInt())
-//                            val p10 = copy.pixelByteBuffer.get(k + imgPix.bytesPerPixel *  (floor((j + 1) * widthRatioPixel).toInt())) + copy.width * imgPix.bytesPerPixel * (floor(i * heightRatioPixel).toInt())
-//                            val p01 = copy.pixelByteBuffer.get(k + imgPix.bytesPerPixel * (floor(j * widthRatioPixel).toInt())) + copy.width * imgPix.bytesPerPixel * (floor((i + 1) * heightRatioPixel).toInt())
-//                            val p11 = copy.pixelByteBuffer.get(k + imgPix.bytesPerPixel * (floor((j + 1) * widthRatioPixel).toInt())) + copy.width * imgPix.bytesPerPixel * (floor((i + 1) * heightRatioPixel).toInt())
-//
-//                            val fx1 = 0.5
-//                            val fx2 = 0.5
-//                            val fy1 = 0.5
-//                            val fy2 = 0.5
-//
-//                            val fa = p00 * fx2 + p10 * fx1
-//                            val fb = p01 * fx2 + p11 * fx1
-//
-//                            val value = (fa * fy2 + fb * fy1).toInt().toByte()
-//
-//                            println(value.toInt())
-//
-//                            try{
-//                                pixelByteBuffer.put(k + imgPix.bytesPerPixel * j + (width * imgPix.bytesPerPixel * i), value)
-//                            }catch (e : Exception){
-//
-//                            }
-//
-//                        }
-//                    }
-//                }
-//            imgPix.metaData.width = width
-//            imgPix.metaData.height = height
-//            imgPix.pixelByteBuffer = pixelByteBuffer
-//
-//            return imgPix
-//        }
-
+        /**
+        * This function inverts the color of pixel
+        * @return[ImgPix]
+        * */
         fun invert(imgPix: ImgPix) : ImgPix {
 
             val width = imgPix.width
