@@ -123,10 +123,6 @@ class Converter {
             return this.toHex().hexToInt()
         }
 
-        fun ByteArray.invert() : ByteArray{
-            return this.reversedArray()
-        }
-
         fun ByteArray.cut(start : Int, end : Int) : ByteArray{
             return this.sliceArray(start until end)
         }

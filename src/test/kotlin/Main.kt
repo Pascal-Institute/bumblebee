@@ -3,4 +3,8 @@ import bumblebee.core.ImgPix
 import bumblebee.core.ImgProcess
 import bumblebee.type.FilterType
 
-fun main(){}
+fun main(){
+    val img = ImgPix("src/main/resources/kids.tif")
+    img.show()
+
+}

@@ -7,6 +7,7 @@ import bumblebee.util.Converter.Companion.colorToByte
 import bumblebee.util.Histogram
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
+import kotlin.math.floor
 
 class ImgProcess {
     companion object{
@@ -42,6 +43,111 @@ class ImgProcess {
 
             return imgPix
         }
+
+        fun resize(imgPix: ImgPix, width: Int, height: Int): ImgPix {
+            val pixelByteBuffer = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
+
+            val oriW = imgPix.width
+            val oriH = imgPix.height
+
+            val widthRatioPixel = imgPix.width.toDouble() / width
+            val heightRatioPixel = imgPix.height.toDouble() / height
+
+
+            val processedImgPix = imgPix.pad(PadType.AVERAGE, 1).crop(1, 1, oriW + 1, oriH + 1)
+
+
+            for (i: Int in 0 until height) {
+                for (j: Int in 0 until width) {
+                    for (k: Int in 0 until imgPix.bytesPerPixel) {
+
+                        //Ideal pixels (x, y)
+                        val x = j * widthRatioPixel
+                        val y = i * heightRatioPixel
+
+                        val x0 = floor(x).toInt()
+                        val x1 = x0 + 1
+                        val y0 = floor(y).toInt()
+                        val y1 = y0 + 1
+
+                        //Actual pixels that have been truncated
+                        val processedPixelByteBuffer = processedImgPix.pixelByteBuffer
+
+                        val p00 = processedPixelByteBuffer.get(k + imgPix.bytesPerPixel * (x0 + processedImgPix.width * y0))
+                        val p10 = processedPixelByteBuffer.get(k + imgPix.bytesPerPixel * (x1 + processedImgPix.width * y0))
+                        val p01 = processedPixelByteBuffer.get(k + imgPix.bytesPerPixel * (x0 + processedImgPix.width * y1))
+                        val p11 = processedPixelByteBuffer.get(k + imgPix.bytesPerPixel * (x1 + processedImgPix.width * y1))
+
+                        //Weight
+                        val fx = x - x0
+                        val fy = y - y0
+
+                        //Interpolation for x
+                        val fa = p00 * (1 - fx) + p10 * fx
+                        val fb = p01 * (1 - fx) + p11 * fx
+
+                        //Interpolation for y
+                        val value = (fa * (1 - fy) + fb * fy).toInt().toByte()
+
+                        pixelByteBuffer.put(k + imgPix.bytesPerPixel * j + (width * imgPix.bytesPerPixel * i), value)
+                    }
+                }
+            }
+            imgPix.metaData.width = width
+            imgPix.metaData.height = height
+            imgPix.pixelByteBuffer = pixelByteBuffer
+
+            // bilinear interpolation 완료
+            return imgPix
+        }
+
+//        fun resize(imgPix: ImgPix, width: Int, height: Int) : ImgPix{
+//
+//            val pixelByteBuffer = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
+//
+//            val oriW = imgPix.width
+//            val oriH = imgPix.height
+//
+//            val copy = imgPix.pad(PadType.AVERAGE, 1).crop(1, 1, oriW + 1, oriH + 1)
+//
+//            val widthRatioPixel =  oriW/ width.toDouble()
+//            val heightRatioPixel = oriH/ height.toDouble()
+//
+//                for(i : Int in 0 until height){
+//                    for(j : Int in 0 until width){
+//                        for(k : Int in 0 until imgPix.bytesPerPixel){
+//                            val p00 = copy.pixelByteBuffer.get(k + imgPix.bytesPerPixel * (floor(j * widthRatioPixel).toInt())) + copy.width * imgPix.bytesPerPixel * (floor(i * heightRatioPixel).toInt())
+//                            val p10 = copy.pixelByteBuffer.get(k + imgPix.bytesPerPixel *  (floor((j + 1) * widthRatioPixel).toInt())) + copy.width * imgPix.bytesPerPixel * (floor(i * heightRatioPixel).toInt())
+//                            val p01 = copy.pixelByteBuffer.get(k + imgPix.bytesPerPixel * (floor(j * widthRatioPixel).toInt())) + copy.width * imgPix.bytesPerPixel * (floor((i + 1) * heightRatioPixel).toInt())
+//                            val p11 = copy.pixelByteBuffer.get(k + imgPix.bytesPerPixel * (floor((j + 1) * widthRatioPixel).toInt())) + copy.width * imgPix.bytesPerPixel * (floor((i + 1) * heightRatioPixel).toInt())
+//
+//                            val fx1 = 0.5
+//                            val fx2 = 0.5
+//                            val fy1 = 0.5
+//                            val fy2 = 0.5
+//
+//                            val fa = p00 * fx2 + p10 * fx1
+//                            val fb = p01 * fx2 + p11 * fx1
+//
+//                            val value = (fa * fy2 + fb * fy1).toInt().toByte()
+//
+//                            println(value.toInt())
+//
+//                            try{
+//                                pixelByteBuffer.put(k + imgPix.bytesPerPixel * j + (width * imgPix.bytesPerPixel * i), value)
+//                            }catch (e : Exception){
+//
+//                            }
+//
+//                        }
+//                    }
+//                }
+//            imgPix.metaData.width = width
+//            imgPix.metaData.height = height
+//            imgPix.pixelByteBuffer = pixelByteBuffer
+//
+//            return imgPix
+//        }
 
         fun invert(imgPix: ImgPix) : ImgPix {
 
@@ -96,7 +202,6 @@ class ImgProcess {
             val width = imgPix.width
             val height = imgPix.height
 
-            imgPix.bytesPerPixel = 1
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
 
             val pixelByteBuffer = ByteBuffer.allocate(width * height * imgPix.bytesPerPixel)
@@ -187,7 +292,8 @@ class ImgProcess {
             for(i : Int in padSize until height - padSize){
                 for(j : Int in padSize  until width - padSize){
                     for(k : Int in 0 until bytesPerPixel){
-                        pixelByteBuffer.put(j * bytesPerPixel + k + i * bytesPerPixel * width,
+
+                        pixelByteBuffer.put(k + j * bytesPerPixel + i * bytesPerPixel * width,
                             imgPix.pixelByteBuffer.get((j-padSize) * bytesPerPixel + k + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
                     }
                 }
@@ -313,11 +419,11 @@ class ImgProcess {
                 }
             }
 
-            imgPix.bytesPerPixel = 1
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
             imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
         }
+
     }
 }
