@@ -171,6 +171,11 @@ import javax.swing.WindowConstants
          return ImgProcess.crop(this, row, col, width, height)
      }
 
+     fun resize(width: Int, height: Int) : ImgPix {
+         manipulatedInstance = true
+         return ImgProcess.resize(this, width, height)
+     }
+
      fun toGrayScale() : ImgPix {
          manipulatedInstance = true
          return ImgProcess.toGrayScale(this)
