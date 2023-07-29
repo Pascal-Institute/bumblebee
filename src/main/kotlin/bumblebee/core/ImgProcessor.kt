@@ -9,7 +9,7 @@ import java.nio.ByteBuffer
 import kotlin.experimental.inv
 import kotlin.math.floor
 
-class ImgProcess {
+class ImgProcessor {
     companion object{
         fun set(imgPix : ImgPix, row : Int, col : Int, color : Color) : ImgPix {
             if (imgPix.colorType != color.colorType){
@@ -149,6 +149,13 @@ class ImgProcess {
 
             imgPix.pixelByteBuffer = pixelByteBuffer
 
+            return imgPix
+        }
+
+        fun rotate(imgPix: ImgPix, degree: Int) : ImgPix{
+            return imgPix
+        }
+        fun crop(imgPix: ImgPix, degree : Int) : ImgPix{
             return imgPix
         }
 

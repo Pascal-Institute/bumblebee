@@ -149,56 +149,62 @@ import javax.swing.WindowConstants
      open fun setMetaData(imgHeader: ImgHeader){}
 
      fun set(row : Int, col : Int, color : Color) : ImgPix {
-         return ImgProcess.set(this, row, col, color)
+         return ImgProcessor.set(this, row, col, color)
      }
 
      fun getChannel(channelIndex : Int) : ImgPix{
          val copy = this.clone()
-         return ImgProcess.getChannel(copy, channelIndex)
+         return ImgProcessor.getChannel(copy, channelIndex)
      }
 
      fun invert() : ImgPix {
          manipulatedInstance = true
-         return ImgProcess.invert(this)
+         return ImgProcessor.invert(this)
      }
+
      fun flip(orientation: OrientationType) : ImgPix {
          manipulatedInstance = true
-         return ImgProcess.flip(this, orientation)
+         return ImgProcessor.flip(this, orientation)
+     }
+
+     fun rotate(degree : Int) : ImgPix {
+         manipulatedInstance = true
+         return ImgProcessor.rotate(this, degree)
      }
 
      fun crop(row : Int, col : Int, width : Int, height : Int) : ImgPix {
          manipulatedInstance = true
-         return ImgProcess.crop(this, row, col, width, height)
+         return ImgProcessor.crop(this, row, col, width, height)
      }
 
      fun resize(width: Int, height: Int) : ImgPix {
          manipulatedInstance = true
-         return ImgProcess.resize(this, width, height)
+         return ImgProcessor.resize(this, width, height)
      }
 
      fun toGrayScale() : ImgPix {
          manipulatedInstance = true
-         return ImgProcess.toGrayScale(this)
+         return ImgProcessor.toGrayScale(this)
      }
 
      fun threshold(thresholdType: ThresholdType): ImgPix {
          manipulatedInstance = true
-         return ImgProcess.threshold(this, thresholdType)
+         return ImgProcessor.threshold(this, thresholdType)
      }
 
      fun threshold(level : Int) : ImgPix {
          manipulatedInstance = true
-         return ImgProcess.threshold(this, level)
+         return ImgProcessor.threshold(this, level)
      }
 
      fun pad(padType: PadType, padSize : Int) : ImgPix{
          manipulatedInstance = true
-         return ImgProcess.pad(this, padType, padSize)
+         return ImgProcessor.pad(this, padType, padSize)
      }
 
      fun filter(filterType: FilterType, filterSize : Int) : ImgPix{
          manipulatedInstance = true
-         return ImgProcess.filter(this, filterType, filterSize)
+         return ImgProcessor.filter(this, filterType, filterSize)
      }
 
      fun histogram() : Histogram{
