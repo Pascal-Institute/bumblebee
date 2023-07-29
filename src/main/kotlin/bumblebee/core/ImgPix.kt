@@ -1,13 +1,7 @@
  package bumblebee.core
 
 import bumblebee.FileManager
-import bumblebee.color.Color
-import bumblebee.color.GRAY
-import bumblebee.color.RGB
-import bumblebee.color.RGBA
 import bumblebee.type.*
-import bumblebee.util.Converter.Companion.toHex
-import bumblebee.util.Histogram
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Image
@@ -20,7 +14,7 @@ import javax.swing.JPanel
 import javax.swing.WindowConstants
 
 
- open class ImgPix() : Cloneable {
+ open class ImgPix() : ImgHandler(), Cloneable {
 
     val metaData = MetaData(0, 0, ColorType.GRAY_SCALE)
     protected val OCTA = 8
@@ -43,6 +37,7 @@ import javax.swing.WindowConstants
         metaData.height = height
         metaData.colorType = colorType
         this.pixelByteBuffer = ByteBuffer.allocate(width * height * colorType.bytesPerPixel)
+        this.also { super.imgPix = it }
     }
 
     constructor(filePath : String) : this() {
@@ -52,7 +47,7 @@ import javax.swing.WindowConstants
         metaData.colorType = imgPix.colorType
         bitDepth = imgPix.bitDepth
         this.pixelByteBuffer = imgPix.pixelByteBuffer
-
+        this.also { super.imgPix = it }
     }
 
      public override fun clone(): ImgPix {
@@ -117,76 +112,4 @@ import javax.swing.WindowConstants
     }
      open fun extract(){}
      open fun setMetaData(imgHeader: ImgHeader){}
-
-     fun set(row : Int, col : Int, color : Color) : ImgPix {
-         return ImgProcessor.set(this, row, col, color)
-     }
-
-     fun getColorAt(row : Int, col: Int) : Color{
-        return ImgInspector.getColorAt(this, row, col)
-     }
-
-     fun getHexStringAt(row : Int, col : Int) : String{
-         return ImgInspector.getHexStringAt(this, row, col)
-     }
-
-     fun getChannel(channelIndex : Int) : ImgPix{
-         val copy = this.clone()
-         return ImgProcessor.getChannel(copy, channelIndex)
-     }
-
-     fun invert() : ImgPix {
-         manipulatedInstance = true
-         return ImgProcessor.invert(this)
-     }
-
-     fun flip(orientation: OrientationType) : ImgPix {
-         manipulatedInstance = true
-         return ImgProcessor.flip(this, orientation)
-     }
-
-     fun rotate(degree : Int) : ImgPix {
-         manipulatedInstance = true
-         return ImgProcessor.rotate(this, degree)
-     }
-
-     fun crop(row : Int, col : Int, width : Int, height : Int) : ImgPix {
-         manipulatedInstance = true
-         return ImgProcessor.crop(this, row, col, width, height)
-     }
-
-     fun resize(width: Int, height: Int) : ImgPix {
-         manipulatedInstance = true
-         return ImgProcessor.resize(this, width, height)
-     }
-
-     fun toGrayScale() : ImgPix {
-         manipulatedInstance = true
-         return ImgProcessor.toGrayScale(this)
-     }
-
-     fun threshold(thresholdType: ThresholdType): ImgPix {
-         manipulatedInstance = true
-         return ImgProcessor.threshold(this, thresholdType)
-     }
-
-     fun threshold(level : Int) : ImgPix {
-         manipulatedInstance = true
-         return ImgProcessor.threshold(this, level)
-     }
-
-     fun pad(padType: PadType, padSize : Int) : ImgPix{
-         manipulatedInstance = true
-         return ImgProcessor.pad(this, padType, padSize)
-     }
-
-     fun filter(filterType: FilterType, filterSize : Int) : ImgPix{
-         manipulatedInstance = true
-         return ImgProcessor.filter(this, filterType, filterSize)
-     }
-
-     fun histogram() : Histogram{
-        return Histogram(this)
-     }
-
  }
