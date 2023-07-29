@@ -43,7 +43,7 @@ png bmp tiff ico
 
 ## 2. Support
 
-### - API documentation : https://volta2030.github.io/bumblebee_api/index.html
+### - API documentation : https://volta2030.github.io/bumblebee_doc/index.html
 
 ### - Github : discussions
 
