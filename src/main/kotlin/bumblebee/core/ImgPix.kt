@@ -59,36 +59,6 @@ import javax.swing.WindowConstants
         return super.clone() as ImgPix
     }
 
-    fun getColorAt(row : Int, col: Int) : Color{
-       return when(bytesPerPixel){
-
-           1-> GRAY(pixelByteBuffer.get(bytesPerPixel * col + (width * bytesPerPixel) * row).toUByte().toInt())
-
-           3-> RGB(
-                pixelByteBuffer.get(0 + bytesPerPixel * col + (width * bytesPerPixel) * row).toUByte().toInt(),
-                pixelByteBuffer.get(1 + bytesPerPixel * col + (width * bytesPerPixel) * row).toUByte().toInt(),
-                pixelByteBuffer.get(2 + bytesPerPixel * col + (width * bytesPerPixel) * row).toUByte().toInt())
-
-           //GBAR to RGBA
-           4-> RGBA(
-                pixelByteBuffer.get(3 + bytesPerPixel * col + (width * bytesPerPixel) * row).toUByte().toInt(),
-                pixelByteBuffer.get(0 + bytesPerPixel * col + (width * bytesPerPixel) * row).toUByte().toInt(),
-                pixelByteBuffer.get(1 + bytesPerPixel * col + (width * bytesPerPixel) * row).toUByte().toInt(),
-                pixelByteBuffer.get(2 + bytesPerPixel * col + (width * bytesPerPixel) * row).toUByte().toInt()
-            )
-
-           else->{GRAY(0)}
-        }
-    }
-
-    fun getHexStringAt(row : Int, col : Int) : String{
-        val byteArray = ByteArray(bytesPerPixel)
-        for (i : Int in 0 until bytesPerPixel){
-            byteArray[i] = pixelByteBuffer.get(i + bytesPerPixel * col + (width * bytesPerPixel) * row)
-        }
-        return byteArray.toHex()
-    }
-
     fun get() : ByteArray {
         return pixelByteBuffer.array()
     }
@@ -150,6 +120,14 @@ import javax.swing.WindowConstants
 
      fun set(row : Int, col : Int, color : Color) : ImgPix {
          return ImgProcessor.set(this, row, col, color)
+     }
+
+     fun getColorAt(row : Int, col: Int) : Color{
+        return ImgInspector.getColorAt(this, row, col)
+     }
+
+     fun getHexStringAt(row : Int, col : Int) : String{
+         return ImgInspector.getHexStringAt(this, row, col)
      }
 
      fun getChannel(channelIndex : Int) : ImgPix{
