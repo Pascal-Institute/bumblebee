@@ -1,7 +1,8 @@
 package bumblebee.util
 
 object StringObj {
-    const val AC_INDEX = "acIndex"
+
+    //COMMON
     const val WIDTH = "width"
     const val HEIGHT = "height"
     const val BIT_COUNT = "bitCount"
@@ -38,6 +39,11 @@ object StringObj {
     const val Y_THUMBNAIL = "yThumbnail"
     const val Y_DENSITY = "yDensity"
     const val BYTE_ORDER ="byteOrder"
+
+    //JPG
+    const val AC_INDEX = "acIndex"
+
+    //TIFF
     const val FORTY_TWO = "42"
     const val IFD_OFFSET ="ifdOffset"
 }
