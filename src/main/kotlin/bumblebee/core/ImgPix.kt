@@ -16,9 +16,11 @@ import javax.swing.WindowConstants
 
  open class ImgPix() : ImgHandler(), Cloneable {
 
-    val metaData = MetaData(0, 0, ColorType.GRAY_SCALE)
-    protected val OCTA = 8
-    var bitDepth = 0
+    val metaData = MetaData(FileType.PIX, 0, 0, ColorType.GRAY_SCALE)
+
+    //property getter
+    val fileType : FileType
+        get() = metaData.fileType
     val width : Int
         get() = metaData.width
     val height : Int
@@ -29,7 +31,6 @@ import javax.swing.WindowConstants
         get() = metaData.colorType.bytesPerPixel
 
     var pixelByteBuffer: ByteBuffer = ByteBuffer.allocate(0)
-    var fileType : FileType = FileType.PIX
 
     constructor(width: Int, height: Int, colorType: ColorType) : this() {
         metaData.width = width
@@ -44,7 +45,6 @@ import javax.swing.WindowConstants
         metaData.width = imgPix.width
         metaData.height = imgPix.height
         metaData.colorType = imgPix.colorType
-        bitDepth = imgPix.bitDepth
         this.pixelByteBuffer = imgPix.pixelByteBuffer
         this.also { super.imgPix = it }
     }
