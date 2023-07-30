@@ -16,6 +16,7 @@ class FileManager {
 
             fileSignature = byteArray.sliceArray(0 until 4)
             if(fileSignature.contentEquals(ImgFileType.ICO_ICON.signature) || fileSignature.contentEquals(ImgFileType.ICO_CURSOR.signature)){return ICO(byteArray)}
+            if(fileSignature.contentEquals(ImgFileType.WEBP.signature)){return WEBP(byteArray)}
 
             fileSignature = fileSignature.sliceArray(0 until 3)
             if(fileSignature.contentEquals(ImgFileType.PIX.signature)){ return PIX(byteArray) }

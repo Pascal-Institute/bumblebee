@@ -6,7 +6,7 @@ import bumblebee.type.ImgFileType
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Operator.Companion.invert
-import bumblebee.core.ImgHeader
+import bumblebee.core.Packet
 import bumblebee.util.StringObj.BIT_COUNT
 import bumblebee.util.StringObj.HEIGHT
 import bumblebee.util.StringObj.SIZE
@@ -16,8 +16,8 @@ import java.nio.ByteBuffer
 
 class BMP(private var byteArray: ByteArray) : ImgPix() {
 
-    private var fileHeader = ImgHeader()
-    private var infoHeader = ImgHeader()
+    private var fileHeader = Packet()
+    private var infoHeader = Packet()
 
     init {
         imgFileType = ImgFileType.BMP
@@ -56,10 +56,10 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
         }
     }
 
-    override fun setMetaData(imgHeader : ImgHeader) {
-        metaData.width = imgHeader[WIDTH].byteToInt()
-        metaData.height = imgHeader[HEIGHT].byteToInt()
-        metaData.colorType = when(imgHeader[BIT_COUNT].byteToInt()) {
+    override fun setMetaData(packet : Packet) {
+        metaData.width = packet[WIDTH].byteToInt()
+        metaData.height = packet[HEIGHT].byteToInt()
+        metaData.colorType = when(packet[BIT_COUNT].byteToInt()) {
             32-> ColorType.TRUE_COLOR_ALPHA
             24-> ColorType.TRUE_COLOR
             16 -> ColorType.GRAY_SCALE_ALPHA

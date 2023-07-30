@@ -110,5 +110,5 @@ import javax.swing.WindowConstants
         frame.pack()
     }
      open fun extract(){}
-     open fun setMetaData(imgHeader: ImgHeader){}
+     open fun setMetaData(packet: Packet){}
  }

@@ -8,5 +8,7 @@ enum class ImgFileType(val signature : ByteArray) {
     TIFF_LITTLE(byteArrayOf(73, 73)),
     TIFF_BIG(byteArrayOf(77, 77)),
     ICO_ICON(byteArrayOf(0, 0, 1, 0)),
-    ICO_CURSOR(byteArrayOf(0, 0, 2, 0))
+    ICO_CURSOR(byteArrayOf(0, 0, 2, 0)),
+    WEBP(byteArrayOf(82, 73, 70, 70))
+
 }

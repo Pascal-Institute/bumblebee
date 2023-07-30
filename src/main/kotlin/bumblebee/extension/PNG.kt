@@ -3,26 +3,22 @@ package bumblebee.extension
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
-import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
-import bumblebee.util.Converter.Companion.toHex
-import bumblebee.core.ImgHeader
+import bumblebee.core.Packet
 import bumblebee.util.StringObj.CRC
 import bumblebee.util.StringObj.DATA
 import bumblebee.util.StringObj.SIZE
 import bumblebee.util.StringObj.TYPE
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
-import java.util.zip.CRC32
-import java.util.zip.Checksum
 import java.util.zip.Inflater
 import kotlin.math.abs
 import kotlin.math.floor
 
 //PNG Version 1.2 / Author : G. Randers-Pehrson, et. al.
 class PNG(private var byteArray: ByteArray) : ImgPix() {
-    private val chunkArray = ArrayList<ImgHeader>()
+    private val chunkArray = ArrayList<Packet>()
     init {
         imgFileType = ImgFileType.PNG
         extract()
@@ -35,7 +31,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
         while (idx < totalSize){
 
-            val chunk = ImgHeader()
+            val chunk = Packet()
 
             //length 4 byte
             chunk[SIZE] = byteArray.cut(idx , idx + 4)
@@ -92,10 +88,10 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         offFilter(decompressedByteBuffer)
     }
 
-    override fun setMetaData(imgHeader: ImgHeader) {
-        metaData.width = imgHeader[DATA].cut(0, 4).byteToInt()
-        metaData.height = imgHeader[DATA].cut(4, 8).byteToInt()
-        metaData.colorType = ColorType.fromInt(imgHeader[DATA][9].byteToInt())
+    override fun setMetaData(packet: Packet) {
+        metaData.width = packet[DATA].cut(0, 4).byteToInt()
+        metaData.height = packet[DATA].cut(4, 8).byteToInt()
+        metaData.colorType = ColorType.fromInt(packet[DATA][9].byteToInt())
     }
 
     private fun decompress(byteArray: ByteArray) : ByteBuffer{

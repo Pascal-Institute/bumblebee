@@ -1,14 +1,11 @@
 package bumblebee.extension
 
-import bumblebee.core.ImgHeader
+import bumblebee.core.Packet
 import bumblebee.core.ImgPix
-import bumblebee.util.Converter
 import bumblebee.util.Converter.Companion.byteArrOf
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
-import bumblebee.util.Converter.Companion.toHex
 import bumblebee.util.Operator.Companion.contains
-import bumblebee.util.StringObj
 import bumblebee.util.StringObj.AC_INDEX
 import bumblebee.util.StringObj.COEFFICIENT
 import bumblebee.util.StringObj.COMPONENT
@@ -36,7 +33,7 @@ import bumblebee.util.StringObj.Y_THUMBNAIL
 import java.lang.Math.*
 
 class JPG(private var byteArray: ByteArray) : ImgPix(){
-    private val segmentArray = mutableListOf<ImgHeader>()
+    private val segmentArray = mutableListOf<Packet>()
     private var encodedByteArray = byteArrayOf()
     init {
         extract()
@@ -50,7 +47,7 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         while (idx < totalSize){
             segmentDetector = byteArray.cut(idx, idx + 2)
 
-            val segment = ImgHeader()
+            val segment = Packet()
 
             if(MarkerType.contains(segmentDetector)){
                 when(MarkerType.fromByteArray(segmentDetector)){
@@ -322,13 +319,13 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         return block
     }
 
-    private fun getImgHeader(markerType: MarkerType) : ImgHeader {
+    private fun getImgHeader(markerType: MarkerType) : Packet {
         segmentArray.forEach {
             if(it[NAME].contentEquals(markerType.byteArray)){
                return it
             }
         }
-        return ImgHeader()
+        return Packet()
     }
 
     private fun restoreQuantizationTable(dqtData: ByteArray): Array<IntArray> {

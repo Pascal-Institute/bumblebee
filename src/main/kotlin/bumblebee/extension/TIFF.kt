@@ -1,6 +1,6 @@
 package bumblebee.extension
 
-import bumblebee.core.ImgHeader
+import bumblebee.core.Packet
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.ImgFileType
@@ -164,7 +164,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
 
 //Image File Header
-private class IFH  : ImgHeader(){
+private class IFH  : Packet(){
     fun extract(imgFileType: ImgFileType, ifdArray: ArrayList<IFD>, byteArray: ByteArray){
         this[BYTE_ORDER] = byteArray.cut(0, 2)
         this[FORTY_TWO] = byteArray.cut(2, 4)
@@ -199,7 +199,7 @@ private class IFD(byteArray: ByteArray){
     }
 }
 
-private class Tag(byteArray: ByteArray) : ImgHeader() {
+private class Tag(byteArray: ByteArray) : Packet() {
     init {
         this[TAG_ID] = byteArray.cut(0, 2).toEndian()
         this[DATA_TYPE] = byteArray.cut(2, 4).toEndian()

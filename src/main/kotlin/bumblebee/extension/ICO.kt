@@ -5,7 +5,7 @@ import bumblebee.type.ColorType
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Operator.Companion.invert
-import bumblebee.core.ImgHeader
+import bumblebee.core.Packet
 import bumblebee.util.StringObj.BIT_COUNT
 import bumblebee.util.StringObj.COUNT
 import bumblebee.util.StringObj.HEIGHT
@@ -20,8 +20,8 @@ import java.nio.ByteBuffer
 
 class ICO(private var byteArray: ByteArray) : ImgPix() {
 
-    private var header = ImgHeader()
-    private var imageDir = ImgHeader()
+    private var header = Packet()
+    private var imageDir = Packet()
 
     init {
         extract()
@@ -67,7 +67,7 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
         }
     }
 
-    override fun setMetaData(header: ImgHeader) {
+    override fun setMetaData(header: Packet) {
         metaData.width = header[WIDTH].byteToInt()
         metaData.height = header[HEIGHT].byteToInt()
         metaData.colorType = when(header[BIT_COUNT].byteToInt()) {
