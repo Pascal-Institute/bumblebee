@@ -268,34 +268,4 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             fun fromInt(num: Int) = FilterType.values().first { it.num == num }
         }
     }
-
-    @Deprecated("instead use ImgHeader", ReplaceWith("ImgHeader"), level = DeprecationLevel.WARNING)
-    private class Chunk : ImgHeader() {
-
-        fun getColorType(byte: Byte): Int {
-            return byte.byteToInt()
-        }
-
-        fun getCRC(): ByteArray {
-            val checksum: Checksum = CRC32()
-            var source = this[TYPE] + this[DATA]
-            checksum.update(source, 0, source.size)
-            return Converter.longToByteArray(checksum.value, 4)
-        }
-
-        fun generateData(imgPix: ImgPix) {
-            var byteArray = imgPix.get()
-            this[DATA] = ByteArray(imgPix.height * (imgPix.width * imgPix.bytesPerPixel + 1))
-            var count = 0
-            this[DATA].forEachIndexed { index, byte ->
-                if(index % (imgPix.width * imgPix.bytesPerPixel + 1) == 0){
-                    this[DATA][index] = 0
-                }else{
-                    this[DATA][index] = byteArray[count]
-                    count++
-                }
-
-            }
-        }
-    }
 }
