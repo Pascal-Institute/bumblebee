@@ -28,7 +28,6 @@ import javax.swing.WindowConstants
     val bytesPerPixel : Int
         get() = metaData.colorType.bytesPerPixel
 
-    private var manipulatedInstance = false
     var pixelByteBuffer: ByteBuffer = ByteBuffer.allocate(0)
     var imgFileType : ImgFileType = ImgFileType.PIX
 
