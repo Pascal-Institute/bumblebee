@@ -6,6 +6,7 @@ import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Operator.Companion.invert
 import bumblebee.core.Packet
+import bumblebee.type.FileType
 import bumblebee.util.StringObj.BIT_COUNT
 import bumblebee.util.StringObj.COUNT
 import bumblebee.util.StringObj.HEIGHT
@@ -28,6 +29,8 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
     }
 
     override fun extract() {
+        metaData.fileType = FileType.ICO_ICON
+
         //6 bytes.
         header[REVERSED] = byteArray.cut(0, 2)
         header[TYPE] = byteArray.cut(2, 4)

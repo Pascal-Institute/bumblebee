@@ -7,7 +7,7 @@ import bumblebee.type.FileType
 class WEBP(private var byteArray: ByteArray) : ImgPix() {
     private val riffHeader = ArrayList<Packet>()
     init {
-        fileType = FileType.WEBP
+        metaData.fileType = FileType.WEBP
         extract()
     }
 }

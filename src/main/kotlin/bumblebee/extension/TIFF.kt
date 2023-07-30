@@ -42,7 +42,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         }
     }
     init {
-        fileType = if (byteArray.cut(0, 2).contentEquals(FileType.TIFF_LITTLE.signature)){
+        metaData.fileType = if (byteArray.cut(0, 2).contentEquals(FileType.TIFF_LITTLE.signature)){
             isLittle = true
             FileType.TIFF_LITTLE
         }else{

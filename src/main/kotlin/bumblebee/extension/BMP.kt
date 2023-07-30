@@ -24,7 +24,7 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
     }
 
     override fun extract() {
-        fileType = FileType.BMP
+        metaData.fileType = FileType.BMP
 
         fileHeader["signature"] = byteArray.cut(0, 2)
         fileHeader["filterSize"] = byteArray.cut(2, 6).invert()

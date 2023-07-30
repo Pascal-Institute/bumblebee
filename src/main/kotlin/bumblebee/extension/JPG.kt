@@ -2,6 +2,7 @@ package bumblebee.extension
 
 import bumblebee.core.Packet
 import bumblebee.core.ImgPix
+import bumblebee.type.FileType
 import bumblebee.util.Converter.Companion.byteArrOf
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
@@ -39,6 +40,7 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         extract()
     }
     override fun extract() {
+        metaData.fileType = FileType.JPG
 
         val totalSize = byteArray.size
         var idx = 2

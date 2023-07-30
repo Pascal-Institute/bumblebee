@@ -19,11 +19,12 @@ class PIX(private var byteArray : ByteArray) : ImgPix() {
     * */
 
     init {
-        fileType = FileType.PIX
         extract()
     }
 
     override fun extract() {
+        metaData.fileType = FileType.PIX
+
         metaData.width = byteArray.copyOfRange(3, 7).byteToInt()
         metaData.height = byteArray.copyOfRange(7, 11).byteToInt()
         metaData.colorType = ColorType.fromInt(byteArray[11].byteToInt())
