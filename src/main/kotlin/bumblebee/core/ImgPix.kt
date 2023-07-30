@@ -29,7 +29,7 @@ import javax.swing.WindowConstants
         get() = metaData.colorType.bytesPerPixel
 
     var pixelByteBuffer: ByteBuffer = ByteBuffer.allocate(0)
-    var imgFileType : ImgFileType = ImgFileType.PIX
+    var fileType : FileType = FileType.PIX
 
     constructor(width: Int, height: Int, colorType: ColorType) : this() {
         metaData.width = width

@@ -3,7 +3,7 @@ package bumblebee.extension
 import bumblebee.core.Packet
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
-import bumblebee.type.ImgFileType
+import bumblebee.type.FileType
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.hexToInt
@@ -42,19 +42,19 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         }
     }
     init {
-        imgFileType = if (byteArray.cut(0, 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+        fileType = if (byteArray.cut(0, 2).contentEquals(FileType.TIFF_LITTLE.signature)){
             isLittle = true
-            ImgFileType.TIFF_LITTLE
+            FileType.TIFF_LITTLE
         }else{
             isLittle = false
-            ImgFileType.TIFF_BIG
+            FileType.TIFF_BIG
         }
         extract()
     }
 
     override fun extract() {
 
-        ifh.extract(imgFileType, ifdArray, byteArray)
+        ifh.extract(fileType, ifdArray, byteArray)
 
         //don't need to make endianArray from here
         ifdArray.forEach {
@@ -165,12 +165,12 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
 //Image File Header
 private class IFH  : Packet(){
-    fun extract(imgFileType: ImgFileType, ifdArray: ArrayList<IFD>, byteArray: ByteArray){
+    fun extract(fileType: FileType, ifdArray: ArrayList<IFD>, byteArray: ByteArray){
         this[BYTE_ORDER] = byteArray.cut(0, 2)
         this[FORTY_TWO] = byteArray.cut(2, 4)
         this[IFD_OFFSET] = byteArray.cut(4, 8)
 
-        val startIdx = if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+        val startIdx = if(fileType.signature.contentEquals(FileType.TIFF_LITTLE.signature)){
             this[IFD_OFFSET].invert().byteToInt()
         }else{
             this[IFD_OFFSET].byteToInt()

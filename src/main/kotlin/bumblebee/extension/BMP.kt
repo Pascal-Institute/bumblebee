@@ -2,7 +2,7 @@ package bumblebee.extension
 
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
-import bumblebee.type.ImgFileType
+import bumblebee.type.FileType
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Operator.Companion.invert
@@ -20,11 +20,11 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
     private var infoHeader = Packet()
 
     init {
-        imgFileType = ImgFileType.BMP
         extract()
     }
 
     override fun extract() {
+        fileType = FileType.BMP
 
         fileHeader["signature"] = byteArray.cut(0, 2)
         fileHeader["filterSize"] = byteArray.cut(2, 6).invert()

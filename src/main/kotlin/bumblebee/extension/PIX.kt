@@ -2,7 +2,7 @@ package bumblebee.extension
 
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
-import bumblebee.type.ImgFileType
+import bumblebee.type.FileType
 import bumblebee.util.Converter.Companion.byteToInt
 import java.nio.ByteBuffer
 
@@ -19,7 +19,7 @@ class PIX(private var byteArray : ByteArray) : ImgPix() {
     * */
 
     init {
-        imgFileType = ImgFileType.PIX
+        fileType = FileType.PIX
         extract()
     }
 

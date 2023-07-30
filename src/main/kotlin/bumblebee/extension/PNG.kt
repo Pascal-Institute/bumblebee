@@ -2,7 +2,7 @@ package bumblebee.extension
 
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
-import bumblebee.type.ImgFileType
+import bumblebee.type.FileType
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.core.Packet
@@ -20,7 +20,7 @@ import kotlin.math.floor
 class PNG(private var byteArray: ByteArray) : ImgPix() {
     private val chunkArray = ArrayList<Packet>()
     init {
-        imgFileType = ImgFileType.PNG
+        fileType = FileType.PNG
         extract()
     }
 

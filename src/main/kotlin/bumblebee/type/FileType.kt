@@ -1,6 +1,6 @@
 package bumblebee.type
 
-enum class ImgFileType(val signature : ByteArray) {
+enum class FileType(val signature : ByteArray) {
     BMP(byteArrayOf(66,77)),
     JPG(byteArrayOf(255.toByte(), 216.toByte())),
     PNG(byteArrayOf(137.toByte(), 80, 78, 71, 13, 10, 26, 10)),
