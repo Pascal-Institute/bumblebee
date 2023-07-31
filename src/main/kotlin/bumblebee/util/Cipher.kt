@@ -1,6 +1,6 @@
 package bumblebee.util
 
-class CipherEngine {
+class Cipher {
     companion object{
 
     }
