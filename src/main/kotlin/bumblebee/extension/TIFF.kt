@@ -4,6 +4,7 @@ import bumblebee.core.Packet
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.FileType
+import bumblebee.util.Cipher
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.hexToInt
@@ -122,7 +123,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                 for(i : Int in 0 until stripCount){
                     var counts = byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
-                    var result = packBitsDecode(byteArray.cut(startIdx, startIdx + counts))
+                    var result = Cipher.decodePackBits(byteArray.cut(startIdx, startIdx + counts))
                     pixelByteBuffer.put(result)
                     println(result.size)
                     startIdx += counts
@@ -138,28 +139,6 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
     private fun lzwDecode(encodedData: ByteArray): ByteArray {
         return encodedData
-    }
-
-    private fun packBitsDecode(byteArray: ByteArray) : ByteArray{
-
-        var returnByteArray = byteArrayOf()
-
-        var i = 0
-        while(i < byteArray.size){
-            val integer = byteArray[i].toInt()
-            if(integer == -128){
-                i = byteArray.size
-            }else if(integer in 0 until 128){
-                returnByteArray += byteArray.cut(i+ 1, i + 1 + (integer + 1))
-                i += integer + 2
-            }else if (integer in -127 until 0){
-                for(j : Int in 0 until -integer + 1){
-                    returnByteArray += byteArray[i + 1]
-                }
-                i += 2
-            }
-        }
-        return returnByteArray
     }
 
 
