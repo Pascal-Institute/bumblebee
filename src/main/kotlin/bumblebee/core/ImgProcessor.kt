@@ -363,11 +363,19 @@ class ImgProcessor {
                             }
                         }
                     }
-
                 }
 
                 FilterType.GAUSSIAN -> {
-                    //Get Filter Mask
+                    val tempImgPix = imgPix.pad(PadType.AVERAGE, 1)
+                    val padImgPixWidth = tempImgPix.width
+                    val temppixelByteBuffer = tempImgPix.pixelByteBuffer
+
+                    val gaussianMask = Array(filterSize) { Array(filterSize) { 0.0 } }
+                    gaussianMask.forEachIndexed { row, it ->
+                        it.forEachIndexed { col, its ->
+                           gaussianMask[row][col] = (1 / 2* Math.PI * stdev * stdev) * Math.pow(Math.E, -(row * row + col * col) / (2 * stdev * stdev))
+                        }
+                    }
 
                 }
 
