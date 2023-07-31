@@ -277,6 +277,10 @@ class ImgProcessor {
          * @return[imgPix]
          */
         fun filter(imgPix: ImgPix, filterType : FilterType, filterSize : Int) : ImgPix{
+            return filter(imgPix, filterType, filterSize, 1.0)
+        }
+
+        fun filter(imgPix: ImgPix, filterType : FilterType, filterSize : Int, stdev : Double) : ImgPix{
 
             val width = imgPix.width
             val height = imgPix.height
@@ -298,7 +302,7 @@ class ImgProcessor {
                             for(k : Int in 0 until bytesPerPixel){
                                 var intValue = 0
                                 for(l : Int in 0 until windowSize){
-                                       intValue += temppixelByteBuffer.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k).toUByte().toInt()
+                                    intValue += temppixelByteBuffer.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k).toUByte().toInt()
                                 }
                                 pixelByteBuffer.put((intValue/windowSize).toByte())
                             }
@@ -319,10 +323,10 @@ class ImgProcessor {
                     for(i : Int in halfFilterSize until height + halfFilterSize){
                         for(j : Int in halfFilterSize until width + halfFilterSize){
                             repeat(bytesPerPixel){
-                                k->
+                                    k->
                                 var uByteArray = UByteArray(windowSize)
                                 repeat(windowSize){
-                                    l-> uByteArray[l] = (temppixelByteBuffer.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k)).toUByte()
+                                        l-> uByteArray[l] = (temppixelByteBuffer.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k)).toUByte()
                                 }
                                 uByteArray.sort()
                                 pixelByteBuffer.put((uByteArray[middleSize]).toByte())
@@ -347,7 +351,8 @@ class ImgProcessor {
                             for(k : Int in 0 until bytesPerPixel){
                                 var intValue = 0
                                 for(l : Int in 0 until windowSize){
-                                    var temp = (temppixelByteBuffer.get(((i - padSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - padSize + (l / filterSize)) * bytesPerPixel) + k).toInt())
+                                    var temp = (
+                                            temppixelByteBuffer.get(((i - padSize + (l / filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - padSize + (l % filterSize)) * bytesPerPixel) + k).toUByte().toInt())
                                     intValue += if(l == 4){
                                         strength * temp
                                     }else{
@@ -361,7 +366,11 @@ class ImgProcessor {
 
                 }
 
-                else->{}
+                FilterType.GAUSSIAN -> {
+                    //Get Filter Mask
+
+                }
+
             }
 
             imgPix.metaData.width = width
@@ -370,6 +379,7 @@ class ImgProcessor {
 
             return imgPix
         }
+
         fun getChannel(imgPix: ImgPix, chanelIndex : Int) : ImgPix{
             val width = imgPix.width
             val height = imgPix.height
