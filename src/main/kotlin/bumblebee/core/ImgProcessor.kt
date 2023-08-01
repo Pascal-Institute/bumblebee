@@ -8,6 +8,7 @@ import bumblebee.util.Histogram
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
 import kotlin.math.floor
+import kotlin.math.pow
 
 class ImgProcessor {
     companion object{
@@ -366,17 +367,27 @@ class ImgProcessor {
                 }
 
                 FilterType.GAUSSIAN -> {
-                    val tempImgPix = imgPix.pad(PadType.AVERAGE, 1)
+                    val padSize = ((filterSize - 1) / 2)
+                    val tempImgPix = imgPix.pad(PadType.AVERAGE, padSize)
                     val padImgPixWidth = tempImgPix.width
                     val temppixelByteBuffer = tempImgPix.pixelByteBuffer
+                    val mask = getGaussianMask(filterSize, padSize, stdev)
+                    for(i : Int in padSize until height + padSize){
+                        for(j : Int in padSize until width + padSize){
+                            for(k : Int in 0 until bytesPerPixel){
+                                var sum = 0.0
 
-                    val gaussianMask = Array(filterSize) { Array(filterSize) { 0.0 } }
-                    gaussianMask.forEachIndexed { row, it ->
-                        it.forEachIndexed { col, its ->
-                           gaussianMask[row][col] = (1 / 2* Math.PI * stdev * stdev) * Math.pow(Math.E, -(row * row + col * col) / (2 * stdev * stdev))
+                                for(l : Int in mask.indices){
+                                    for(m : Int in mask.indices){
+                                       val value =  temppixelByteBuffer.get(((i - padSize + l) * bytesPerPixel * padImgPixWidth) + ((j - padSize + m) * bytesPerPixel) + k).toUByte().toInt()
+                                       sum+= value * mask[m][l]
+                                    }
+                                }
+                                pixelByteBuffer.put(sum.toInt().toByte())
+
+                            }
                         }
                     }
-
                 }
 
             }
@@ -404,6 +415,26 @@ class ImgProcessor {
             imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
+        }
+
+        private fun getGaussianMask(filterSize: Int, padSize: Int, stdev: Double) : Array<Array<Double>>{
+            val mask = Array(filterSize) { Array(filterSize) { 0.0 } }
+            var sum = 0.0
+            for(row : Int in -padSize until  padSize + 1){
+                for(col : Int in -padSize until  padSize + 1){
+                    val value = (1.0 / (2* Math.PI * stdev * stdev)) * Math.E.pow(-(row * row + col * col) / (2 * stdev * stdev))
+                    mask[row + padSize][col + padSize] = value
+                    sum += value
+                }
+            }
+
+            //must do norm because pixel distance is discrete...
+            for (row in 0 until filterSize) {
+                for (col in 0 until filterSize) {
+                    mask[row][col] /= sum
+                }
+            }
+            return mask
         }
 
     }

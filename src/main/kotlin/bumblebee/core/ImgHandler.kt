@@ -81,4 +81,9 @@ open class ImgHandler(){
         isManipulated = true
         return ImgProcessor.filter(imgPix, filterType, filterSize)
     }
+
+    fun filter(filterType: FilterType, filterSize : Int, stdev : Double) : ImgPix{
+        isManipulated = true
+        return ImgProcessor.filter(imgPix, filterType, filterSize, stdev)
+    }
 }
