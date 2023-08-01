@@ -231,7 +231,11 @@ class ImgProcessor {
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
-                                pixelByteBuffer.put(0)
+                                if((i >= padSize && i < height - padSize) && (j >= padSize && j < width - padSize)){
+                                    pixelByteBuffer.put(imgPix.pixelByteBuffer.get(k + (j-padSize) * bytesPerPixel + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
+                                }else{
+                                    pixelByteBuffer.put(0)
+                                }
                             }
                         }
                     }
@@ -239,11 +243,14 @@ class ImgProcessor {
 
                 PadType.AVERAGE -> {
                     var averagePixel = Histogram(imgPix).getAverage(imgPix.colorType)
-
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
-                                pixelByteBuffer.put(averagePixel[k])
+                                if((i >= padSize && i < height - padSize) && (j >= padSize && j < width - padSize)){
+                                    pixelByteBuffer.put(imgPix.pixelByteBuffer.get(k + (j-padSize) * bytesPerPixel + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
+                                }else{
+                                    pixelByteBuffer.put(averagePixel[k])
+                                }
                             }
                         }
                     }
@@ -252,17 +259,6 @@ class ImgProcessor {
 
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-
-            for(i : Int in padSize until height - padSize){
-                for(j : Int in padSize  until width - padSize){
-                    for(k : Int in 0 until bytesPerPixel){
-
-                        pixelByteBuffer.put(k + j * bytesPerPixel + i * bytesPerPixel * width,
-                            imgPix.pixelByteBuffer.get((j-padSize) * bytesPerPixel + k + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
-                    }
-                }
-            }
-
             imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
