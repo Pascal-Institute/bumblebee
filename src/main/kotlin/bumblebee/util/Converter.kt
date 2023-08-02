@@ -123,6 +123,14 @@ class Converter {
             return this.toHex().hexToInt()
         }
 
+        fun ByteArray.toASCII() : String{
+            var asciiString = ""
+            for(i : Int in indices){
+                asciiString += this[i].byteToInt().toChar().toString()
+            }
+            return asciiString
+        }
+
         fun ByteArray.cut(start : Int, end : Int) : ByteArray{
             return this.sliceArray(start until end)
         }
