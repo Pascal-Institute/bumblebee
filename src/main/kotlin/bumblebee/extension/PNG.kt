@@ -6,10 +6,10 @@ import bumblebee.type.FileType
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.core.Packet
-import bumblebee.util.StringObj.CRC
-import bumblebee.util.StringObj.DATA
-import bumblebee.util.StringObj.SIZE
-import bumblebee.util.StringObj.TYPE
+import bumblebee.util.StringObject.CRC
+import bumblebee.util.StringObject.DATA
+import bumblebee.util.StringObject.SIZE
+import bumblebee.util.StringObject.TYPE
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.util.zip.Inflater

@@ -7,11 +7,11 @@ import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Operator.Companion.invert
 import bumblebee.core.Packet
-import bumblebee.util.StringObj.BIT_COUNT
-import bumblebee.util.StringObj.HEIGHT
-import bumblebee.util.StringObj.SIZE
-import bumblebee.util.StringObj.START_OFFSET
-import bumblebee.util.StringObj.WIDTH
+import bumblebee.util.StringObject.BIT_COUNT
+import bumblebee.util.StringObject.HEIGHT
+import bumblebee.util.StringObject.SIZE
+import bumblebee.util.StringObject.START_OFFSET
+import bumblebee.util.StringObject.WIDTH
 import java.nio.ByteBuffer
 
 class BMP(private var byteArray: ByteArray) : ImgPix() {

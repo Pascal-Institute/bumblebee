@@ -1,6 +1,6 @@
 package bumblebee.util
 
-object StringObj {
+object StringObject {
 
     //COMMON
     const val WIDTH = "width"

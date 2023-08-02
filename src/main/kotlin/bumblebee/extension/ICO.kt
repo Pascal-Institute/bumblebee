@@ -7,16 +7,16 @@ import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Operator.Companion.invert
 import bumblebee.core.Packet
 import bumblebee.type.FileType
-import bumblebee.util.StringObj.BIT_COUNT
-import bumblebee.util.StringObj.COUNT
-import bumblebee.util.StringObj.HEIGHT
-import bumblebee.util.StringObj.NUM_OF_COLORS
-import bumblebee.util.StringObj.PLANES
-import bumblebee.util.StringObj.REVERSED
-import bumblebee.util.StringObj.SIZE
-import bumblebee.util.StringObj.START_OFFSET
-import bumblebee.util.StringObj.TYPE
-import bumblebee.util.StringObj.WIDTH
+import bumblebee.util.StringObject.BIT_COUNT
+import bumblebee.util.StringObject.COUNT
+import bumblebee.util.StringObject.HEIGHT
+import bumblebee.util.StringObject.NUM_OF_COLORS
+import bumblebee.util.StringObject.PLANES
+import bumblebee.util.StringObject.REVERSED
+import bumblebee.util.StringObject.SIZE
+import bumblebee.util.StringObject.START_OFFSET
+import bumblebee.util.StringObject.TYPE
+import bumblebee.util.StringObject.WIDTH
 import java.nio.ByteBuffer
 
 class ICO(private var byteArray: ByteArray) : ImgPix() {

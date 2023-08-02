@@ -11,14 +11,14 @@ import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.intToByteArray
 import bumblebee.util.Operator.Companion.invert
 import bumblebee.util.Converter.Companion.toHex
-import bumblebee.util.StringObj.BYTE_ORDER
-import bumblebee.util.StringObj.DATA
-import bumblebee.util.StringObj.DATA_COUNT
-import bumblebee.util.StringObj.DATA_OFFSET
-import bumblebee.util.StringObj.DATA_TYPE
-import bumblebee.util.StringObj.FORTY_TWO
-import bumblebee.util.StringObj.IFD_OFFSET
-import bumblebee.util.StringObj.TAG_ID
+import bumblebee.util.StringObject.BYTE_ORDER
+import bumblebee.util.StringObject.DATA
+import bumblebee.util.StringObject.DATA_COUNT
+import bumblebee.util.StringObject.DATA_OFFSET
+import bumblebee.util.StringObject.DATA_TYPE
+import bumblebee.util.StringObject.FORTY_TWO
+import bumblebee.util.StringObject.IFD_OFFSET
+import bumblebee.util.StringObject.TAG_ID
 import java.nio.ByteBuffer
 
 //TIFF Revision 6.0 / Author : Aldus Corporation
