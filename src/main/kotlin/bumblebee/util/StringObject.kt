@@ -14,6 +14,7 @@ object StringObject {
     const val DATA_OFFSET ="dataOffset"
     const val DATA_TYPE = "dataType"
     const val DC_INDEX = "dcIndex"
+    const val FORMAT = "format"
     const val HUFFMAN_TABLE = "huffmanTable"
     const val NUM_OF_COMPONENT = "numOfComponent"
     const val SIZE = "size"
