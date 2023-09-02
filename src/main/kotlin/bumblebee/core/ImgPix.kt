@@ -1,7 +1,9 @@
  package bumblebee.core
 
 import bumblebee.FileManager
+import bumblebee.color.Color
 import bumblebee.type.*
+import bumblebee.util.Histogram
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Image
@@ -14,9 +16,10 @@ import javax.swing.JPanel
 import javax.swing.WindowConstants
 
 
- open class ImgPix() : ImgHandler(), Cloneable {
+ open class ImgPix() : Cloneable {
 
     val metaData = MetaData(FileType.PIX, 0, 0, ColorType.GRAY_SCALE)
+    private var isManipulated = false
 
     //property getter
     val fileType : FileType
@@ -37,8 +40,7 @@ import javax.swing.WindowConstants
         metaData.height = height
         metaData.colorType = colorType
         this.pixelByteBuffer = ByteBuffer.allocate(width * height * colorType.bytesPerPixel)
-        this.also { super.imgPix = it }
-    }
+     }
 
     constructor(filePath : String) : this() {
        var imgPix  = FileManager.read(filePath)
@@ -46,7 +48,6 @@ import javax.swing.WindowConstants
         metaData.height = imgPix.height
         metaData.colorType = imgPix.colorType
         this.pixelByteBuffer = imgPix.pixelByteBuffer
-        this.also { super.imgPix = it }
     }
 
      public override fun clone(): ImgPix {
@@ -111,4 +112,83 @@ import javax.swing.WindowConstants
     }
      open fun extract(){}
      open fun setMetaData(packet: Packet){}
+
+     //ImgHandler
+     fun getColorAt(row : Int, col: Int) : Color {
+         return ImgInspector.getColorAt(this, row, col)
+     }
+
+     fun getHexStringAt(row : Int, col : Int) : String{
+         return ImgInspector.getHexStringAt(this, row, col)
+     }
+
+     fun histogram() : Histogram {
+         return Histogram(this)
+     }
+
+     fun set(row : Int, col : Int, color : Color) : ImgPix {
+         return ImgProcessor.set(this, row, col, color)
+     }
+
+     fun invert() : ImgPix {
+         isManipulated = true
+         return ImgProcessor.invert(this)
+     }
+
+     fun flip(orientation: OrientationType) : ImgPix {
+         isManipulated = true
+         return ImgProcessor.flip(this, orientation)
+     }
+
+     fun rotate(degree : Int) : ImgPix {
+         isManipulated = true
+         return ImgProcessor.rotate(this, degree)
+     }
+
+     fun threshold(thresholdType: ThresholdType): ImgPix {
+         isManipulated = true
+         return ImgProcessor.threshold(this, thresholdType)
+     }
+
+     fun threshold(level : Int) : ImgPix {
+         isManipulated = true
+         return ImgProcessor.threshold(this, level)
+     }
+
+     fun getChannel(channelIndex : Int) : ImgPix{
+         val copy = this.clone()
+         return ImgProcessor.getChannel(copy, channelIndex)
+     }
+
+     fun toGrayScale() : ImgPix {
+         isManipulated = true
+         return ImgProcessor.toGrayScale(this)
+     }
+
+     fun resize(width: Int, height: Int) : ImgPix {
+         isManipulated = true
+         return ImgProcessor.resize(this, width, height)
+     }
+
+     fun crop(row : Int, col : Int, width : Int, height : Int) : ImgPix {
+         isManipulated = true
+         return ImgProcessor.crop(this, row, col, width, height)
+     }
+
+     fun pad(padType: PadType, padSize : Int) : ImgPix{
+         isManipulated = true
+         return ImgProcessor.pad(this, padType, padSize)
+     }
+
+     fun filter(filterType: FilterType, filterSize : Int) : ImgPix{
+         isManipulated = true
+         return ImgProcessor.filter(this, filterType, filterSize)
+     }
+
+     fun filter(filterType: FilterType, filterSize : Int, stdev : Double) : ImgPix{
+         isManipulated = true
+         return ImgProcessor.filter(this, filterType, filterSize, stdev)
+     }
+
+
  }
