@@ -5,29 +5,32 @@ import bumblebee.type.ColorType
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Operator.Companion.invert
-import bumblebee.core.ImgHeader
-import bumblebee.util.StringObj.BIT_COUNT
-import bumblebee.util.StringObj.COUNT
-import bumblebee.util.StringObj.HEIGHT
-import bumblebee.util.StringObj.NUM_OF_COLORS
-import bumblebee.util.StringObj.PLANES
-import bumblebee.util.StringObj.REVERSED
-import bumblebee.util.StringObj.SIZE
-import bumblebee.util.StringObj.START_OFFSET
-import bumblebee.util.StringObj.TYPE
-import bumblebee.util.StringObj.WIDTH
+import bumblebee.core.Packet
+import bumblebee.type.FileType
+import bumblebee.util.StringObject.BIT_COUNT
+import bumblebee.util.StringObject.COUNT
+import bumblebee.util.StringObject.HEIGHT
+import bumblebee.util.StringObject.NUM_OF_COLORS
+import bumblebee.util.StringObject.PLANES
+import bumblebee.util.StringObject.REVERSED
+import bumblebee.util.StringObject.SIZE
+import bumblebee.util.StringObject.START_OFFSET
+import bumblebee.util.StringObject.TYPE
+import bumblebee.util.StringObject.WIDTH
 import java.nio.ByteBuffer
 
 class ICO(private var byteArray: ByteArray) : ImgPix() {
 
-    private var header = ImgHeader()
-    private var imageDir = ImgHeader()
+    private var header = Packet()
+    private var imageDir = Packet()
 
     init {
         extract()
     }
 
     override fun extract() {
+        metaData.fileType = FileType.ICO_ICON
+
         //6 bytes.
         header[REVERSED] = byteArray.cut(0, 2)
         header[TYPE] = byteArray.cut(2, 4)
@@ -67,7 +70,7 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
         }
     }
 
-    override fun setMetaData(header: ImgHeader) {
+    override fun setMetaData(header: Packet) {
         metaData.width = header[WIDTH].byteToInt()
         metaData.height = header[HEIGHT].byteToInt()
         metaData.colorType = when(header[BIT_COUNT].byteToInt()) {

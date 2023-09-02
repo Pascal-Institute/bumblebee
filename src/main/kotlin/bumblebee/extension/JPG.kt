@@ -1,47 +1,46 @@
 package bumblebee.extension
 
-import bumblebee.core.ImgHeader
+import bumblebee.core.Packet
 import bumblebee.core.ImgPix
-import bumblebee.util.Converter
+import bumblebee.type.FileType
 import bumblebee.util.Converter.Companion.byteArrOf
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
-import bumblebee.util.Converter.Companion.toHex
 import bumblebee.util.Operator.Companion.contains
-import bumblebee.util.StringObj
-import bumblebee.util.StringObj.AC_INDEX
-import bumblebee.util.StringObj.COEFFICIENT
-import bumblebee.util.StringObj.COMPONENT
-import bumblebee.util.StringObj.DATA
-import bumblebee.util.StringObj.DC_INDEX
-import bumblebee.util.StringObj.ENDIAN
-import bumblebee.util.StringObj.HEIGHT
-import bumblebee.util.StringObj.HUFFMAN_TABLE
-import bumblebee.util.StringObj.IDENTIFIER
-import bumblebee.util.StringObj.NAME
-import bumblebee.util.StringObj.NUM_OF_COMPONENT
-import bumblebee.util.StringObj.ORDER
-import bumblebee.util.StringObj.PRECISION
-import bumblebee.util.StringObj.RESTART_INTERVAL
-import bumblebee.util.StringObj.SIZE
-import bumblebee.util.StringObj.TEXT
-import bumblebee.util.StringObj.TRANSITION_METHOD
-import bumblebee.util.StringObj.UNITS
-import bumblebee.util.StringObj.VERSION
-import bumblebee.util.StringObj.WIDTH
-import bumblebee.util.StringObj.X_DENSITY
-import bumblebee.util.StringObj.X_THUMBNAIL
-import bumblebee.util.StringObj.Y_DENSITY
-import bumblebee.util.StringObj.Y_THUMBNAIL
+import bumblebee.util.StringObject.AC_INDEX
+import bumblebee.util.StringObject.COEFFICIENT
+import bumblebee.util.StringObject.COMPONENT
+import bumblebee.util.StringObject.DATA
+import bumblebee.util.StringObject.DC_INDEX
+import bumblebee.util.StringObject.ENDIAN
+import bumblebee.util.StringObject.HEIGHT
+import bumblebee.util.StringObject.HUFFMAN_TABLE
+import bumblebee.util.StringObject.IDENTIFIER
+import bumblebee.util.StringObject.NAME
+import bumblebee.util.StringObject.NUM_OF_COMPONENT
+import bumblebee.util.StringObject.ORDER
+import bumblebee.util.StringObject.PRECISION
+import bumblebee.util.StringObject.RESTART_INTERVAL
+import bumblebee.util.StringObject.SIZE
+import bumblebee.util.StringObject.TEXT
+import bumblebee.util.StringObject.TRANSITION_METHOD
+import bumblebee.util.StringObject.UNITS
+import bumblebee.util.StringObject.VERSION
+import bumblebee.util.StringObject.WIDTH
+import bumblebee.util.StringObject.X_DENSITY
+import bumblebee.util.StringObject.X_THUMBNAIL
+import bumblebee.util.StringObject.Y_DENSITY
+import bumblebee.util.StringObject.Y_THUMBNAIL
 import java.lang.Math.*
 
 class JPG(private var byteArray: ByteArray) : ImgPix(){
-    private val segmentArray = mutableListOf<ImgHeader>()
+    private val segmentArray = mutableListOf<Packet>()
     private var encodedByteArray = byteArrayOf()
     init {
         extract()
     }
     override fun extract() {
+        metaData.fileType = FileType.JPG
 
         val totalSize = byteArray.size
         var idx = 2
@@ -50,7 +49,7 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         while (idx < totalSize){
             segmentDetector = byteArray.cut(idx, idx + 2)
 
-            val segment = ImgHeader()
+            val segment = Packet()
 
             if(MarkerType.contains(segmentDetector)){
                 when(MarkerType.fromByteArray(segmentDetector)){
@@ -322,13 +321,13 @@ class JPG(private var byteArray: ByteArray) : ImgPix(){
         return block
     }
 
-    private fun getImgHeader(markerType: MarkerType) : ImgHeader {
+    private fun getImgHeader(markerType: MarkerType) : Packet {
         segmentArray.forEach {
             if(it[NAME].contentEquals(markerType.byteArray)){
                return it
             }
         }
-        return ImgHeader()
+        return Packet()
     }
 
     private fun restoreQuantizationTable(dqtData: ByteArray): Array<IntArray> {

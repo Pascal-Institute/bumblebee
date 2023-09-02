@@ -2,40 +2,37 @@ package bumblebee.extension
 
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
-import bumblebee.type.ImgFileType
-import bumblebee.util.Converter
+import bumblebee.type.FileType
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
-import bumblebee.util.Converter.Companion.toHex
-import bumblebee.core.ImgHeader
-import bumblebee.util.StringObj.CRC
-import bumblebee.util.StringObj.DATA
-import bumblebee.util.StringObj.SIZE
-import bumblebee.util.StringObj.TYPE
+import bumblebee.core.Packet
+import bumblebee.util.StringObject.CRC
+import bumblebee.util.StringObject.DATA
+import bumblebee.util.StringObject.SIZE
+import bumblebee.util.StringObject.TYPE
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
-import java.util.zip.CRC32
-import java.util.zip.Checksum
 import java.util.zip.Inflater
 import kotlin.math.abs
 import kotlin.math.floor
 
 //PNG Version 1.2 / Author : G. Randers-Pehrson, et. al.
 class PNG(private var byteArray: ByteArray) : ImgPix() {
-    private val chunkArray = ArrayList<ImgHeader>()
+    private val chunkArray = ArrayList<Packet>()
+    private var bitDepth = 0
     init {
-        imgFileType = ImgFileType.PNG
         extract()
     }
 
     override fun extract() {
+        metaData.fileType = FileType.PNG
 
         val totalSize = byteArray.size
         var idx = 8
 
         while (idx < totalSize){
 
-            val chunk = ImgHeader()
+            val chunk = Packet()
 
             //length 4 byte
             chunk[SIZE] = byteArray.cut(idx , idx + 4)
@@ -92,10 +89,10 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         offFilter(decompressedByteBuffer)
     }
 
-    override fun setMetaData(imgHeader: ImgHeader) {
-        metaData.width = imgHeader[DATA].cut(0, 4).byteToInt()
-        metaData.height = imgHeader[DATA].cut(4, 8).byteToInt()
-        metaData.colorType = ColorType.fromInt(imgHeader[DATA][9].byteToInt())
+    override fun setMetaData(packet: Packet) {
+        metaData.width = packet[DATA].cut(0, 4).byteToInt()
+        metaData.height = packet[DATA].cut(4, 8).byteToInt()
+        metaData.colorType = ColorType.fromInt(packet[DATA][9].byteToInt())
     }
 
     private fun decompress(byteArray: ByteArray) : ByteBuffer{
@@ -266,36 +263,6 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
         companion object {
             fun fromInt(num: Int) = FilterType.values().first { it.num == num }
-        }
-    }
-
-    @Deprecated("instead use ImgHeader", ReplaceWith("ImgHeader"), level = DeprecationLevel.WARNING)
-    private class Chunk : ImgHeader() {
-
-        fun getColorType(byte: Byte): Int {
-            return byte.byteToInt()
-        }
-
-        fun getCRC(): ByteArray {
-            val checksum: Checksum = CRC32()
-            var source = this[TYPE] + this[DATA]
-            checksum.update(source, 0, source.size)
-            return Converter.longToByteArray(checksum.value, 4)
-        }
-
-        fun generateData(imgPix: ImgPix) {
-            var byteArray = imgPix.get()
-            this[DATA] = ByteArray(imgPix.height * (imgPix.width * imgPix.bytesPerPixel + 1))
-            var count = 0
-            this[DATA].forEachIndexed { index, byte ->
-                if(index % (imgPix.width * imgPix.bytesPerPixel + 1) == 0){
-                    this[DATA][index] = 0
-                }else{
-                    this[DATA][index] = byteArray[count]
-                    count++
-                }
-
-            }
         }
     }
 }

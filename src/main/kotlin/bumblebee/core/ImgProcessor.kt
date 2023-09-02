@@ -8,8 +8,9 @@ import bumblebee.util.Histogram
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
 import kotlin.math.floor
+import kotlin.math.pow
 
-class ImgProcess {
+class ImgProcessor {
     companion object{
         fun set(imgPix : ImgPix, row : Int, col : Int, color : Color) : ImgPix {
             if (imgPix.colorType != color.colorType){
@@ -152,6 +153,13 @@ class ImgProcess {
             return imgPix
         }
 
+        fun rotate(imgPix: ImgPix, degree: Int) : ImgPix{
+            return imgPix
+        }
+        fun crop(imgPix: ImgPix, degree : Int) : ImgPix{
+            return imgPix
+        }
+
         fun toGrayScale(imgPix : ImgPix) : ImgPix{
             val oldBytesPerPixel = imgPix.bytesPerPixel
 
@@ -223,7 +231,11 @@ class ImgProcess {
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
-                                pixelByteBuffer.put(0)
+                                if((i >= padSize && i < height - padSize) && (j >= padSize && j < width - padSize)){
+                                    pixelByteBuffer.put(imgPix.pixelByteBuffer.get(k + (j-padSize) * bytesPerPixel + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
+                                }else{
+                                    pixelByteBuffer.put(0)
+                                }
                             }
                         }
                     }
@@ -231,11 +243,14 @@ class ImgProcess {
 
                 PadType.AVERAGE -> {
                     var averagePixel = Histogram(imgPix).getAverage(imgPix.colorType)
-
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
-                                pixelByteBuffer.put(averagePixel[k])
+                                if((i >= padSize && i < height - padSize) && (j >= padSize && j < width - padSize)){
+                                    pixelByteBuffer.put(imgPix.pixelByteBuffer.get(k + (j-padSize) * bytesPerPixel + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
+                                }else{
+                                    pixelByteBuffer.put(averagePixel[k])
+                                }
                             }
                         }
                     }
@@ -244,17 +259,6 @@ class ImgProcess {
 
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-
-            for(i : Int in padSize until height - padSize){
-                for(j : Int in padSize  until width - padSize){
-                    for(k : Int in 0 until bytesPerPixel){
-
-                        pixelByteBuffer.put(k + j * bytesPerPixel + i * bytesPerPixel * width,
-                            imgPix.pixelByteBuffer.get((j-padSize) * bytesPerPixel + k + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
-                    }
-                }
-            }
-
             imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
@@ -270,6 +274,10 @@ class ImgProcess {
          * @return[imgPix]
          */
         fun filter(imgPix: ImgPix, filterType : FilterType, filterSize : Int) : ImgPix{
+            return filter(imgPix, filterType, filterSize, 1.0)
+        }
+
+        fun filter(imgPix: ImgPix, filterType : FilterType, filterSize : Int, stdev : Double) : ImgPix{
 
             val width = imgPix.width
             val height = imgPix.height
@@ -291,7 +299,7 @@ class ImgProcess {
                             for(k : Int in 0 until bytesPerPixel){
                                 var intValue = 0
                                 for(l : Int in 0 until windowSize){
-                                       intValue += temppixelByteBuffer.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k).toUByte().toInt()
+                                    intValue += temppixelByteBuffer.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k).toUByte().toInt()
                                 }
                                 pixelByteBuffer.put((intValue/windowSize).toByte())
                             }
@@ -312,10 +320,10 @@ class ImgProcess {
                     for(i : Int in halfFilterSize until height + halfFilterSize){
                         for(j : Int in halfFilterSize until width + halfFilterSize){
                             repeat(bytesPerPixel){
-                                k->
+                                    k->
                                 var uByteArray = UByteArray(windowSize)
                                 repeat(windowSize){
-                                    l-> uByteArray[l] = (temppixelByteBuffer.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k)).toUByte()
+                                        l-> uByteArray[l] = (temppixelByteBuffer.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k)).toUByte()
                                 }
                                 uByteArray.sort()
                                 pixelByteBuffer.put((uByteArray[middleSize]).toByte())
@@ -340,7 +348,8 @@ class ImgProcess {
                             for(k : Int in 0 until bytesPerPixel){
                                 var intValue = 0
                                 for(l : Int in 0 until windowSize){
-                                    var temp = (temppixelByteBuffer.get(((i - padSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - padSize + (l / filterSize)) * bytesPerPixel) + k).toInt())
+                                    var temp = (
+                                            temppixelByteBuffer.get(((i - padSize + (l / filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - padSize + (l % filterSize)) * bytesPerPixel) + k).toUByte().toInt())
                                     intValue += if(l == 4){
                                         strength * temp
                                     }else{
@@ -351,10 +360,32 @@ class ImgProcess {
                             }
                         }
                     }
-
                 }
 
-                else->{}
+                FilterType.GAUSSIAN -> {
+                    val padSize = ((filterSize - 1) / 2)
+                    val tempImgPix = imgPix.pad(PadType.AVERAGE, padSize)
+                    val padImgPixWidth = tempImgPix.width
+                    val temppixelByteBuffer = tempImgPix.pixelByteBuffer
+                    val mask = getGaussianMask(filterSize, padSize, stdev)
+                    for(i : Int in padSize until height + padSize){
+                        for(j : Int in padSize until width + padSize){
+                            for(k : Int in 0 until bytesPerPixel){
+                                var sum = 0.0
+
+                                for(l : Int in mask.indices){
+                                    for(m : Int in mask.indices){
+                                       val value =  temppixelByteBuffer.get(((i - padSize + l) * bytesPerPixel * padImgPixWidth) + ((j - padSize + m) * bytesPerPixel) + k).toUByte().toInt()
+                                       sum+= value * mask[m][l]
+                                    }
+                                }
+                                pixelByteBuffer.put(sum.toInt().toByte())
+
+                            }
+                        }
+                    }
+                }
+
             }
 
             imgPix.metaData.width = width
@@ -363,6 +394,7 @@ class ImgProcess {
 
             return imgPix
         }
+
         fun getChannel(imgPix: ImgPix, chanelIndex : Int) : ImgPix{
             val width = imgPix.width
             val height = imgPix.height
@@ -379,6 +411,26 @@ class ImgProcess {
             imgPix.pixelByteBuffer = pixelByteBuffer
 
             return imgPix
+        }
+
+        private fun getGaussianMask(filterSize: Int, padSize: Int, stdev: Double) : Array<Array<Double>>{
+            val mask = Array(filterSize) { Array(filterSize) { 0.0 } }
+            var sum = 0.0
+            for(row : Int in -padSize until  padSize + 1){
+                for(col : Int in -padSize until  padSize + 1){
+                    val value = (1.0 / (2* Math.PI * stdev * stdev)) * Math.E.pow(-(row * row + col * col) / (2 * stdev * stdev))
+                    mask[row + padSize][col + padSize] = value
+                    sum += value
+                }
+            }
+
+            //must do norm because pixel distance is discrete...
+            for (row in 0 until filterSize) {
+                for (col in 0 until filterSize) {
+                    mask[row][col] /= sum
+                }
+            }
+            return mask
         }
 
     }

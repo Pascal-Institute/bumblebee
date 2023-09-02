@@ -1,7 +1,8 @@
 package bumblebee.util
 
-object StringObj {
-    const val AC_INDEX = "acIndex"
+object StringObject {
+
+    //COMMON
     const val WIDTH = "width"
     const val HEIGHT = "height"
     const val BIT_COUNT = "bitCount"
@@ -13,6 +14,8 @@ object StringObj {
     const val DATA_OFFSET ="dataOffset"
     const val DATA_TYPE = "dataType"
     const val DC_INDEX = "dcIndex"
+    const val FORMAT = "format"
+    const val FOUR_CC = "FourCC"
     const val HUFFMAN_TABLE = "huffmanTable"
     const val NUM_OF_COMPONENT = "numOfComponent"
     const val SIZE = "size"
@@ -38,6 +41,11 @@ object StringObj {
     const val Y_THUMBNAIL = "yThumbnail"
     const val Y_DENSITY = "yDensity"
     const val BYTE_ORDER ="byteOrder"
+
+    //JPG
+    const val AC_INDEX = "acIndex"
+
+    //TIFF
     const val FORTY_TWO = "42"
     const val IFD_OFFSET ="ifdOffset"
 }

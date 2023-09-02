@@ -1,23 +1,24 @@
 package bumblebee.extension
 
-import bumblebee.core.ImgHeader
+import bumblebee.core.Packet
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
-import bumblebee.type.ImgFileType
+import bumblebee.type.FileType
+import bumblebee.util.Cipher
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.hexToInt
 import bumblebee.util.Converter.Companion.intToByteArray
 import bumblebee.util.Operator.Companion.invert
 import bumblebee.util.Converter.Companion.toHex
-import bumblebee.util.StringObj.BYTE_ORDER
-import bumblebee.util.StringObj.DATA
-import bumblebee.util.StringObj.DATA_COUNT
-import bumblebee.util.StringObj.DATA_OFFSET
-import bumblebee.util.StringObj.DATA_TYPE
-import bumblebee.util.StringObj.FORTY_TWO
-import bumblebee.util.StringObj.IFD_OFFSET
-import bumblebee.util.StringObj.TAG_ID
+import bumblebee.util.StringObject.BYTE_ORDER
+import bumblebee.util.StringObject.DATA
+import bumblebee.util.StringObject.DATA_COUNT
+import bumblebee.util.StringObject.DATA_OFFSET
+import bumblebee.util.StringObject.DATA_TYPE
+import bumblebee.util.StringObject.FORTY_TWO
+import bumblebee.util.StringObject.IFD_OFFSET
+import bumblebee.util.StringObject.TAG_ID
 import java.nio.ByteBuffer
 
 //TIFF Revision 6.0 / Author : Aldus Corporation
@@ -42,19 +43,19 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         }
     }
     init {
-        imgFileType = if (byteArray.cut(0, 2).contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+        metaData.fileType = if (byteArray.cut(0, 2).contentEquals(FileType.TIFF_LITTLE.signature)){
             isLittle = true
-            ImgFileType.TIFF_LITTLE
+            FileType.TIFF_LITTLE
         }else{
             isLittle = false
-            ImgFileType.TIFF_BIG
+            FileType.TIFF_BIG
         }
         extract()
     }
 
     override fun extract() {
 
-        ifh.extract(imgFileType, ifdArray, byteArray)
+        ifh.extract(fileType, ifdArray, byteArray)
 
         //don't need to make endianArray from here
         ifdArray.forEach {
@@ -122,7 +123,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                 for(i : Int in 0 until stripCount){
                     var counts = byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
-                    var result = packBitsDecode(byteArray.cut(startIdx, startIdx + counts))
+                    var result = Cipher.decodePackBits(byteArray.cut(startIdx, startIdx + counts))
                     pixelByteBuffer.put(result)
                     println(result.size)
                     startIdx += counts
@@ -140,37 +141,15 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         return encodedData
     }
 
-    private fun packBitsDecode(byteArray: ByteArray) : ByteArray{
-
-        var returnByteArray = byteArrayOf()
-
-        var i = 0
-        while(i < byteArray.size){
-            val integer = byteArray[i].toInt()
-            if(integer == -128){
-                i = byteArray.size
-            }else if(integer in 0 until 128){
-                returnByteArray += byteArray.cut(i+ 1, i + 1 + (integer + 1))
-                i += integer + 2
-            }else if (integer in -127 until 0){
-                for(j : Int in 0 until -integer + 1){
-                    returnByteArray += byteArray[i + 1]
-                }
-                i += 2
-            }
-        }
-        return returnByteArray
-    }
-
 
 //Image File Header
-private class IFH  : ImgHeader(){
-    fun extract(imgFileType: ImgFileType, ifdArray: ArrayList<IFD>, byteArray: ByteArray){
+private class IFH  : Packet(){
+    fun extract(fileType: FileType, ifdArray: ArrayList<IFD>, byteArray: ByteArray){
         this[BYTE_ORDER] = byteArray.cut(0, 2)
         this[FORTY_TWO] = byteArray.cut(2, 4)
         this[IFD_OFFSET] = byteArray.cut(4, 8)
 
-        val startIdx = if(imgFileType.signature.contentEquals(ImgFileType.TIFF_LITTLE.signature)){
+        val startIdx = if(fileType.signature.contentEquals(FileType.TIFF_LITTLE.signature)){
             this[IFD_OFFSET].invert().byteToInt()
         }else{
             this[IFD_OFFSET].byteToInt()
@@ -199,7 +178,7 @@ private class IFD(byteArray: ByteArray){
     }
 }
 
-private class Tag(byteArray: ByteArray) : ImgHeader() {
+private class Tag(byteArray: ByteArray) : Packet() {
     init {
         this[TAG_ID] = byteArray.cut(0, 2).toEndian()
         this[DATA_TYPE] = byteArray.cut(2, 4).toEndian()
