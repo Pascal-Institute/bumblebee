@@ -161,7 +161,21 @@ class Converter {
 
             return byteArray
         }
+
+        fun RGB.toYCBCR() : YCBCR{
+            val y = YCBCR.kr * this.r + YCBCR.kg * this.g + YCBCR.kb * this.b
+            val cb = 0.5 * ((this.b - y)/(1 - YCBCR.kb))
+            val cr = 0.5 * ((this.r - y)/(1 - YCBCR.kr))
+
+            return YCBCR(y, cb, cr)
+        }
+
+        fun YCBCR.toRGB() : RGB{
+            val r  = this.y + 2 * this.cr * (1 - YCBCR.kr)
+            val b = this.y + 2 * this.cb * (1 - YCBCR.kb)
+            val g = (this.y - YCBCR.kr * r - YCBCR.kb * b) / YCBCR.kg
+
+            return RGB(r.toInt(), g.toInt(), b.toInt())
+        }
     }
-
-
 }

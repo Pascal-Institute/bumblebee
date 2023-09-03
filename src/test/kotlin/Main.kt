@@ -1,10 +1,10 @@
-import bumblebee.FileManager
-import bumblebee.core.ImgPix
-import bumblebee.core.ImgProcess
-import bumblebee.type.FilterType
+import bumblebee.color.RGB
+import bumblebee.util.Converter.Companion.toRGB
+import bumblebee.util.Converter.Companion.toYCBCR
 
 fun main(){
-    val img = ImgPix("src/main/resources/kids.tif")
-    img.show()
 
+    val rgb = RGB(10,20,30)
+    val converted = rgb.toYCBCR()
+    val final = converted.toRGB()
 }
