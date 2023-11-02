@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation ("com.github.volta2030:bumblebee:1.0.16")
+    implementation ("com.github.volta2030:bumblebee:1.0.19")
 }
 
 ```
@@ -38,15 +38,12 @@ dependencies {
 ### - Extension support
 
 ```
-png bmp tiff
+png bmp tiff ico
 ```
 
 ## 2. Support
 
-### - API documentation : use Dokka
-```
-./gradlew dokkaHtml
-```
+### - API documentation : https://volta2030.github.io/bumblebee_doc/index.html
 
 ### - Github : discussions
 
