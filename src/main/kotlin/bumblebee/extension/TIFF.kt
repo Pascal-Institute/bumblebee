@@ -4,7 +4,6 @@ import bumblebee.core.Packet
 import bumblebee.core.ImgPix
 import bumblebee.type.ColorType
 import bumblebee.type.FileType
-import bumblebee.util.Cipher
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.cut
 import bumblebee.util.Converter.Companion.hexToInt
@@ -19,6 +18,7 @@ import bumblebee.util.StringObject.DATA_TYPE
 import bumblebee.util.StringObject.FORTY_TWO
 import bumblebee.util.StringObject.IFD_OFFSET
 import bumblebee.util.StringObject.TAG_ID
+import delta.Cipher
 import java.nio.ByteBuffer
 
 //TIFF Revision 6.0 / Author : Aldus Corporation
