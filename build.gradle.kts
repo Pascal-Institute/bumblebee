@@ -31,7 +31,7 @@ publishing {
         create<MavenPublication>("maven") {
             groupId = "com.snacklab"
             artifactId = "bumblebee"
-            version = "1.0.22"
+            version = "1.1.0"
 
             from(components["java"])
         }
