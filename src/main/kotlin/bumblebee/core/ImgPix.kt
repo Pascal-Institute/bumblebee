@@ -33,34 +33,29 @@ import javax.swing.WindowConstants
     val bytesPerPixel : Int
         get() = metaData.colorType.bytesPerPixel
 
-    var pixelByteBuffer: ByteBuffer = ByteBuffer.allocate(0)
+    var pixelByteArray = ByteArray(0)
 
     constructor(width: Int, height: Int, colorType: ColorType) : this() {
         metaData.width = width
         metaData.height = height
         metaData.colorType = colorType
-        this.pixelByteBuffer = ByteBuffer.allocate(width * height * colorType.bytesPerPixel)
+        this.pixelByteArray = ByteArray(width * height * colorType.bytesPerPixel)
      }
 
     constructor(filePath : String) : this() {
-       var imgPix  = FileManager.read(filePath)
+        val imgPix  = FileManager.read(filePath)
         metaData.width = imgPix.width
         metaData.height = imgPix.height
         metaData.colorType = imgPix.colorType
-        this.pixelByteBuffer = imgPix.pixelByteBuffer
+        this.pixelByteArray = imgPix.pixelByteArray
     }
 
      public override fun clone(): ImgPix {
         return super.clone() as ImgPix
     }
 
-    fun get() : ByteArray {
-        return pixelByteBuffer.array()
-    }
-
     fun show(){
-        val pixelByteBufferArray = pixelByteBuffer.array()
-        val buffer = DataBufferByte(pixelByteBufferArray, pixelByteBufferArray.size)
+        val buffer = DataBufferByte(pixelByteArray, pixelByteArray.size)
 
         val bufferedImage : BufferedImage
         when(colorType){

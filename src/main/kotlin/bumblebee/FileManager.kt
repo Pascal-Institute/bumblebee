@@ -37,7 +37,7 @@ class FileManager {
                                         intToByteArray(imgPix.width, 4) +
                                         intToByteArray(imgPix.height, 4) +
                                         intToByteArray(imgPix.colorType.num, 1) +
-                                        imgPix.get()
+                                        imgPix.pixelByteArray
                         File("$filePath.pix").writeBytes(byteArray)
                     }
                    else -> {}
