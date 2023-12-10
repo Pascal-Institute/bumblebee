@@ -91,7 +91,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 if(TagType.fromByteArray(tag[TAG_ID]) == TagType.STRIP_OFFSETS) {
                         extractRasterImage(tag)
                 }else{
-                    println(TagType.fromByteArray(tag[TAG_ID]))
+//                    println(TagType.fromByteArray(tag[TAG_ID]))
                 }
             }
         }
@@ -105,7 +105,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         var startIdx = byteArray.cut(firstStripOffset, firstStripOffset + 4).toEndian().byteToInt()
         val endIdx = byteArray.cut(lastStripOffset - 4, lastStripOffset).toEndian().byteToInt() + byteArray.cut(stripByteCounts + (4 * stripCount) - 4, stripByteCounts + 4 * stripCount).toEndian().byteToInt()
 
-        this.pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
+        this.pixelByteArray = ByteArray(width * height * bytesPerPixel)
         when(compressionType){
             CompressionType.LZW -> {
 
@@ -113,7 +113,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                     var counts =  byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
                     //Do LZW
-                    pixelByteBuffer.put(lzwDecode(byteArray.cut(startIdx, startIdx + counts)))
+                    pixelByteArray = lzwDecode(byteArray.cut(startIdx, startIdx + counts))
 
                     startIdx += counts
                 }
@@ -124,15 +124,14 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                 for(i : Int in 0 until stripCount){
                     var counts = byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
                     var result = Cipher.decodePackBits(byteArray.cut(startIdx, startIdx + counts))
-                    pixelByteBuffer.put(result)
-                    println(result.size)
+                    pixelByteArray = result
                     startIdx += counts
                 }
 
             }
 
             else->{
-                pixelByteBuffer.put(byteArray.cut(startIdx, endIdx))
+                pixelByteArray = byteArray.cut(startIdx, endIdx)
             }
         }
     }
