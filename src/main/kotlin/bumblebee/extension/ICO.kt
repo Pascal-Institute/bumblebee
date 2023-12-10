@@ -48,24 +48,24 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
 
         setMetaData(imageDir)
 
-        pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
+        pixelByteArray = ByteArray(width * height * bytesPerPixel)
 
         val startIdx = imageDir[START_OFFSET].byteToInt()
-        val endIdx = startIdx + pixelByteBuffer.capacity()
+        val endIdx = startIdx + pixelByteArray.size
 
         //BGR, ABGR
         byteArray.cut(startIdx, endIdx).forEachIndexed { index, byte ->
-            pixelByteBuffer.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
+            pixelByteArray[bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1] = byte
         }
 
         //RGBA to GBAR
         if(bytesPerPixel == 4){
-            val copyPixelByteArray = pixelByteBuffer.array().clone()
+            val copyPixelByteArray = pixelByteArray
             for(i : Int in copyPixelByteArray.indices step 4){
-                pixelByteBuffer.put(i, copyPixelByteArray[i + 1])
-                pixelByteBuffer.put(i + 1, copyPixelByteArray[i + 2])
-                pixelByteBuffer.put(i + 2, copyPixelByteArray[i + 3])
-                pixelByteBuffer.put(i + 3, copyPixelByteArray[i])
+                pixelByteArray[i] = copyPixelByteArray[i + 1]
+                pixelByteArray[i + 1] = copyPixelByteArray[i + 2]
+                pixelByteArray[i + 2] = copyPixelByteArray[i + 3]
+                pixelByteArray[i + 3] = copyPixelByteArray[i]
             }
         }
     }
