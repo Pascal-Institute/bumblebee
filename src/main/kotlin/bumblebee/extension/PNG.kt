@@ -58,7 +58,6 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             chunkArray.add(chunk)
         }
 
-        val outputStream = ByteArrayOutputStream()
         var byteArray = ByteArray(0)
 
         chunkArray.forEach{
@@ -84,8 +83,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             }
         }
 
-        outputStream.write(byteArray)
-        val decompressedByteBuffer = decompress(outputStream.toByteArray())
+        val decompressedByteBuffer = decompress(byteArray)
         offFilter(decompressedByteBuffer)
     }
 
