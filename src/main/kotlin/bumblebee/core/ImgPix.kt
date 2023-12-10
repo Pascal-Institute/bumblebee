@@ -57,10 +57,6 @@ import javax.swing.WindowConstants
         return super.clone() as ImgPix
     }
 
-    fun get() : ByteArray {
-        return pixelByteBuffer.array()
-    }
-
     fun show(){
         val buffer = DataBufferByte(pixelByteArray, pixelByteArray.size)
 
