@@ -10,6 +10,7 @@ import bumblebee.util.StringObject.CRC
 import bumblebee.util.StringObject.DATA
 import bumblebee.util.StringObject.SIZE
 import bumblebee.util.StringObject.TYPE
+import delta.ZLib
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.util.zip.Inflater
@@ -83,8 +84,8 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             }
         }
 
-        val decompressedByteBuffer = decompress(byteArray)
-        offFilter(decompressedByteBuffer)
+        val decompressedByteArray = ZLib.decode(byteArray, height * (1 + width * bytesPerPixel))
+        offFilter(decompressedByteArray)
     }
 
     override fun setMetaData(packet: Packet) {
@@ -93,23 +94,15 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         metaData.colorType = ColorType.fromInt(packet[DATA][9].byteToInt())
     }
 
-    private fun decompress(byteArray: ByteArray) : ByteBuffer{
-        val decompresser = Inflater()
-        decompresser.setInput(byteArray, 0, byteArray.size)
-        val decompressedByteArray = ByteArray(height * (1 + width * bytesPerPixel))
-        decompresser.inflate(decompressedByteArray)
-        decompresser.end()
-        return ByteBuffer.wrap(decompressedByteArray)
-    }
-    private fun offFilter(decompressedByteBuffer: ByteBuffer) {
+    private fun offFilter(decompressedByteArray: ByteArray) {
 
         pixelByteArray = ByteArray(width * height * bytesPerPixel)
 
         for(col : Int in 0 until height ){
 
-            var filterType: FilterType = try{
+            val filterType: FilterType = try{
                 FilterType.fromInt(
-                    decompressedByteBuffer.get(((width * bytesPerPixel) + 1) * col).byteToInt()
+                    decompressedByteArray[((width * bytesPerPixel) + 1) * col].byteToInt()
                 )
             }catch (e : Exception){
                 FilterType.NONE
@@ -121,7 +114,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             val byteArray = ByteArray(size)
 
             for(i : Int in 0 until size){
-                byteArray[i] =  decompressedByteBuffer.get(from+i)
+                byteArray[i] = decompressedByteArray[from+i]
             }
 
 

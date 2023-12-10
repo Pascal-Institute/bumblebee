@@ -18,8 +18,7 @@ import bumblebee.util.StringObject.DATA_TYPE
 import bumblebee.util.StringObject.FORTY_TWO
 import bumblebee.util.StringObject.IFD_OFFSET
 import bumblebee.util.StringObject.TAG_ID
-import delta.Cipher
-import java.nio.ByteBuffer
+import delta.Packbits
 
 //TIFF Revision 6.0 / Author : Aldus Corporation
 class TIFF(private var byteArray: ByteArray) : ImgPix() {
@@ -123,7 +122,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                 for(i : Int in 0 until stripCount){
                     var counts = byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
-                    var result = Cipher.decodePackBits(byteArray.cut(startIdx, startIdx + counts))
+                    var result = Packbits.decode(byteArray.cut(startIdx, startIdx + counts))
                     pixelByteArray = result
                     startIdx += counts
                 }
