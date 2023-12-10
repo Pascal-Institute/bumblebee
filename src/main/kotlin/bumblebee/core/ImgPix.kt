@@ -33,14 +33,12 @@ import javax.swing.WindowConstants
     val bytesPerPixel : Int
         get() = metaData.colorType.bytesPerPixel
 
-    var pixelByteBuffer: ByteBuffer = ByteBuffer.allocate(0)
     var pixelByteArray = ByteArray(0)
 
     constructor(width: Int, height: Int, colorType: ColorType) : this() {
         metaData.width = width
         metaData.height = height
         metaData.colorType = colorType
-        this.pixelByteBuffer = ByteBuffer.allocate(width * height * colorType.bytesPerPixel)
         this.pixelByteArray = ByteArray(width * height * colorType.bytesPerPixel)
      }
 
@@ -49,7 +47,6 @@ import javax.swing.WindowConstants
         metaData.width = imgPix.width
         metaData.height = imgPix.height
         metaData.colorType = imgPix.colorType
-        this.pixelByteBuffer = imgPix.pixelByteBuffer
         this.pixelByteArray = imgPix.pixelByteArray
     }
 
