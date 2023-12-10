@@ -103,7 +103,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
     }
     private fun offFilter(decompressedByteBuffer: ByteBuffer) {
 
-        pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
+        pixelByteArray = ByteArray(width * height * bytesPerPixel)
 
         for(col : Int in 0 until height ){
 
@@ -136,7 +136,11 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
     }
 
     private fun none(byteArray : ByteArray, from: Int) {
-        pixelByteBuffer.put(byteArray)
+        var idx = from
+        byteArray.forEach {
+            pixelByteArray[idx] = it
+            idx++
+        }
     }
 
     private fun sub(byteArray: ByteArray, from: Int) {
@@ -144,9 +148,9 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         var count = 0
         byteArray.forEach {
             if(count < bytesPerPixel){
-                pixelByteBuffer.put(it)
+                pixelByteArray[idx] = it
             }else{
-                pixelByteBuffer.put((pixelByteBuffer.get(idx-bytesPerPixel) + it).toByte())
+                pixelByteArray[idx] = (pixelByteArray.get(idx-bytesPerPixel) + it).toByte()
             }
             idx++
             count++
@@ -156,7 +160,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
     private fun up(byteArray: ByteArray, from: Int) {
         var idx = from
         byteArray.forEach{
-            pixelByteBuffer.put((pixelByteBuffer.get(idx - width * bytesPerPixel) + it).toByte())
+            pixelByteArray[idx] = (pixelByteArray.get(idx - width * bytesPerPixel) + it).toByte()
             idx++
         }
     }
@@ -168,16 +172,16 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
         byteArray.forEach{
             if(count < bytesPerPixel){
-                val b = pixelByteBuffer.get(idx - width * bytesPerPixel).toUByte().toInt()
+                val b = pixelByteArray.get(idx - width * bytesPerPixel).toUByte().toInt()
                 val c = floor( b  * 0.5 ).toInt()
-                pixelByteBuffer.put((c + it).toByte())
+                pixelByteArray[idx] = (c + it).toByte()
 
             }else{
 
-                val a = pixelByteBuffer.get(idx - bytesPerPixel).toUByte().toInt()
-                val b = pixelByteBuffer.get(idx - width * bytesPerPixel).toUByte().toInt()
+                val a = pixelByteArray.get(idx - bytesPerPixel).toUByte().toInt()
+                val b = pixelByteArray.get(idx - width * bytesPerPixel).toUByte().toInt()
                 val c = floor((a  + b) * 0.5 ).toInt()
-                pixelByteBuffer.put((c + it).toByte())
+                pixelByteArray[idx] = (c + it).toByte()
             }
 
             idx++
@@ -193,7 +197,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             if(count < bytesPerPixel){
 
                 val a = 0
-                val b = pixelByteBuffer.get(idx - width * bytesPerPixel).toUByte().toInt()
+                val b = pixelByteArray.get(idx - width * bytesPerPixel).toUByte().toInt()
                 val c = 0
 
                 val byteP = (a + b - c)
@@ -210,12 +214,12 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     c.toByte()
                 }
 
-                pixelByteBuffer.put((pR + it).toByte())
+                pixelByteArray[idx] = (pR + it).toByte()
 
             }else{
-                val a = pixelByteBuffer.get(idx - bytesPerPixel).toUByte().toInt()
-                val b = pixelByteBuffer.get(idx - width * bytesPerPixel).toUByte().toInt()
-                val c = pixelByteBuffer.get(idx - width * bytesPerPixel - bytesPerPixel).toUByte().toInt()
+                val a = pixelByteArray.get(idx - bytesPerPixel).toUByte().toInt()
+                val b = pixelByteArray.get(idx - width * bytesPerPixel).toUByte().toInt()
+                val c = pixelByteArray.get(idx - width * bytesPerPixel - bytesPerPixel).toUByte().toInt()
 
                 val byteP = (a + b - c)
 
@@ -231,7 +235,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     c
                 }
 
-                pixelByteBuffer.put((pR + it).toByte())
+                pixelByteArray[idx] = ((pR + it).toByte())
             }
             idx++
             count++
