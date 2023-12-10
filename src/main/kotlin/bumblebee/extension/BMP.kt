@@ -46,13 +46,13 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
 
         setMetaData(infoHeader)
 
-        pixelByteBuffer = ByteBuffer.allocate(width * height * bytesPerPixel)
+        pixelByteArray = ByteArray(width * height * bytesPerPixel)
 
         val startIdx = fileHeader[START_OFFSET].byteToInt()
-        val endIdx = startIdx + pixelByteBuffer.capacity()
+        val endIdx = startIdx + pixelByteArray.size
 
         byteArray.cut(startIdx, endIdx).forEachIndexed { index, byte ->
-            pixelByteBuffer.put( bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1 , byte)
+            pixelByteArray[bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1] = byte
         }
     }
 
