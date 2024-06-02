@@ -1,6 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.9.0"
-    id("org.jetbrains.dokka") version "1.7.20"
+    kotlin("jvm") version "2.0.0"
     `maven-publish`
 }
 
@@ -23,10 +22,10 @@ tasks.test {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = "com.snacklab"
+            groupId = "com.pascal.institute"
             artifactId = "bumblebee"
 
-            version = "1.2.0"
+            version = "1.2.1"
 
             from(components["java"])
         }
