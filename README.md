@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    implementation ("com.github.pascal.institute:bumblebee:1.2.1")
+    implementation ("com.github.Pascal-Institute:bumblebee:1.2.2")
 }
 
 ```
@@ -29,7 +29,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.pascal.institute:bumblebee:1.2.1"
+    implementation "com.github.Pascal-Institute:bumblebee:1.2.2"
 }
 ```
 
