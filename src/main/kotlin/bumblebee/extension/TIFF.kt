@@ -19,6 +19,7 @@ import bumblebee.util.StringObject.FORTY_TWO
 import bumblebee.util.StringObject.IFD_OFFSET
 import bumblebee.util.StringObject.TAG_ID
 import delta.Packbits
+import komat.space.Mat
 
 //TIFF Revision 6.0 / Author : Aldus Corporation
 class TIFF(private var byteArray: ByteArray) : ImgPix() {
@@ -104,15 +105,15 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         var startIdx = byteArray.cut(firstStripOffset, firstStripOffset + 4).toEndian().byteToInt()
         val endIdx = byteArray.cut(lastStripOffset - 4, lastStripOffset).toEndian().byteToInt() + byteArray.cut(stripByteCounts + (4 * stripCount) - 4, stripByteCounts + 4 * stripCount).toEndian().byteToInt()
 
-        this.pixelByteArray = ByteArray(width * height * bytesPerPixel)
+        this.mat = Mat(width, height * bytesPerPixel, ByteArray(width * height * bytesPerPixel))
         when(compressionType){
             CompressionType.LZW -> {
 
                 for(i : Int in 0 until stripCount){
 
-                    var counts =  byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
+                    var counts = byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
                     //Do LZW
-                    pixelByteArray = lzwDecode(byteArray.cut(startIdx, startIdx + counts))
+                    mat = Mat(0, 0, lzwDecode(byteArray.cut(startIdx, startIdx + counts)))
 
                     startIdx += counts
                 }
@@ -122,15 +123,15 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                 for(i : Int in 0 until stripCount){
                     var counts = byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
-                    var result = Packbits.decode(byteArray.cut(startIdx, startIdx + counts))
-                    pixelByteArray = result
+                    var result = Mat(0, 0, Packbits.decode(byteArray.cut(startIdx, startIdx + counts)))
+                    mat = result
                     startIdx += counts
                 }
 
             }
 
             else->{
-                pixelByteArray = byteArray.cut(startIdx, endIdx)
+                mat = Mat(0,0,byteArray.cut(startIdx, endIdx))
             }
         }
     }

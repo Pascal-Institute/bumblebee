@@ -11,6 +11,7 @@ import bumblebee.util.StringObject.DATA
 import bumblebee.util.StringObject.SIZE
 import bumblebee.util.StringObject.TYPE
 import delta.ZLib
+import komat.space.Mat
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.util.zip.Inflater
@@ -96,7 +97,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
     private fun offFilter(decompressedByteArray: ByteArray) {
 
-        pixelByteArray = ByteArray(width * height * bytesPerPixel)
+        mat = Mat(width, height * bytesPerPixel, ByteArray(width * height * bytesPerPixel))
 
         for(col : Int in 0 until height ){
 
@@ -131,7 +132,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
     private fun none(byteArray : ByteArray, from: Int) {
         var idx = from
         byteArray.forEach {
-            pixelByteArray[idx] = it
+            mat[idx] = it
             idx++
         }
     }
@@ -141,9 +142,9 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         var count = 0
         byteArray.forEach {
             if(count < bytesPerPixel){
-                pixelByteArray[idx] = it
+                mat[idx] = it
             }else{
-                pixelByteArray[idx] = (pixelByteArray[idx-bytesPerPixel] + it).toByte()
+                mat[idx] = (mat[idx-bytesPerPixel] as Byte + it).toByte()
             }
             idx++
             count++
@@ -153,7 +154,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
     private fun up(byteArray: ByteArray, from: Int) {
         var idx = from
         byteArray.forEach{
-            pixelByteArray[idx] = (pixelByteArray[idx - width * bytesPerPixel] + it).toByte()
+            mat[idx] = (mat[idx - width * bytesPerPixel] as Byte + it).toByte()
             idx++
         }
     }
@@ -165,16 +166,16 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
         byteArray.forEach{
             if(count < bytesPerPixel){
-                val b = pixelByteArray[idx - width * bytesPerPixel].toUByte().toInt()
+                val b = (mat[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
                 val c = floor( b  * 0.5 ).toInt()
-                pixelByteArray[idx] = (c + it).toByte()
+                mat[idx] = (c + it).toByte()
 
             }else{
 
-                val a = pixelByteArray[idx - bytesPerPixel].toUByte().toInt()
-                val b = pixelByteArray[idx - width * bytesPerPixel].toUByte().toInt()
+                val a = (mat[idx - bytesPerPixel] as Byte).toUByte().toInt()
+                val b = (mat[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
                 val c = floor((a  + b) * 0.5 ).toInt()
-                pixelByteArray[idx] = (c + it).toByte()
+                mat[idx] = (c + it).toByte()
             }
 
             idx++
@@ -190,7 +191,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             if(count < bytesPerPixel){
 
                 val a = 0
-                val b = pixelByteArray[idx - width * bytesPerPixel].toUByte().toInt()
+                val b = (mat[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
                 val c = 0
 
                 val byteP = (a + b - c)
@@ -207,12 +208,12 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     c.toByte()
                 }
 
-                pixelByteArray[idx] = (pR + it).toByte()
+                mat[idx] = (pR + it).toByte()
 
             }else{
-                val a = pixelByteArray[idx - bytesPerPixel].toUByte().toInt()
-                val b = pixelByteArray[idx - width * bytesPerPixel].toUByte().toInt()
-                val c = pixelByteArray[idx - width * bytesPerPixel - bytesPerPixel].toUByte().toInt()
+                val a = (mat[idx - bytesPerPixel] as Byte).toUByte().toInt()
+                val b = (mat[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
+                val c = (mat[idx - width * bytesPerPixel - bytesPerPixel] as Byte).toUByte().toInt()
 
                 val byteP = (a + b - c)
 
@@ -228,7 +229,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     c
                 }
 
-                pixelByteArray[idx] = ((pR + it).toByte())
+                mat[idx] = ((pR + it).toByte())
             }
             idx++
             count++

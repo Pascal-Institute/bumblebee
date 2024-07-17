@@ -31,7 +31,6 @@ import bumblebee.util.StringObject.X_DENSITY
 import bumblebee.util.StringObject.X_THUMBNAIL
 import bumblebee.util.StringObject.Y_DENSITY
 import bumblebee.util.StringObject.Y_THUMBNAIL
-import java.lang.Math.*
 
 class JPG(private var byteArray: ByteArray) : ImgPix(){
     private val segmentArray = mutableListOf<Packet>()

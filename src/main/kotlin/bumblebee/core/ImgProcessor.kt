@@ -5,6 +5,7 @@ import bumblebee.type.*
 import bumblebee.util.Converter.Companion.byteToInt
 import bumblebee.util.Converter.Companion.colorToByte
 import bumblebee.util.Histogram
+import komat.space.Mat
 import java.nio.ByteBuffer
 import kotlin.experimental.inv
 import kotlin.math.floor
@@ -18,7 +19,7 @@ class ImgProcessor {
             } else {
                 val byteArray: ByteArray = colorToByte(color)
                 for (i: Int in 0 until imgPix.bytesPerPixel) {
-                    imgPix.pixelByteArray[i + imgPix.bytesPerPixel * col + (imgPix.width * imgPix.bytesPerPixel) * row] =
+                    imgPix.mat[i + imgPix.bytesPerPixel * col + (imgPix.width * imgPix.bytesPerPixel) * row] =
                         byteArray[i]
                 }
             }
@@ -28,27 +29,27 @@ class ImgProcessor {
         fun crop(imgPix: ImgPix, row: Int, col: Int, width: Int, height: Int): ImgPix {
 
             val bytesPerPixel = imgPix.bytesPerPixel
-            val pixelByteArray = ByteArray(width * height * bytesPerPixel)
+            val mat = Mat(width, height * bytesPerPixel, ByteArray(width * height * bytesPerPixel))
             val startIdx = row * (imgPix.width * bytesPerPixel) + col * bytesPerPixel
 
             for (i: Int in 0 until height) {
                 for (j: Int in 0 until width) {
                     for (k: Int in 0 until bytesPerPixel) {
-                        pixelByteArray[j * bytesPerPixel + k + (i * bytesPerPixel * width)] =
-                            (imgPix.pixelByteArray.get(startIdx + j * bytesPerPixel + k + (i * bytesPerPixel * imgPix.width)))
+                        mat[j * bytesPerPixel + k + (i * bytesPerPixel * width)] =
+                            imgPix.mat[startIdx + j * bytesPerPixel + k + (i * bytesPerPixel * imgPix.width)].toByte()
                     }
                 }
             }
 
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-            imgPix.pixelByteArray = pixelByteArray
+            imgPix.mat = mat
 
             return imgPix
         }
 
         fun resize(imgPix: ImgPix, width: Int, height: Int): ImgPix {
-            val pixelByteArray = ByteArray(width * height * imgPix.bytesPerPixel)
+            val pixelMat = Mat(width, height * imgPix.bytesPerPixel, ByteArray(width * height * imgPix.bytesPerPixel))
 
             val oriW = imgPix.width
             val oriH = imgPix.height
@@ -60,7 +61,7 @@ class ImgProcessor {
             val processedImgPix = imgPix.pad(PadType.AVERAGE, 1).crop(1, 1, oriW + 1, oriH + 1)
 
             //Actual pixels that have been truncated
-            val processedpixelByteArray = processedImgPix.pixelByteArray
+            val processedpixelMat = processedImgPix.mat
 
             for (i: Int in 0 until height) {
                 for (j: Int in 0 until width) {
@@ -76,10 +77,10 @@ class ImgProcessor {
                         val y1 = y0 + 1
 
 
-                        val p00 = processedpixelByteArray.get(k + imgPix.bytesPerPixel * (x0 + processedImgPix.width * y0))
-                        val p10 = processedpixelByteArray.get(k + imgPix.bytesPerPixel * (x1 + processedImgPix.width * y0))
-                        val p01 = processedpixelByteArray.get(k + imgPix.bytesPerPixel * (x0 + processedImgPix.width * y1))
-                        val p11 = processedpixelByteArray.get(k + imgPix.bytesPerPixel * (x1 + processedImgPix.width * y1))
+                        val p00 = processedpixelMat[k + imgPix.bytesPerPixel * (x0 + processedImgPix.width * y0)].toByte()
+                        val p10 = processedpixelMat[k + imgPix.bytesPerPixel * (x1 + processedImgPix.width * y0)].toByte()
+                        val p01 = processedpixelMat[k + imgPix.bytesPerPixel * (x0 + processedImgPix.width * y1)].toByte()
+                        val p11 = processedpixelMat[k + imgPix.bytesPerPixel * (x1 + processedImgPix.width * y1)].toByte()
 
                         //Weight
                         val fx = x - x0
@@ -92,13 +93,13 @@ class ImgProcessor {
                         //Interpolation for y
                         val value = (fa * (1 - fy) + fb * fy).toInt().toByte()
 
-                        pixelByteArray[k + imgPix.bytesPerPixel * j + (width * imgPix.bytesPerPixel * i)] = value
+                        pixelMat[k + imgPix.bytesPerPixel * j + (width * imgPix.bytesPerPixel * i)] = value
                     }
                 }
             }
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-            imgPix.pixelByteArray = pixelByteArray
+            imgPix.mat = pixelMat
 
             // bilinear interpolation 완료
             return imgPix
@@ -115,7 +116,7 @@ class ImgProcessor {
             val bytesPerPixel = imgPix.bytesPerPixel
 
             for(i : Int in 0 until width * height * bytesPerPixel){
-                imgPix.pixelByteArray[i] = imgPix.pixelByteArray[i].inv()
+                imgPix.mat[i] = (imgPix.mat[i].toByte()).inv()
                }
             return imgPix
         }
@@ -126,14 +127,14 @@ class ImgProcessor {
             val height = imgPix.height
             val bytesPerPixel = imgPix.bytesPerPixel
 
-            val pixelByteArray = ByteArray(width * height * bytesPerPixel)
+            val pixelMat = Mat(width, height* bytesPerPixel, ByteArray(width * height * bytesPerPixel))
 
             when(orientation){
                 OrientationType.HORIZONTAL -> {
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
-                                pixelByteArray[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = (imgPix.pixelByteArray.get(((i + 1) * bytesPerPixel * width - 1) - (j * bytesPerPixel + (bytesPerPixel - 1) - k)))
+                                pixelMat[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = (imgPix.mat[((i + 1) * bytesPerPixel * width - 1) - (j * bytesPerPixel + (bytesPerPixel - 1) - k)])
                             }
                         }
                     }
@@ -143,14 +144,14 @@ class ImgProcessor {
                     for(i : Int in 0 until height){
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
-                                pixelByteArray[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = (imgPix.pixelByteArray.get(width * (height - (i + 1)) * bytesPerPixel + j * bytesPerPixel + k))
+                                pixelMat[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = imgPix.mat[width * (height - (i + 1)) * bytesPerPixel + j * bytesPerPixel + k]
                             }
                         }
                     }
                 }
             }
 
-            imgPix.pixelByteArray = pixelByteArray
+            imgPix.mat = pixelMat
 
             return imgPix
         }
@@ -170,19 +171,19 @@ class ImgProcessor {
 
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
 
-            val pixelByteArray = ByteArray(width * height * imgPix.bytesPerPixel)
+            val mat = Mat(width, height * imgPix.bytesPerPixel, ByteArray(width * height * imgPix.bytesPerPixel))
 
             for(i : Int in 0 until height){
                 for(j : Int in 0 until width){
                     var integer = 0
                     for(k : Int in 0 until oldBytesPerPixel){
-                         integer += imgPix.pixelByteArray.get((i * oldBytesPerPixel* width) + (j * oldBytesPerPixel) + k).toUByte().toInt()
+                         integer += (imgPix.mat[(i * oldBytesPerPixel* width) + (j * oldBytesPerPixel) + k].toByte()).toUByte().toInt()
                     }
-                    pixelByteArray[i * width + j] = (integer / oldBytesPerPixel).toByte()
+                    mat[i * width + j] = (integer / oldBytesPerPixel).toByte()
                 }
             }
 
-            imgPix.pixelByteArray = pixelByteArray
+            imgPix.mat = mat
 
             return imgPix
         }
@@ -198,8 +199,8 @@ class ImgProcessor {
             }
 
             for(i : Int in 0 until width * height * bytesPerPixel){
-                val byte = if (imgPix.pixelByteArray.get(i).byteToInt() > level) (255).toByte() else (0).toByte()
-                imgPix.pixelByteArray[i] = byte
+                val byte = if ((imgPix.mat[i].toByte()).byteToInt() > level) (255).toByte() else (0).toByte()
+                imgPix.mat[i] = byte
             }
 
             return imgPix
@@ -226,7 +227,7 @@ class ImgProcessor {
             val height = padSize + imgPix.height + padSize
             val bytesPerPixel = imgPix.bytesPerPixel
 
-            val pixelByteArray = ByteArray(width * height * bytesPerPixel)
+            val pixelByteArray = Mat(width, height * bytesPerPixel, ByteArray(width * height * bytesPerPixel))
 
             when(padType){
                 PadType.ZERO -> {
@@ -234,7 +235,7 @@ class ImgProcessor {
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
                                 if((i >= padSize && i < height - padSize) && (j >= padSize && j < width - padSize)){
-                                    pixelByteArray[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = (imgPix.pixelByteArray.get(k + (j-padSize) * bytesPerPixel + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
+                                    pixelByteArray[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = (imgPix.mat[k + (j-padSize) * bytesPerPixel + (i-padSize) * bytesPerPixel * (width - 2 * padSize)].toByte())
                                 }else{
                                     pixelByteArray[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = 0
                                 }
@@ -249,7 +250,7 @@ class ImgProcessor {
                         for(j : Int in 0 until width){
                             for(k : Int in 0 until bytesPerPixel){
                                 if((i >= padSize && i < height - padSize) && (j >= padSize && j < width - padSize)){
-                                    pixelByteArray[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = (imgPix.pixelByteArray.get(k + (j-padSize) * bytesPerPixel + (i-padSize) * bytesPerPixel * (width - 2 * padSize)))
+                                    pixelByteArray[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = (imgPix.mat[k + (j-padSize) * bytesPerPixel + (i-padSize) * bytesPerPixel * (width - 2 * padSize)].toByte())
                                 }else{
                                     pixelByteArray[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = averagePixel[k]
                                 }
@@ -261,7 +262,7 @@ class ImgProcessor {
 
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-            imgPix.pixelByteArray = pixelByteArray
+            imgPix.mat = pixelByteArray
 
             return imgPix
         }
@@ -284,7 +285,7 @@ class ImgProcessor {
             val width = imgPix.width
             val height = imgPix.height
             val bytesPerPixel = imgPix.bytesPerPixel
-            val pixelByteArray = ByteArray(width * height * bytesPerPixel)
+            val pixelMat = Mat(width, height * bytesPerPixel, ByteArray(width * height * bytesPerPixel))
 
             when(filterType){
                 FilterType.AVERAGE->{
@@ -294,16 +295,16 @@ class ImgProcessor {
 
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
                     val padImgPixWidth = tempImgPix.width
-                    val temppixelByteArray = tempImgPix.pixelByteArray
+                    val temppixelMat = tempImgPix.mat
 
                     for(i : Int in halfFilterSize until height + halfFilterSize){
                         for(j : Int in halfFilterSize until width + halfFilterSize){
                             for(k : Int in 0 until bytesPerPixel){
                                 var intValue = 0
                                 for(l : Int in 0 until windowSize){
-                                    intValue += temppixelByteArray.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k).toUByte().toInt()
+                                    intValue += (temppixelMat[((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k].toByte()).toUByte().toInt()
                                 }
-                                pixelByteArray[(j - halfFilterSize) * bytesPerPixel + k + ((i - halfFilterSize) * bytesPerPixel * width)] =((intValue/windowSize).toByte())
+                                pixelMat[(j - halfFilterSize) * bytesPerPixel + k + ((i - halfFilterSize) * bytesPerPixel * width)] =((intValue/windowSize).toByte())
                             }
                         }
                     }
@@ -317,7 +318,7 @@ class ImgProcessor {
 
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
                     val padImgPixWidth = tempImgPix.width
-                    val temppixelByteArray = tempImgPix.pixelByteArray
+                    val temppixelByteArray = tempImgPix.mat
 
                     for(i : Int in halfFilterSize until height + halfFilterSize){
                         for(j : Int in halfFilterSize until width + halfFilterSize){
@@ -325,10 +326,10 @@ class ImgProcessor {
                                     k->
                                 var uByteArray = UByteArray(windowSize)
                                 repeat(windowSize){
-                                        l-> uByteArray[l] = (temppixelByteArray.get(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k)).toUByte()
+                                        l-> uByteArray[l] = (temppixelByteArray[(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k)].toByte()).toUByte()
                                 }
                                 uByteArray.sort()
-                                pixelByteArray[(j - halfFilterSize) * bytesPerPixel + k + ((i - halfFilterSize) * bytesPerPixel * width)] = ((uByteArray[middleSize]).toByte())
+                                pixelMat[(j - halfFilterSize) * bytesPerPixel + k + ((i - halfFilterSize) * bytesPerPixel * width)] = ((uByteArray[middleSize]).toByte())
                             }
                         }
                     }
@@ -343,7 +344,7 @@ class ImgProcessor {
                     val exceptStrength = -1
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, padSize)
                     val padImgPixWidth = tempImgPix.width
-                    val temppixelByteArray = tempImgPix.pixelByteArray
+                    val temppixelMat = tempImgPix.mat
 
                     for(i : Int in padSize until height + padSize){
                         for(j : Int in padSize until width + padSize){
@@ -351,14 +352,14 @@ class ImgProcessor {
                                 var intValue = 0
                                 for(l : Int in 0 until windowSize){
                                     var temp = (
-                                            temppixelByteArray.get(((i - padSize + (l / filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - padSize + (l % filterSize)) * bytesPerPixel) + k).toUByte().toInt())
+                                            (temppixelMat[(((i - padSize + (l / filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - padSize + (l % filterSize)) * bytesPerPixel) + k)].toByte()).toUByte().toInt())
                                     intValue += if(l == 4){
                                         strength * temp
                                     }else{
                                         exceptStrength * temp
                                     }
                                 }
-                                pixelByteArray[(j - padSize) * bytesPerPixel + k + ((i - padSize) * bytesPerPixel * width)] = intValue.toByte()
+                                pixelMat[(j - padSize) * bytesPerPixel + k + ((i - padSize) * bytesPerPixel * width)] = intValue.toByte()
                             }
                         }
                     }
@@ -368,7 +369,7 @@ class ImgProcessor {
                     val padSize = ((filterSize - 1) / 2)
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, padSize)
                     val padImgPixWidth = tempImgPix.width
-                    val temppixelByteArray = tempImgPix.pixelByteArray
+                    val temppixelMat = tempImgPix.mat
                     val mask = getGaussianMask(filterSize, padSize, stdev)
                     for(i : Int in padSize until height + padSize){
                         for(j : Int in padSize until width + padSize){
@@ -377,11 +378,11 @@ class ImgProcessor {
 
                                 for(l : Int in mask.indices){
                                     for(m : Int in mask.indices){
-                                       val value =  temppixelByteArray.get(((i - padSize + l) * bytesPerPixel * padImgPixWidth) + ((j - padSize + m) * bytesPerPixel) + k).toUByte().toInt()
+                                       val value =  (temppixelMat[(((i - padSize + l) * bytesPerPixel * padImgPixWidth) + ((j - padSize + m) * bytesPerPixel) + k)].toByte()).toUByte().toInt()
                                        sum+= value * mask[m][l]
                                     }
                                 }
-                                pixelByteArray[(j - padSize) * bytesPerPixel + k + ((i - padSize) * bytesPerPixel * width)] = (sum.toInt().toByte())
+                                pixelMat[(j - padSize) * bytesPerPixel + k + ((i - padSize) * bytesPerPixel * width)] = (sum.toInt().toByte())
                             }
                         }
                     }
@@ -391,7 +392,7 @@ class ImgProcessor {
 
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-            imgPix.pixelByteArray = pixelByteArray
+            imgPix.mat = pixelMat
 
             return imgPix
         }
@@ -399,17 +400,17 @@ class ImgProcessor {
         fun getChannel(imgPix: ImgPix, chanelIndex : Int) : ImgPix{
             val width = imgPix.width
             val height = imgPix.height
-            val pixelByteArray = ByteArray(width * height * 1)
-            val originpixelByteArray = imgPix.pixelByteArray
+            val pixelMat = Mat(width, height, ByteArray(width * height * 1))
+            val originpixelMat = imgPix.mat
 
             for(i : Int in 0 until height){
                 for(j : Int in 0 until width){
-                    pixelByteArray[i * width + j] = (originpixelByteArray.get(i * imgPix.bytesPerPixel * width + j * imgPix.bytesPerPixel + chanelIndex))
+                    pixelMat[i * width + j] = originpixelMat[(i * imgPix.bytesPerPixel * width + j * imgPix.bytesPerPixel + chanelIndex)]
                 }
             }
 
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
-            imgPix.pixelByteArray = pixelByteArray
+            imgPix.mat = pixelMat
 
             return imgPix
         }

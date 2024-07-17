@@ -12,6 +12,7 @@ import bumblebee.util.StringObject.HEIGHT
 import bumblebee.util.StringObject.SIZE
 import bumblebee.util.StringObject.START_OFFSET
 import bumblebee.util.StringObject.WIDTH
+import komat.space.Mat
 import java.nio.ByteBuffer
 
 class BMP(private var byteArray: ByteArray) : ImgPix() {
@@ -46,13 +47,13 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
 
         setMetaData(infoHeader)
 
-        pixelByteArray = ByteArray(width * height * bytesPerPixel)
+        mat = Mat(width, height * bytesPerPixel, ByteArray(width * height * bytesPerPixel))
 
         val startIdx = fileHeader[START_OFFSET].byteToInt()
-        val endIdx = startIdx + pixelByteArray.size
+        val endIdx = startIdx + mat.elements.size
 
         byteArray.cut(startIdx, endIdx).forEachIndexed { index, byte ->
-            pixelByteArray[bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1] = byte
+            mat[bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1] = byte
         }
     }
 
