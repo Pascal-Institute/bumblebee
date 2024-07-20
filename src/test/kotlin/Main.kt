@@ -4,7 +4,7 @@ import bumblebee.type.OrientationType
 import bumblebee.type.PadType
 
 fun main(){
-    val imgPix = ImgPix("C:\\dev\\bumblebee\\src\\main\\resources\\bumblebee_icon.png")
+    val imgPix = ImgPix("src/main/resources/bumblebee_icon.png")
     imgPix.resize(256, 256)
     imgPix.invert()
     imgPix.flip(OrientationType.HORIZONTAL)
@@ -15,4 +15,7 @@ fun main(){
     imgPix.pad(PadType.AVERAGE, 5)
     imgPix.filter(FilterType.GAUSSIAN, 11, 3.0)
     imgPix.show()
+
+    val lenna = ImgPix("src/main/resources/lenna.png")
+    lenna.show()
 }

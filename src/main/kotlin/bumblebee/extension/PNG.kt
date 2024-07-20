@@ -144,7 +144,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             if(count < bytesPerPixel){
                 cube[idx] = it
             }else{
-                cube[idx] = (cube[idx-bytesPerPixel] as Byte + it).toByte()
+                cube[idx] = (cube[idx-bytesPerPixel].toByte() + it).toByte()
             }
             idx++
             count++
@@ -154,7 +154,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
     private fun up(byteArray: ByteArray, from: Int) {
         var idx = from
         byteArray.forEach{
-            cube[idx] = (cube[idx - width * bytesPerPixel] as Byte + it).toByte()
+            cube[idx] = (cube[idx - width * bytesPerPixel].toByte() + it).toByte()
             idx++
         }
     }
@@ -166,14 +166,14 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
         byteArray.forEach{
             if(count < bytesPerPixel){
-                val b = (cube[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
+                val b = (cube[idx - width * bytesPerPixel].toByte() ).toUByte().toInt()
                 val c = floor( b  * 0.5 ).toInt()
                 cube[idx] = (c + it).toByte()
 
             }else{
 
-                val a = (cube[idx - bytesPerPixel] as Byte).toUByte().toInt()
-                val b = (cube[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
+                val a = (cube[idx - bytesPerPixel].toByte()).toUByte().toInt()
+                val b = (cube[idx - width * bytesPerPixel].toByte()).toUByte().toInt()
                 val c = floor((a  + b) * 0.5 ).toInt()
                 cube[idx] = (c + it).toByte()
             }
@@ -191,7 +191,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             if(count < bytesPerPixel){
 
                 val a = 0
-                val b = (cube[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
+                val b = (cube[idx - width * bytesPerPixel].toByte()).toUByte().toInt()
                 val c = 0
 
                 val byteP = (a + b - c)
@@ -211,9 +211,9 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                 cube[idx] = (pR + it).toByte()
 
             }else{
-                val a = (cube[idx - bytesPerPixel] as Byte).toUByte().toInt()
-                val b = (cube[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
-                val c = (cube[idx - width * bytesPerPixel - bytesPerPixel] as Byte).toUByte().toInt()
+                val a = (cube[idx - bytesPerPixel].toByte()).toUByte().toInt()
+                val b = (cube[idx - width * bytesPerPixel].toByte()).toUByte().toInt()
+                val c = (cube[idx - width * bytesPerPixel - bytesPerPixel].toByte()).toUByte().toInt()
 
                 val byteP = (a + b - c)
 
