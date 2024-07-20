@@ -5,7 +5,6 @@ import bumblebee.type.PadType
 
 fun main(){
     val imgPix = ImgPix("C:\\dev\\bumblebee\\src\\main\\resources\\bumblebee_icon.png")
-    imgPix.show()
     imgPix.resize(256, 256)
     imgPix.invert()
     imgPix.flip(OrientationType.HORIZONTAL)

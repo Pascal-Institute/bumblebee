@@ -5,6 +5,7 @@ import bumblebee.color.Color
 import bumblebee.type.*
 import bumblebee.util.Histogram
 import komat.Element
+import komat.space.Cube
 import komat.space.Mat
 import java.awt.Dimension
 import java.awt.Graphics
@@ -34,17 +35,16 @@ import javax.swing.WindowConstants
     val bytesPerPixel : Int
         get() = metaData.colorType.bytesPerPixel
 
-    var mat = Mat(0,0, ByteArray(0))
-
-    operator fun get(i: Int, j: Int): Element {
-        return mat.elements[i * mat.column + j]
-    }
+     //depth : row
+     //row : column
+     //column : color size
+    var cube = Cube(0,0,0)
 
     constructor(width: Int, height: Int, colorType: ColorType) : this() {
         metaData.width = width
         metaData.height = height
         metaData.colorType = colorType
-        this.mat = Mat(width, height* colorType.bytesPerPixel, ByteArray(width * height * colorType.bytesPerPixel))
+        cube = Cube(width, height, colorType.bytesPerPixel)
      }
 
     constructor(filePath : String) : this() {
@@ -52,7 +52,7 @@ import javax.swing.WindowConstants
         metaData.width = imgPix.width
         metaData.height = imgPix.height
         metaData.colorType = imgPix.colorType
-        this.mat = imgPix.mat
+        cube = imgPix.cube
     }
 
      public override fun clone(): ImgPix {
@@ -60,7 +60,7 @@ import javax.swing.WindowConstants
     }
 
     fun show(){
-        val buffer = DataBufferByte(mat.elements.map { it.toByte() }.toByteArray(), mat.elements.size)
+        val buffer = DataBufferByte(cube.elements.map { it.toByte() }.toByteArray(), cube.elements.size)
 
         val bufferedImage : BufferedImage
         when(colorType){

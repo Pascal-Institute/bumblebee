@@ -17,8 +17,7 @@ import bumblebee.util.StringObject.SIZE
 import bumblebee.util.StringObject.START_OFFSET
 import bumblebee.util.StringObject.TYPE
 import bumblebee.util.StringObject.WIDTH
-import komat.space.Mat
-import java.nio.ByteBuffer
+import komat.space.Cube
 
 class ICO(private var byteArray: ByteArray) : ImgPix() {
 
@@ -49,24 +48,24 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
 
         setMetaData(imageDir)
 
-        mat = Mat(width, height * bytesPerPixel, ByteArray(width * height * bytesPerPixel))
+        cube = Cube(width, height, bytesPerPixel)
 
         val startIdx = imageDir[START_OFFSET].byteToInt()
-        val endIdx = startIdx + mat.elements.size
+        val endIdx = startIdx + cube.elements.size
 
         //BGR, ABGR
         byteArray.cut(startIdx, endIdx).forEachIndexed { index, byte ->
-            mat[bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1] = byte
+            cube[bytesPerPixel * width * (height - (index / (width * bytesPerPixel)) - 1) + ((index % (width * bytesPerPixel))/bytesPerPixel + 1) * bytesPerPixel - index % bytesPerPixel - 1] = byte
         }
 
         //RGBA to GBAR
         if(bytesPerPixel == 4){
-            val copyPixelMat = mat
-            for(i : Int in copyPixelMat.elements.indices step 4){
-                mat[i] = copyPixelMat[i + 1]
-                mat[i + 1] = copyPixelMat[i + 2]
-                mat[i + 2] = copyPixelMat[i + 3]
-                mat[i + 3] = copyPixelMat[i]
+            val copyPixelcube = cube
+            for(i : Int in copyPixelcube.elements.indices step 4){
+                cube[i] = copyPixelcube[i + 1]
+                cube[i + 1] = copyPixelcube[i + 2]
+                cube[i + 2] = copyPixelcube[i + 3]
+                cube[i + 3] = copyPixelcube[i]
             }
         }
     }
