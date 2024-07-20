@@ -60,7 +60,7 @@ import javax.swing.WindowConstants
     }
 
     fun show(){
-        val buffer = DataBufferByte(cube.elements.map { it.toByte() }.toByteArray(), cube.elements.size)
+        val buffer = DataBufferByte(cube.toByteArray(), cube.elements.size)
 
         val bufferedImage : BufferedImage
         when(colorType){

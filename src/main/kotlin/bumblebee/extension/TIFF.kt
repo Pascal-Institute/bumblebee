@@ -115,7 +115,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
                     var counts = byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
                     //Do LZW
                     cube = Cube(0, 0, bytesPerPixel)
-                    cube.elements = lzwDecode(byteArray.cut(startIdx, startIdx + counts)).map{Element(it)}.toTypedArray()
+                    cube.elements = lzwDecode(byteArray.cut(startIdx, startIdx + counts)).map{ Element(it) }.toTypedArray()
 
                     startIdx += counts
                 }
