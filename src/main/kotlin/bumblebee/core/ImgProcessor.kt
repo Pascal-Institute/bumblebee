@@ -48,7 +48,7 @@ class ImgProcessor {
         }
 
         fun resize(imgPix: ImgPix, width: Int, height: Int): ImgPix {
-            val pixelCube = Cube(width, height, imgPix.bytesPerPixel, Element(0.toByte()))
+            val cube = Cube(width, height, imgPix.bytesPerPixel, Element(0.toByte()))
 
             val oriW = imgPix.width
             val oriH = imgPix.height
@@ -91,15 +91,14 @@ class ImgProcessor {
                         //Interpolation for y
                         val value = (fa * (1 - fy) + fb * fy).toInt().toByte()
 
-                        pixelCube[i, j, k] = value
+                        cube[i, j, k] = value
                     }
                 }
             }
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-            imgPix.cube = pixelCube
+            imgPix.cube = cube
 
-            // bilinear interpolation 완료
             return imgPix
         }
 
@@ -203,7 +202,7 @@ class ImgProcessor {
             val height = padSize + imgPix.height + padSize
             val bytesPerPixel = imgPix.bytesPerPixel
 
-            val pixelCube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
+            val cube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
 
             when (padType) {
                 PadType.ZERO -> {
@@ -211,9 +210,9 @@ class ImgProcessor {
                         for (j in 0 until height) {
                             for (k in 0 until bytesPerPixel) {
                                 if ((i >= padSize && i < height - padSize) && (j >= padSize && j < width - padSize)) {
-                                    pixelCube[i, j, k] = imgPix.cube[i - padSize, j - padSize, k]
+                                    cube[i, j, k] = imgPix.cube[i - padSize, j - padSize, k]
                                 } else {
-                                    pixelCube[i, j, k] = (0).toByte()
+                                    cube[i, j, k] = (0).toByte()
                                 }
                             }
                         }
@@ -226,9 +225,9 @@ class ImgProcessor {
                         for (j in 0 until height) {
                             for (k in 0 until bytesPerPixel) {
                                 if ((i >= padSize && i < height - padSize) && (j >= padSize && j < width - padSize)) {
-                                    pixelCube[i, j, k] = imgPix.cube[i - padSize, j - padSize, k]
+                                    cube[i, j, k] = imgPix.cube[i - padSize, j - padSize, k]
                                 } else {
-                                    pixelCube[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = averagePixel[k]
+                                    cube[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = averagePixel[k]
                                 }
                             }
                         }
@@ -238,7 +237,7 @@ class ImgProcessor {
 
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-            imgPix.cube = pixelCube
+            imgPix.cube = cube
 
             return imgPix
         }
@@ -261,7 +260,7 @@ class ImgProcessor {
             val width = imgPix.width
             val height = imgPix.height
             val bytesPerPixel = imgPix.bytesPerPixel
-            val pixelCube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
+            val cube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
 
             when (filterType) {
                 FilterType.AVERAGE -> {
@@ -280,7 +279,7 @@ class ImgProcessor {
                                     intValue += tempPixelCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte()
                                         .toUByte().toInt()
                                 }
-                                pixelCube[i - halfFilterSize, j - halfFilterSize, k] = (intValue / windowSize).toByte()
+                                cube[i - halfFilterSize, j - halfFilterSize, k] = (intValue / windowSize).toByte()
                             }
                         }
                     }
@@ -305,7 +304,7 @@ class ImgProcessor {
                                             .toUByte()
                                 }
                                 uByteArray.sort()
-                                pixelCube[i - halfFilterSize, j - halfFilterSize, k] =
+                                cube[i - halfFilterSize, j - halfFilterSize, k] =
                                     ((uByteArray[middleSize]).toByte())
                             }
                         }
@@ -336,7 +335,7 @@ class ImgProcessor {
                                         exceptStrength * temp
                                     }
                                 }
-                                pixelCube[i - padSize, j - padSize, k] = intValue.toByte()
+                                cube[i - padSize, j - padSize, k] = intValue.toByte()
                             }
                         }
                     }
@@ -359,7 +358,7 @@ class ImgProcessor {
                                         sum += value * mask[l][m]
                                     }
                                 }
-                                pixelCube[i - padSize, j - padSize, k] = sum.toInt().toByte()
+                                cube[i - padSize, j - padSize, k] = sum.toInt().toByte()
                             }
                         }
                     }
@@ -369,7 +368,7 @@ class ImgProcessor {
 
             imgPix.metaData.width = width
             imgPix.metaData.height = height
-            imgPix.cube = pixelCube
+            imgPix.cube = cube
 
             return imgPix
         }
@@ -377,17 +376,17 @@ class ImgProcessor {
         fun getChannel(imgPix: ImgPix, chanelIndex: Int): ImgPix {
             val width = imgPix.width
             val height = imgPix.height
-            val pixelCube = Cube(width, height, 1, Element(0.toByte()))
+            val cube = Cube(width, height, 1, Element(0.toByte()))
             val originPixelCube = imgPix.cube
 
             for (i in 0 until width) {
                 for (j in 0 until height) {
-                    pixelCube[i, j, 0] = originPixelCube[i, j, chanelIndex]
+                    cube[i, j, 0] = originPixelCube[i, j, chanelIndex]
                 }
             }
 
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
-            imgPix.cube = pixelCube
+            imgPix.cube = cube
 
             return imgPix
         }
