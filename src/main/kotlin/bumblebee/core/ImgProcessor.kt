@@ -33,11 +33,11 @@ class ImgProcessor {
             val cube = Cube(width, height, bytesPerPixel)
             val startIdx = row * (imgPix.height * bytesPerPixel) + col * bytesPerPixel
 
-            for (i: Int in 0 until height) {
-                for (j: Int in 0 until width) {
+            for (i: Int in 0 until width) {
+                for (j: Int in 0 until height) {
                     for (k: Int in 0 until bytesPerPixel) {
-                        cube[j * bytesPerPixel + k + (i * bytesPerPixel * width)] =
-                            imgPix.cube[startIdx + j * bytesPerPixel + k + (i * bytesPerPixel * imgPix.width)].toByte()
+                        cube[i, j, k] =
+                            imgPix.cube[startIdx + j * bytesPerPixel + k + (i * bytesPerPixel * imgPix.height)].toByte()
                     }
                 }
             }
@@ -50,7 +50,7 @@ class ImgProcessor {
         }
 
         fun resize(imgPix: ImgPix, width: Int, height: Int): ImgPix {
-            val pixelCube = Cube(width, height, imgPix.bytesPerPixel)
+            val pixelCube = imgPix.cube
 
             val oriW = imgPix.width
             val oriH = imgPix.height

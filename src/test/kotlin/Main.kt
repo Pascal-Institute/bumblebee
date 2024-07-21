@@ -17,5 +17,6 @@ fun main(){
     imgPix.show()
 
     val lenna = ImgPix("src/main/resources/lenna.png")
+    lenna.crop(0,0,128,128)
     lenna.show()
 }
