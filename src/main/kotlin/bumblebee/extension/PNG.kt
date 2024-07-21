@@ -11,10 +11,8 @@ import bumblebee.util.StringObject.DATA
 import bumblebee.util.StringObject.SIZE
 import bumblebee.util.StringObject.TYPE
 import delta.ZLib
-import komat.space.Mat
-import java.io.ByteArrayOutputStream
-import java.nio.ByteBuffer
-import java.util.zip.Inflater
+import komat.Element
+import komat.space.Cube
 import kotlin.math.abs
 import kotlin.math.floor
 
@@ -97,7 +95,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
     private fun offFilter(decompressedByteArray: ByteArray) {
 
-        mat = Mat(width, height * bytesPerPixel, ByteArray(width * height * bytesPerPixel))
+        cube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
 
         for(col : Int in 0 until height ){
 
@@ -132,7 +130,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
     private fun none(byteArray : ByteArray, from: Int) {
         var idx = from
         byteArray.forEach {
-            mat[idx] = it
+            cube[idx] = it
             idx++
         }
     }
@@ -142,9 +140,9 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         var count = 0
         byteArray.forEach {
             if(count < bytesPerPixel){
-                mat[idx] = it
+                cube[idx] = it
             }else{
-                mat[idx] = (mat[idx-bytesPerPixel] as Byte + it).toByte()
+                cube[idx] = (cube[idx-bytesPerPixel].toByte() + it).toByte()
             }
             idx++
             count++
@@ -154,7 +152,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
     private fun up(byteArray: ByteArray, from: Int) {
         var idx = from
         byteArray.forEach{
-            mat[idx] = (mat[idx - width * bytesPerPixel] as Byte + it).toByte()
+            cube[idx] = (cube[idx - width * bytesPerPixel].toByte() + it).toByte()
             idx++
         }
     }
@@ -166,16 +164,16 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
         byteArray.forEach{
             if(count < bytesPerPixel){
-                val b = (mat[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
+                val b = (cube[idx - width * bytesPerPixel].toByte() ).toUByte().toInt()
                 val c = floor( b  * 0.5 ).toInt()
-                mat[idx] = (c + it).toByte()
+                cube[idx] = (c + it).toByte()
 
             }else{
 
-                val a = (mat[idx - bytesPerPixel] as Byte).toUByte().toInt()
-                val b = (mat[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
+                val a = (cube[idx - bytesPerPixel].toByte()).toUByte().toInt()
+                val b = (cube[idx - width * bytesPerPixel].toByte()).toUByte().toInt()
                 val c = floor((a  + b) * 0.5 ).toInt()
-                mat[idx] = (c + it).toByte()
+                cube[idx] = (c + it).toByte()
             }
 
             idx++
@@ -191,7 +189,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
             if(count < bytesPerPixel){
 
                 val a = 0
-                val b = (mat[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
+                val b = (cube[idx - width * bytesPerPixel].toByte()).toUByte().toInt()
                 val c = 0
 
                 val byteP = (a + b - c)
@@ -208,12 +206,12 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     c.toByte()
                 }
 
-                mat[idx] = (pR + it).toByte()
+                cube[idx] = (pR + it).toByte()
 
             }else{
-                val a = (mat[idx - bytesPerPixel] as Byte).toUByte().toInt()
-                val b = (mat[idx - width * bytesPerPixel] as Byte).toUByte().toInt()
-                val c = (mat[idx - width * bytesPerPixel - bytesPerPixel] as Byte).toUByte().toInt()
+                val a = (cube[idx - bytesPerPixel].toByte()).toUByte().toInt()
+                val b = (cube[idx - width * bytesPerPixel].toByte()).toUByte().toInt()
+                val c = (cube[idx - width * bytesPerPixel - bytesPerPixel].toByte()).toUByte().toInt()
 
                 val byteP = (a + b - c)
 
@@ -229,7 +227,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                     c
                 }
 
-                mat[idx] = ((pR + it).toByte())
+                cube[idx] = ((pR + it).toByte())
             }
             idx++
             count++

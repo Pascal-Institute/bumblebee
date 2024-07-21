@@ -13,7 +13,7 @@ repositories {
 dependencies {
     testImplementation(kotlin("test"))
     implementation ("com.github.volta2030:delta:1.1.0")
-    implementation ("com.github.Pascal-Institute:komat:1.9.1")
+    implementation ("com.github.Pascal-Institute:komat:develop-SNAPSHOT")
 }
 
 tasks.test {

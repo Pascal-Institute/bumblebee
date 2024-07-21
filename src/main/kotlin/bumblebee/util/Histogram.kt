@@ -20,7 +20,7 @@ data class Histogram(val imgPix: ImgPix) {
             ColorType.GRAY_SCALE->{
                 channelG = MutableList(256) { 0 }
 
-                imgPix.mat.elements.forEach {
+                imgPix.cube.elements.forEach {
                     val index = (it.toByte()).toUByte().toInt()
                     channelG[index] += 1
                 }
@@ -32,7 +32,7 @@ data class Histogram(val imgPix: ImgPix) {
                 channelG = MutableList(256) { 0 }
                 channelB = MutableList(256) { 0 }
 
-                imgPix.mat.elements.forEachIndexed { idx, byte ->
+                imgPix.cube.elements.forEachIndexed { idx, byte ->
                     val index = (byte.toByte()).toUByte().toInt()
 
                     when(idx % 3){
@@ -47,7 +47,7 @@ data class Histogram(val imgPix: ImgPix) {
             else->{
                 channelG = MutableList(256) { 0 }
 
-                imgPix.mat.elements.forEach {
+                imgPix.cube.elements.forEach {
                     val index = (it.toByte()).toUByte().toInt()
                     channelG[index] += 1
                 }

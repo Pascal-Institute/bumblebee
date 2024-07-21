@@ -19,7 +19,8 @@ import bumblebee.util.StringObject.FORTY_TWO
 import bumblebee.util.StringObject.IFD_OFFSET
 import bumblebee.util.StringObject.TAG_ID
 import delta.Packbits
-import komat.space.Mat
+import komat.space.Cube
+import komat.Element
 
 //TIFF Revision 6.0 / Author : Aldus Corporation
 class TIFF(private var byteArray: ByteArray) : ImgPix() {
@@ -105,7 +106,7 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
         var startIdx = byteArray.cut(firstStripOffset, firstStripOffset + 4).toEndian().byteToInt()
         val endIdx = byteArray.cut(lastStripOffset - 4, lastStripOffset).toEndian().byteToInt() + byteArray.cut(stripByteCounts + (4 * stripCount) - 4, stripByteCounts + 4 * stripCount).toEndian().byteToInt()
 
-        this.mat = Mat(width, height * bytesPerPixel, ByteArray(width * height * bytesPerPixel))
+        cube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
         when(compressionType){
             CompressionType.LZW -> {
 
@@ -113,7 +114,8 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                     var counts = byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
                     //Do LZW
-                    mat = Mat(0, 0, lzwDecode(byteArray.cut(startIdx, startIdx + counts)))
+                    cube = Cube(0, 0, bytesPerPixel, Element(0.toByte()))
+                    cube.elements = lzwDecode(byteArray.cut(startIdx, startIdx + counts)).map{ Element(it) }.toTypedArray()
 
                     startIdx += counts
                 }
@@ -123,15 +125,17 @@ class TIFF(private var byteArray: ByteArray) : ImgPix() {
 
                 for(i : Int in 0 until stripCount){
                     var counts = byteArray.cut(stripByteCounts + (4 * i), stripByteCounts + (4 * i) + 4).toEndian().byteToInt()
-                    var result = Mat(0, 0, Packbits.decode(byteArray.cut(startIdx, startIdx + counts)))
-                    mat = result
+                    var result = Cube(0, 0, bytesPerPixel, Element(0.toByte()))
+                    result.elements = Packbits.decode(byteArray.cut(startIdx, startIdx + counts)).map { Element(it) }.toTypedArray()
+                    cube = result
                     startIdx += counts
                 }
 
             }
 
             else->{
-                mat = Mat(0,0,byteArray.cut(startIdx, endIdx))
+                cube = Cube(0, 0, bytesPerPixel, Element(0.toByte()))
+                cube.elements = byteArray.cut(startIdx, endIdx).map { Element(it) }.toTypedArray()
             }
         }
     }
