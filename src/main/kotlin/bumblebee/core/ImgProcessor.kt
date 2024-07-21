@@ -269,14 +269,14 @@ class ImgProcessor {
                     val halfFilterSize = filterSize / 2
 
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
-                    val tempPixelCube = tempImgPix.cube
+                    val tempCube = tempImgPix.cube
 
                     for (i in halfFilterSize until width + halfFilterSize) {
                         for (j in halfFilterSize until height + halfFilterSize) {
                             for (k in 0 until bytesPerPixel) {
                                 var intValue = 0
                                 for (l: Int in 0 until windowSize) {
-                                    intValue += tempPixelCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte()
+                                    intValue += tempCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte()
                                         .toUByte().toInt()
                                 }
                                 cube[i - halfFilterSize, j - halfFilterSize, k] = (intValue / windowSize).toByte()
@@ -292,7 +292,7 @@ class ImgProcessor {
                     val halfFilterSize = filterSize / 2
 
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
-                    val tempPixelCube = tempImgPix.cube
+                    val tempCube = tempImgPix.cube
 
                     for (i in halfFilterSize until width + halfFilterSize) {
                         for (j in halfFilterSize until height + halfFilterSize) {
@@ -300,7 +300,7 @@ class ImgProcessor {
                                 var uByteArray = UByteArray(windowSize)
                                 repeat(windowSize) { l ->
                                     uByteArray[l] =
-                                        tempPixelCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte()
+                                        tempCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte()
                                             .toUByte()
                                 }
                                 uByteArray.sort()
@@ -319,7 +319,7 @@ class ImgProcessor {
                     val strength = 9
                     val exceptStrength = -1
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, padSize)
-                    val tempPixelCube = tempImgPix.cube
+                    val tempCube = tempImgPix.cube
 
                     for (i in padSize until width + padSize) {
                         for (j in padSize until height + padSize) {
@@ -327,7 +327,7 @@ class ImgProcessor {
                                 var intValue = 0
                                 for (l: Int in 0 until windowSize) {
                                     var temp =
-                                        tempPixelCube[i - padSize + (l / filterSize), j - padSize + (l % filterSize), k].toByte()
+                                        tempCube[i - padSize + (l / filterSize), j - padSize + (l % filterSize), k].toByte()
                                             .toUByte().toInt()
                                     intValue += if (l == 4) {
                                         strength * temp
@@ -344,7 +344,7 @@ class ImgProcessor {
                 FilterType.GAUSSIAN -> {
                     val padSize = ((filterSize - 1) / 2)
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, padSize)
-                    val tempPixelCube = tempImgPix.cube
+                    val tempCube = tempImgPix.cube
                     val mask = getGaussianMask(filterSize, padSize, stdev)
                     for (i in padSize until width + padSize) {
                         for (j in padSize until height + padSize) {
@@ -354,7 +354,7 @@ class ImgProcessor {
                                 for (l: Int in mask.indices) {
                                     for (m: Int in mask.indices) {
                                         val value =
-                                            tempPixelCube[i - padSize + l, j - padSize, k].toByte().toUByte().toInt()
+                                            tempCube[i - padSize + l, j - padSize, k].toByte().toUByte().toInt()
                                         sum += value * mask[l][m]
                                     }
                                 }
