@@ -29,7 +29,6 @@ class ImgProcessor {
 
             val bytesPerPixel = imgPix.bytesPerPixel
             val cube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
-            val startIdx = row * (imgPix.height * bytesPerPixel) + col * bytesPerPixel
 
             for (i: Int in 0 until width) {
                 for (j: Int in 0 until height) {
