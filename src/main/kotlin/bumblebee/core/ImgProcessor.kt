@@ -354,7 +354,7 @@ class ImgProcessor {
                                 for (l: Int in mask.indices) {
                                     for (m: Int in mask.indices) {
                                         val value =
-                                            tempCube[i - padSize + l, j - padSize, k].toByte().toUByte().toInt()
+                                            tempCube[i - padSize + l, j - padSize + m, k].toByte().toUByte().toInt()
                                         sum += value * mask[l][m]
                                     }
                                 }
