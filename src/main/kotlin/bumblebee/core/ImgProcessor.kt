@@ -293,19 +293,16 @@ class ImgProcessor {
                     val halfFilterSize = filterSize / 2
 
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
-                    val padImgPixWidth = tempImgPix.width
                     val tempPixelCube = tempImgPix.cube
 
-                    for (i: Int in halfFilterSize until height + halfFilterSize) {
-                        for (j: Int in halfFilterSize until width + halfFilterSize) {
-                            for (k: Int in 0 until bytesPerPixel) {
+                    for (i in halfFilterSize until width + halfFilterSize) {
+                        for (j in halfFilterSize until height + halfFilterSize) {
+                            for (k in 0 until bytesPerPixel) {
                                 var intValue = 0
                                 for (l: Int in 0 until windowSize) {
-                                    intValue += (tempPixelCube[((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k].toByte()).toUByte()
-                                        .toInt()
+                                    intValue += tempPixelCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte().toUByte().toInt()
                                 }
-                                pixelCube[(j - halfFilterSize) * bytesPerPixel + k + ((i - halfFilterSize) * bytesPerPixel * width)] =
-                                    ((intValue / windowSize).toByte())
+                                pixelCube[i - halfFilterSize,j - halfFilterSize, k] = (intValue / windowSize).toByte()
                             }
                         }
                     }
@@ -318,19 +315,17 @@ class ImgProcessor {
                     val halfFilterSize = filterSize / 2
 
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, halfFilterSize)
-                    val padImgPixWidth = tempImgPix.width
                     val tempPixelCube = tempImgPix.cube
 
-                    for (i: Int in halfFilterSize until height + halfFilterSize) {
-                        for (j: Int in halfFilterSize until width + halfFilterSize) {
+                    for (i in halfFilterSize until width + halfFilterSize) {
+                        for (j in halfFilterSize until height + halfFilterSize) {
                             repeat(bytesPerPixel) { k ->
                                 var uByteArray = UByteArray(windowSize)
                                 repeat(windowSize) { l ->
-                                    uByteArray[l] =
-                                        (tempPixelCube[(((i - halfFilterSize + (l % filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - halfFilterSize + (l / filterSize)) * bytesPerPixel) + k)].toByte()).toUByte()
+                                    uByteArray[l] = tempPixelCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte().toUByte()
                                 }
                                 uByteArray.sort()
-                                pixelCube[(j - halfFilterSize) * bytesPerPixel + k + ((i - halfFilterSize) * bytesPerPixel * width)] =
+                                pixelCube[i - halfFilterSize, j - halfFilterSize, k] =
                                     ((uByteArray[middleSize]).toByte())
                             }
                         }
@@ -345,25 +340,21 @@ class ImgProcessor {
                     val strength = 9
                     val exceptStrength = -1
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, padSize)
-                    val padImgPixWidth = tempImgPix.width
                     val tempPixelCube = tempImgPix.cube
 
-                    for (i: Int in padSize until height + padSize) {
-                        for (j: Int in padSize until width + padSize) {
-                            for (k: Int in 0 until bytesPerPixel) {
+                    for (i in padSize until width + padSize) {
+                        for (j in padSize until height + padSize) {
+                            for (k in 0 until bytesPerPixel) {
                                 var intValue = 0
                                 for (l: Int in 0 until windowSize) {
-                                    var temp = (
-                                            (tempPixelCube[(((i - padSize + (l / filterSize)) * bytesPerPixel * padImgPixWidth) + ((j - padSize + (l % filterSize)) * bytesPerPixel) + k)].toByte()).toUByte()
-                                                .toInt())
+                                    var temp = tempPixelCube[i - padSize + (l / filterSize), j - padSize + (l % filterSize), k].toByte().toUByte().toInt()
                                     intValue += if (l == 4) {
                                         strength * temp
                                     } else {
                                         exceptStrength * temp
                                     }
                                 }
-                                pixelCube[(j - padSize) * bytesPerPixel + k + ((i - padSize) * bytesPerPixel * width)] =
-                                    intValue.toByte()
+                                pixelCube[i - padSize, j - padSize, k] =intValue.toByte()
                             }
                         }
                     }
@@ -372,24 +363,20 @@ class ImgProcessor {
                 FilterType.GAUSSIAN -> {
                     val padSize = ((filterSize - 1) / 2)
                     val tempImgPix = imgPix.pad(PadType.AVERAGE, padSize)
-                    val padImgPixWidth = tempImgPix.width
                     val tempPixelCube = tempImgPix.cube
                     val mask = getGaussianMask(filterSize, padSize, stdev)
-                    for (i: Int in padSize until height + padSize) {
-                        for (j: Int in padSize until width + padSize) {
-                            for (k: Int in 0 until bytesPerPixel) {
+                    for (i in padSize until width + padSize) {
+                        for (j in padSize until height + padSize) {
+                            for (k in 0 until bytesPerPixel) {
                                 var sum = 0.0
 
                                 for (l: Int in mask.indices) {
                                     for (m: Int in mask.indices) {
-                                        val value =
-                                            (tempPixelCube[(((i - padSize + l) * bytesPerPixel * padImgPixWidth) + ((j - padSize + m) * bytesPerPixel) + k)].toByte()).toUByte()
-                                                .toInt()
-                                        sum += value * mask[m][l]
+                                        val value =tempPixelCube[i - padSize + l, j - padSize, k].toByte().toUByte().toInt()
+                                        sum += value * mask[l][m]
                                     }
                                 }
-                                pixelCube[(j - padSize) * bytesPerPixel + k + ((i - padSize) * bytesPerPixel * width)] =
-                                    sum.toInt().toByte()
+                                pixelCube[i - padSize, j-padSize, k] = sum.toInt().toByte()
                             }
                         }
                     }
