@@ -412,10 +412,9 @@ class ImgProcessor {
             val pixelCube = Cube(width, height, 1, Element(0.toByte()))
             val originPixelCube = imgPix.cube
 
-            for (i: Int in 0 until height) {
-                for (j: Int in 0 until width) {
-                    pixelCube[i * width + j] =
-                        originPixelCube[(i * imgPix.bytesPerPixel * width + j * imgPix.bytesPerPixel + chanelIndex)]
+            for (i in 0 until width) {
+                for (j in 0 until height) {
+                    pixelCube[i, j, 0] = originPixelCube[i, j, chanelIndex]
                 }
             }
 
