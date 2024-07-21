@@ -5,18 +5,21 @@ import bumblebee.type.PadType
 
 fun main(){
     val imgPix = ImgPix("src/main/resources/bumblebee_icon.png")
-    imgPix.resize(256, 256)
-    imgPix.invert()
+    imgPix.resize(128, 128)
+    imgPix.toGrayScale()
+
+    /*imgPix.invert()
     imgPix.flip(OrientationType.HORIZONTAL)
     imgPix.flip(OrientationType.VERTICAL)
     imgPix.toGrayScale()
     imgPix.threshold(120)
     imgPix.pad(PadType.ZERO, 3)
     imgPix.pad(PadType.AVERAGE, 5)
-    imgPix.filter(FilterType.GAUSSIAN, 11, 3.0)
+    imgPix.filter(FilterType.GAUSSIAN, 11, 3.0)*/
     imgPix.show()
 
-    val lenna = ImgPix("src/main/resources/lenna.png")
+/*    val lenna = ImgPix("src/main/resources/lenna.png")
     lenna.crop(256,256,256,256)
-    lenna.show()
+    lenna.pad(PadType.AVERAGE, 10)
+    lenna.show()*/
 }

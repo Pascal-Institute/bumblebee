@@ -55,7 +55,6 @@ class ImgProcessor {
             val widthRatioPixel = imgPix.width.toDouble() / width
             val heightRatioPixel = imgPix.height.toDouble() / height
 
-
             val processedImgPix = imgPix.pad(PadType.AVERAGE, 1).crop(1, 1, oriW + 1, oriH + 1)
 
             //Actual pixels that have been truncated
@@ -156,10 +155,12 @@ class ImgProcessor {
             return imgPix
         }
 
+        @Deprecated("this function does nothing")
         fun rotate(imgPix: ImgPix, degree: Int): ImgPix {
             return imgPix
         }
 
+        @Deprecated("this function does nothing")
         fun crop(imgPix: ImgPix, degree: Int): ImgPix {
             return imgPix
         }
@@ -172,16 +173,15 @@ class ImgProcessor {
 
             imgPix.metaData.colorType = ColorType.GRAY_SCALE
 
-            val cube = Cube(width, height, imgPix.bytesPerPixel, Element(0.toByte()))
+            val cube = Cube(width, height, 1, Element(0.toByte()))
 
-            for (i: Int in 0 until height) {
-                for (j: Int in 0 until width) {
+            for (i in 0 until width) {
+                for (j in 0 until height) {
                     var integer = 0
-                    for (k: Int in 0 until oldBytesPerPixel) {
-                        integer += (imgPix.cube[(i * oldBytesPerPixel * width) + (j * oldBytesPerPixel) + k].toByte()).toUByte()
-                            .toInt()
+                    for (k in 0 until oldBytesPerPixel) {
+                        integer += (imgPix.cube[i, j, k].toByte()).toUByte().toInt()
                     }
-                    cube[i * width + j] = (integer / oldBytesPerPixel).toByte()
+                    cube[i, j, 0] = (integer / oldBytesPerPixel).toByte()
                 }
             }
 
