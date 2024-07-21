@@ -23,7 +23,8 @@ fun main(){
 
     val lenna = ImgPix("src/main/resources/lenna.png")
     lenna.crop(256,256,256,256)
+    lenna.flip(OrientationType.HORIZONTAL)
     //lenna.pad(PadType.AVERAGE, 10)
-    lenna.filter(FilterType.GAUSSIAN, 9, 2.0)
+    //lenna.filter(FilterType.GAUSSIAN, 9, 2.0)
     lenna.show()
 }

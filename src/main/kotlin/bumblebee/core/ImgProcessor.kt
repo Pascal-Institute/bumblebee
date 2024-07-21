@@ -7,6 +7,7 @@ import bumblebee.util.Converter.Companion.colorToByte
 import bumblebee.util.Histogram
 import komat.Element
 import komat.space.Cube
+import komat.type.Axis
 import kotlin.experimental.inv
 import kotlin.math.floor
 import kotlin.math.pow
@@ -34,7 +35,7 @@ class ImgProcessor {
                 for (j: Int in 0 until height) {
                     for (k: Int in 0 until bytesPerPixel) {
                         cube[i, j, k] =
-                            imgPix.cube[i + row, j + col,k]
+                            imgPix.cube[i + row, j + col, k]
                     }
                 }
             }
@@ -119,39 +120,15 @@ class ImgProcessor {
         }
 
         fun flip(imgPix: ImgPix, orientation: OrientationType): ImgPix {
-
-            val width = imgPix.width
-            val height = imgPix.height
-            val bytesPerPixel = imgPix.bytesPerPixel
-
-            val pixelCube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
-
             when (orientation) {
                 OrientationType.HORIZONTAL -> {
-                    for (i: Int in 0 until height) {
-                        for (j: Int in 0 until width) {
-                            for (k: Int in 0 until bytesPerPixel) {
-                                pixelCube[j * bytesPerPixel + k + (i * bytesPerPixel * width)] =
-                                    (imgPix.cube[((i + 1) * bytesPerPixel * width - 1) - (j * bytesPerPixel + (bytesPerPixel - 1) - k)])
-                            }
-                        }
-                    }
+                    imgPix.cube.flip(Axis.FRONTAL)
                 }
 
                 OrientationType.VERTICAL -> {
-                    for (i: Int in 0 until height) {
-                        for (j: Int in 0 until width) {
-                            for (k: Int in 0 until bytesPerPixel) {
-                                pixelCube[j * bytesPerPixel + k + (i * bytesPerPixel * width)] =
-                                    imgPix.cube[width * (height - (i + 1)) * bytesPerPixel + j * bytesPerPixel + k]
-                            }
-                        }
-                    }
+                    imgPix.cube.flip(Axis.VERTICAL)
                 }
             }
-
-            imgPix.cube = pixelCube
-
             return imgPix
         }
 
@@ -300,9 +277,10 @@ class ImgProcessor {
                             for (k in 0 until bytesPerPixel) {
                                 var intValue = 0
                                 for (l: Int in 0 until windowSize) {
-                                    intValue += tempPixelCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte().toUByte().toInt()
+                                    intValue += tempPixelCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte()
+                                        .toUByte().toInt()
                                 }
-                                pixelCube[i - halfFilterSize,j - halfFilterSize, k] = (intValue / windowSize).toByte()
+                                pixelCube[i - halfFilterSize, j - halfFilterSize, k] = (intValue / windowSize).toByte()
                             }
                         }
                     }
@@ -322,7 +300,9 @@ class ImgProcessor {
                             repeat(bytesPerPixel) { k ->
                                 var uByteArray = UByteArray(windowSize)
                                 repeat(windowSize) { l ->
-                                    uByteArray[l] = tempPixelCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte().toUByte()
+                                    uByteArray[l] =
+                                        tempPixelCube[i - halfFilterSize + (l % filterSize), j - halfFilterSize + (l / filterSize), k].toByte()
+                                            .toUByte()
                                 }
                                 uByteArray.sort()
                                 pixelCube[i - halfFilterSize, j - halfFilterSize, k] =
@@ -347,14 +327,16 @@ class ImgProcessor {
                             for (k in 0 until bytesPerPixel) {
                                 var intValue = 0
                                 for (l: Int in 0 until windowSize) {
-                                    var temp = tempPixelCube[i - padSize + (l / filterSize), j - padSize + (l % filterSize), k].toByte().toUByte().toInt()
+                                    var temp =
+                                        tempPixelCube[i - padSize + (l / filterSize), j - padSize + (l % filterSize), k].toByte()
+                                            .toUByte().toInt()
                                     intValue += if (l == 4) {
                                         strength * temp
                                     } else {
                                         exceptStrength * temp
                                     }
                                 }
-                                pixelCube[i - padSize, j - padSize, k] =intValue.toByte()
+                                pixelCube[i - padSize, j - padSize, k] = intValue.toByte()
                             }
                         }
                     }
@@ -372,11 +354,12 @@ class ImgProcessor {
 
                                 for (l: Int in mask.indices) {
                                     for (m: Int in mask.indices) {
-                                        val value =tempPixelCube[i - padSize + l, j - padSize, k].toByte().toUByte().toInt()
+                                        val value =
+                                            tempPixelCube[i - padSize + l, j - padSize, k].toByte().toUByte().toInt()
                                         sum += value * mask[l][m]
                                     }
                                 }
-                                pixelCube[i - padSize, j-padSize, k] = sum.toInt().toByte()
+                                pixelCube[i - padSize, j - padSize, k] = sum.toInt().toByte()
                             }
                         }
                     }
