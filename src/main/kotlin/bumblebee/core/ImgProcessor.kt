@@ -48,7 +48,7 @@ class ImgProcessor {
         }
 
         fun resize(imgPix: ImgPix, width: Int, height: Int): ImgPix {
-            val pixelCube = imgPix.cube
+            val pixelCube = Cube(width, height, imgPix.bytesPerPixel, Element(0.toByte()))
 
             val oriW = imgPix.width
             val oriH = imgPix.height
@@ -62,13 +62,13 @@ class ImgProcessor {
             //Actual pixels that have been truncated
             val processedCube = processedImgPix.cube
 
-            for (i: Int in 0 until height) {
-                for (j: Int in 0 until width) {
-                    for (k: Int in 0 until imgPix.bytesPerPixel) {
+            for (i in 0 until width) {
+                for (j in 0 until height) {
+                    for (k in 0 until imgPix.bytesPerPixel) {
 
                         //Ideal pixels (x, y)
-                        val x = j * widthRatioPixel
-                        val y = i * heightRatioPixel
+                        val x = i * widthRatioPixel
+                        val y = j * heightRatioPixel
 
                         val x0 = floor(x).toInt()
                         val x1 = x0 + 1
@@ -76,10 +76,10 @@ class ImgProcessor {
                         val y1 = y0 + 1
 
 
-                        val p00 = processedCube[k + imgPix.bytesPerPixel * (x0 + processedImgPix.width * y0)].toByte()
-                        val p10 = processedCube[k + imgPix.bytesPerPixel * (x1 + processedImgPix.width * y0)].toByte()
-                        val p01 = processedCube[k + imgPix.bytesPerPixel * (x0 + processedImgPix.width * y1)].toByte()
-                        val p11 = processedCube[k + imgPix.bytesPerPixel * (x1 + processedImgPix.width * y1)].toByte()
+                        val p00 = processedCube[x0, y0, k].toByte()
+                        val p10 = processedCube[x1, y0, k].toByte()
+                        val p01 = processedCube[x0, y1, k].toByte()
+                        val p11 = processedCube[x1, y1, k].toByte()
 
                         //Weight
                         val fx = x - x0
@@ -92,7 +92,7 @@ class ImgProcessor {
                         //Interpolation for y
                         val value = (fa * (1 - fy) + fb * fy).toInt().toByte()
 
-                        pixelCube[k + imgPix.bytesPerPixel * j + (width * imgPix.bytesPerPixel * i)] = value
+                        pixelCube[i, j, k] = value
                     }
                 }
             }
