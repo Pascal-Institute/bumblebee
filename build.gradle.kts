@@ -26,7 +26,7 @@ publishing {
             groupId = "com.pascal.institute"//Navigate beyond computing oceans
             artifactId = "bumblebee"
 
-            version = "1.2.2"
+            version = "1.2.3"
 
             from(components["java"])
         }
