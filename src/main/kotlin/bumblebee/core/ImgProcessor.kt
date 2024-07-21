@@ -192,16 +192,12 @@ class ImgProcessor {
 
         fun threshold(imgPix: ImgPix, level: Int): ImgPix {
 
-            val width = imgPix.width
-            val height = imgPix.height
-            val bytesPerPixel = imgPix.bytesPerPixel
-
             if (imgPix.colorType != ColorType.GRAY_SCALE) {
                 toGrayScale(imgPix)
             }
 
-            for (i: Int in 0 until width * height * bytesPerPixel) {
-                val byte = if ((imgPix.cube[i].toByte()).byteToInt() > level) (255).toByte() else (0).toByte()
+            for (i in 0 until imgPix.cube.size()) {
+                val byte = if (imgPix.cube[i].toByte().byteToInt() > level) (255).toByte() else (0).toByte()
                 imgPix.cube[i] = byte
             }
 
