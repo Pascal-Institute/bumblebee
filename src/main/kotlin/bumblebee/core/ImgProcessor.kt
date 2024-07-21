@@ -230,14 +230,13 @@ class ImgProcessor {
 
             when (padType) {
                 PadType.ZERO -> {
-                    for (i: Int in 0 until height) {
-                        for (j: Int in 0 until width) {
-                            for (k: Int in 0 until bytesPerPixel) {
+                    for (i in 0 until width) {
+                        for (j in 0 until height) {
+                            for (k in 0 until bytesPerPixel) {
                                 if ((i >= padSize && i < height - padSize) && (j >= padSize && j < width - padSize)) {
-                                    pixelCube[j * bytesPerPixel + k + (i * bytesPerPixel * width)] =
-                                        (imgPix.cube[k + (j - padSize) * bytesPerPixel + (i - padSize) * bytesPerPixel * (width - 2 * padSize)].toByte())
+                                    pixelCube[i, j, k] = imgPix.cube[i - padSize, j - padSize, k]
                                 } else {
-                                    pixelCube[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = (0).toByte()
+                                    pixelCube[i, j, k] = (0).toByte()
                                 }
                             }
                         }
@@ -246,12 +245,11 @@ class ImgProcessor {
 
                 PadType.AVERAGE -> {
                     var averagePixel = Histogram(imgPix).getAverage(imgPix.colorType)
-                    for (i: Int in 0 until height) {
-                        for (j: Int in 0 until width) {
-                            for (k: Int in 0 until bytesPerPixel) {
+                    for (i in 0 until width) {
+                        for (j in 0 until height) {
+                            for (k in 0 until bytesPerPixel) {
                                 if ((i >= padSize && i < height - padSize) && (j >= padSize && j < width - padSize)) {
-                                    pixelCube[j * bytesPerPixel + k + (i * bytesPerPixel * width)] =
-                                        imgPix.cube[k + (j - padSize) * bytesPerPixel + (i - padSize) * bytesPerPixel * (width - 2 * padSize)].toByte()
+                                    pixelCube[i, j, k] = imgPix.cube[i - padSize, j - padSize, k]
                                 } else {
                                     pixelCube[j * bytesPerPixel + k + (i * bytesPerPixel * width)] = averagePixel[k]
                                 }
