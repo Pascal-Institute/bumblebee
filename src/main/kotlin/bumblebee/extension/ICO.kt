@@ -18,6 +18,7 @@ import bumblebee.util.StringObject.START_OFFSET
 import bumblebee.util.StringObject.TYPE
 import bumblebee.util.StringObject.WIDTH
 import komat.space.Cube
+import komat.Element
 
 class ICO(private var byteArray: ByteArray) : ImgPix() {
 
@@ -48,7 +49,7 @@ class ICO(private var byteArray: ByteArray) : ImgPix() {
 
         setMetaData(imageDir)
 
-        cube = Cube(width, height, bytesPerPixel)
+        cube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
 
         val startIdx = imageDir[START_OFFSET].byteToInt()
         val endIdx = startIdx + cube.elements.size

@@ -29,8 +29,8 @@ class PIX(private var byteArray : ByteArray) : ImgPix() {
         metaData.width = byteArray.copyOfRange(3, 7).byteToInt()
         metaData.height = byteArray.copyOfRange(7, 11).byteToInt()
         metaData.colorType = ColorType.fromInt(byteArray[11].byteToInt())
-        cube = Cube(metaData.width, metaData.height, metaData.colorType.bytesPerPixel)
-        cube = Cube(metaData.width, metaData.height, metaData.colorType.bytesPerPixel)
+        cube = Cube(metaData.width, metaData.height, metaData.colorType.bytesPerPixel, Element(0.toByte()))
+        cube = Cube(metaData.width, metaData.height, metaData.colorType.bytesPerPixel, Element(0.toByte()))
         cube.elements = byteArray.copyOfRange(12 , 12 + metaData.width * metaData.height * metaData.colorType.bytesPerPixel).map { Element(it) }.toTypedArray()
     }
 }

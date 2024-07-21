@@ -11,10 +11,8 @@ import bumblebee.util.StringObject.DATA
 import bumblebee.util.StringObject.SIZE
 import bumblebee.util.StringObject.TYPE
 import delta.ZLib
+import komat.Element
 import komat.space.Cube
-import java.io.ByteArrayOutputStream
-import java.nio.ByteBuffer
-import java.util.zip.Inflater
 import kotlin.math.abs
 import kotlin.math.floor
 
@@ -97,7 +95,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
     private fun offFilter(decompressedByteArray: ByteArray) {
 
-        cube = Cube(width, height, bytesPerPixel)
+        cube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
 
         for(col : Int in 0 until height ){
 

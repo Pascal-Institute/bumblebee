@@ -13,7 +13,7 @@ import bumblebee.util.StringObject.SIZE
 import bumblebee.util.StringObject.START_OFFSET
 import bumblebee.util.StringObject.WIDTH
 import komat.space.Cube
-import java.nio.ByteBuffer
+import komat.Element
 
 class BMP(private var byteArray: ByteArray) : ImgPix() {
 
@@ -47,7 +47,7 @@ class BMP(private var byteArray: ByteArray) : ImgPix() {
 
         setMetaData(infoHeader)
 
-        cube = Cube(width, height, bytesPerPixel)
+        cube = Cube(width, height, bytesPerPixel, Element(0.toByte()))
 
         val startIdx = fileHeader[START_OFFSET].byteToInt()
         val endIdx = startIdx + cube.elements.size

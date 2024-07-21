@@ -6,7 +6,6 @@ import bumblebee.type.*
 import bumblebee.util.Histogram
 import komat.Element
 import komat.space.Cube
-import komat.space.Mat
 import java.awt.Dimension
 import java.awt.Graphics
 import java.awt.Image
@@ -38,13 +37,13 @@ import javax.swing.WindowConstants
      //depth : row
      //row : column
      //column : color size
-    var cube = Cube(0,0,0)
+    var cube = Cube(0,0,0, Element(0.toByte()))
 
     constructor(width: Int, height: Int, colorType: ColorType) : this() {
         metaData.width = width
         metaData.height = height
         metaData.colorType = colorType
-        cube = Cube(width, height, colorType.bytesPerPixel)
+        cube = Cube(width, height, colorType.bytesPerPixel, Element(0.toByte()))
      }
 
     constructor(filePath : String) : this() {
