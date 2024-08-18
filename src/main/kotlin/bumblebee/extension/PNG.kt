@@ -65,7 +65,10 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
                 ChunkType.IHDR -> {
                     setMetaData(it)
                     bitDepth = it[DATA][8].byteToInt()
-//                  bytesPerPixel = colorType.colorSpace * (bitDepth / OCTA)
+                }
+
+                ChunkType.ICCP -> {
+
                 }
 
                 ChunkType.IDAT -> {
@@ -236,6 +239,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
 
     private enum class ChunkType(val byte : ByteArray) {
         IHDR(byteArrayOf(73, 72, 68, 82)),
+        ICCP(byteArrayOf(105, 67, 67, 80)),
         IDAT(byteArrayOf(73, 68, 65, 84)),
         IEND(byteArrayOf(73, 69, 78, 68)),
         PHYS(byteArrayOf(112, 72, 89, 115)),
@@ -243,7 +247,7 @@ class PNG(private var byteArray: ByteArray) : ImgPix() {
         SRGB(byteArrayOf(115, 82, 71, 66)),
         GAMA(byteArrayOf(103, 65, 77, 65));
         companion object {
-            fun fromByteArray(byteArray: ByteArray) = ChunkType.values().first { it.byte.contentEquals(byteArray) }
+            fun fromByteArray(byteArray: ByteArray) = entries.first { it.byte.contentEquals(byteArray) }
         }
     }
 
